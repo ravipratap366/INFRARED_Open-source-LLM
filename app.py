@@ -17,6 +17,11 @@ from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import norm
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
+def calculate_first_digit(data):
+    first_digits = data.astype(str).str.strip().str[0].astype(int)
+    counts = first_digits.value_counts(normalize=True, sort=False)
+    benford = np.log10(1 + 1 / np.arange(1, 10))
+    return counts, benford
 
 import base64
 
@@ -145,7 +150,11 @@ def find_duplicate_vendors(vendors_df, threshold):
     return duplicates, df_duplicates
 
 
-
+def calculate_first_digit(data):
+    first_digits = data.astype(str).str.strip().str[0].astype(int)
+    counts = first_digits.value_counts(normalize=True, sort=False)
+    benford = np.log10(1 + 1 / np.arange(1, 10))
+    return counts, benford
 
 def main():
     
@@ -353,6 +362,39 @@ def main():
                     st.write("Please upload the j_1 file.")
             else:
                 st.write("Please upload both lfa1 and Vendor_acc files.")
+
+        elif selected_info == "Vendor belongs to country in Africa, Turkey, Bangkok etc":
+            st.header("Upload your lfa1 file")
+            data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
+            if data_file1 is not None:
+                data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
+                st.write(data1.head(2))
+
+            st.header("Upload your t005t file")
+            data_file2 = st.file_uploader("Upload CSV", type=["csv"], key="t005t")
+
+            if data_file2 is not None:
+                data2 = pd.read_csv(data_file2, encoding='latin1')  # Specify the correct encoding
+                st.write(data2.head(2))
+
+                t005t = data2  # Assign data2 to t005t variable
+                ltf = pd.merge(data1, t005t, on='LAND1', how='left')
+                st.write(ltf)
+
+                ltf1 = ltf[['LIFNR','LAND1', 'LANDX50']]
+                filter_values = ['Africa', 'Turkey', 'Bangkok']  # Example filter values
+                filter_country = ltf1[ltf1['LANDX50'].isin(filter_values)]
+                country_counts = filter_country['LANDX50'].value_counts()
+                st.write(country_counts.head(5))
+
+
+
+
+     
+
+
+
+         
 
 
 
@@ -744,8 +786,43 @@ def main():
             )
 
             st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
-            
-        # elif selected_anomalyAlgorithm == "Benford law":
+
+        elif selected_anomalyAlgorithm == "Benford law":  
+            # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
+            selected_feature = st.selectbox("Select a feature:", data.columns)
+
+            # Calculate the distribution of first digits using Benford's Law
+            counts, benford = calculate_first_digit(data[selected_feature])
+
+            # Exclude the first digit (0) from the observed distribution
+            counts = counts.iloc[1:]
+
+            # Plot the observed and expected distributions
+            plt.figure(figsize=(8, 6))
+            plt.bar(range(1, 10), counts * 100, label='Observed')
+            plt.plot(range(1, 10), benford * 100, color='red', label='Expected')
+            plt.xlabel("First Digit")
+            plt.ylabel("Percentage")
+            plt.title("Benford's Law Analysis of " + selected_feature)
+            plt.legend()
+            st.pyplot(plt)
+
+            # Calculate the deviation from expected percentages
+            deviation = (counts - benford) * 100
+
+            # Show the results in a DataFrame
+            results = pd.DataFrame({'Digit': range(1, 10), 'Observed (%)': counts * 100, 'Expected (%)': benford * 100, 'Deviation (%)': deviation})
+            st.write("Results:")
+            st.write(results)
+
+            file_name = "Benford_Analysis_" + selected_feature.replace(" ", "_") + ".csv"
+            st.download_button(
+                label="Download",
+                data=results.to_csv(index=False),
+                file_name=file_name,
+                mime="text/csv"
+            )
+
 
 
 
