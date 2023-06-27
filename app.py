@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -124,12 +125,19 @@ def apply_anomaly_detection_IsolationForest(data):
 def main():
     
 
-    st.header("Upload you csv data")
-    data_file = st.file_uploader("Upload CSV", type=["csv"])
+
+
+    st.header("Upload your data file")
+    data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
     if data_file is not None:
-        data = pd.read_csv(data_file)
-
+        file_extension = data_file.name.split(".")[-1]
+        if file_extension == "csv":
+            data = pd.read_csv(data_file)
+        elif file_extension in ["xlsx", "XLSX"]:
+            data = pd.read_excel(data_file)
+        else:
+            st.error("Unsupported file format. Please upload a CSV or Excel file.")
     
 
         # starting of basic information side bar
