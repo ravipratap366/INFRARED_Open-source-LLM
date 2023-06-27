@@ -14,6 +14,9 @@ from sklearn.neighbors import KernelDensity
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import MinMaxScaler
+from scipy.stats import norm
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 import base64
 
@@ -121,6 +124,28 @@ def apply_anomaly_detection_IsolationForest(data):
 
 
 
+def find_duplicate_vendors(vendors_df, threshold):
+    duplicates = []
+    lf = vendors_df.copy()
+    lf['NAME1'] = lf['NAME1'].astype(str)
+    vendor_names = lf['NAME1'].unique().tolist()
+    columns = ['Vendor 1', 'Vendor 2', 'Score']
+    df_duplicates = pd.DataFrame(data=[], columns=columns)
+
+    for i, name in enumerate(vendor_names):
+        # Compare the current name with the remaining names
+        matches = process.extract(name, vendor_names[i+1:], scorer=fuzz.ratio)
+
+        # Check if any match exceeds the threshold
+        for match, score in matches:
+            if score >= threshold:
+                duplicates.append((name, match))
+                df_duplicates.loc[len(df_duplicates)] = [name, match, score]
+
+    return duplicates, df_duplicates
+
+
+
 
 def main():
     
@@ -164,36 +189,183 @@ def main():
 
         if selected_info == "None":
             st.write(" ")
-        elif selected_info == "Number of one-time vendor account":
+        elif selected_info == "Number of one time vendor account":
             st.header("Upload your lfa1 file")
             data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
 
             if data_file1 is not None:
-                data1 = pd.read_csv(data_file1)
+                data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
                 st.write(data1.head(2))
 
             st.header("Upload your lfb1 file")
             data_file2 = st.file_uploader("Upload CSV", type=["csv"], key="lfb1")
 
             if data_file2 is not None:
-                data2 = pd.read_csv(data_file2)
+                data2 = pd.read_csv(data_file2, encoding='latin1')  # Specify the correct encoding
                 st.write(data2.head(2))
 
                 # Merge data1 and data2 based on LIFNR using inner join
                 merged_data = pd.merge(data1, data2, on="LIFNR", how="inner")
                 st.write(merged_data.head(2))
 
-                # Calculate value counts of 'NAME1' column in the merged data
-                x2 = pd.DataFrame(merged_data['NAME1'].value_counts()).reset_index()
-                st.write(x2)
+                # Calculate the total number of unique vendors from 'NAME1' feature
+                unique_vendors = merged_data['NAME1'].nunique()
+                st.write("Total number of unique vendors:", unique_vendors)
 
-                # Filter x2 for rows where NAME1 is equal to 1
-                filtered_x2 = x2[x2['NAME1'] == 1]
+                # Filter merged_data for rows where NAME1 occurs only once
+                filtered_x2 = merged_data[merged_data['NAME1'].map(merged_data['NAME1'].value_counts()) == 1]
                 st.write(filtered_x2)
 
-                # Filter lf for rows where XCPDK is equal to 'X'
+                # Filter merged_data for rows where XCPDK is equal to 'X'
                 one_time_vendor = merged_data[merged_data['XCPDK'] == 'X']
                 st.write(one_time_vendor)
+
+        elif selected_info == "Duplicate vendor account basis name and fuzzy logic":
+            st.header("Upload your lfa1 file")
+            data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
+
+            if data_file1 is not None:
+                data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
+                st.write(data1.head(2))
+
+                # Perform duplicate vendor detection
+                threshold = 95
+                duplicates, df_duplicates = find_duplicate_vendors(data1, threshold)
+
+                # Display duplicate vendor pairs
+                st.write("Duplicate Vendor Accounts:")
+                for vendor1, vendor2 in duplicates:
+                    st.write(vendor1, "--", vendor2)
+
+                # Display dataframe with duplicate vendor pairs
+                st.write("Duplicate Vendor Accounts DataFrame:")
+                st.write(df_duplicates)
+
+        elif selected_info == "Changes in vendor bank account":
+            st.header("Upload your lfbk file")
+            data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfbk")
+            
+            if data_file1 is not None:
+                data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
+                st.write(data1.head(2))
+                
+                # Calculate the count of unique BANKN values for each LIFNR
+                series_data = data1.groupby('LIFNR')['BANKN'].nunique()
+                
+                # Create a DataFrame with the count of BANKN values
+                x1 = pd.DataFrame({'BANKN': series_data})
+                x1 = x1.rename(columns={'BANKN': 'count_BankN'})
+                x1 = x1.reset_index()
+                
+                # Get the list of LIFNR values with count_BankN greater than 1
+                l1 = list(x1[x1['count_BankN'] > 1]['LIFNR'])
+                
+                # Filter x1 for rows where count_BankN is greater than 1
+                x1_filtered = x1[x1['count_BankN'] > 1]
+                
+                # Count the number of people with multiple accounts
+                num_people = len(x1_filtered)
+                
+                # Display the number of people with multiple accounts
+                st.write("Number of people with multiple accounts:", num_people)
+                st.write(x1_filtered)
+
+        elif selected_info == "Vendor details matching with employee (common address, common bank account, common PAN)":
+            st.header("Upload your lfa1 file")
+            data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
+            data1 = None  # Initialize data1 variable
+            data2 = None  # Initialize data2 variable
+            data3 = None  # Initialize data3 variable
+            data4 = None  # Initialize data4 variable
+
+            if data_file1 is not None:
+                data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
+                data1['KTOKK'] = data1['KTOKK'].astype(str)  # Convert 'KTOKK' column to string
+                data1['KTOKK'] = data1['KTOKK'].str.replace("'", "")  # Replace single quotes in 'KTOKK' column
+                st.write(data1.head(2))
+
+            st.header("Upload your Vendor_acc file")
+            data_file2 = st.file_uploader("Upload CSV", type=["csv"], key="Vendor_acc")
+
+            if data_file2 is not None:
+                data2 = pd.read_csv(data_file2, encoding='latin1')  # Specify the correct encoding
+                data2['Group'] = data2['Group'].astype(str)  # Convert 'Group' column to string
+                st.write(data2.head(2))
+
+            if data1 is not None and data2 is not None:
+                lfa1_vd = pd.merge(data1, data2, left_on='KTOKK', right_on='Group', how='left')
+                st.write(lfa1_vd)
+
+                st.header("Upload your j_1 file")
+                data_file3 = st.file_uploader("Upload CSV", type=["csv"], key="j_1")
+
+                if data_file3 is not None:
+                    data3 = pd.read_csv(data_file3, encoding='latin1')  # Specify the correct encoding
+                    st.write(data3.head(2))
+
+                st.header("Upload your lfbk file")
+                data_file4 = st.file_uploader("Upload CSV", type=["csv"], key="lfbk")
+
+                if data_file4 is not None:
+                    data4 = pd.read_csv(data_file4, encoding='latin1')  # Specify the correct encoding
+                    st.write(data4.head(2))
+
+                if data3 is not None:
+                    lfa1_vd_j = pd.merge(lfa1_vd, data3, on='LIFNR', how='left')
+
+                    lfa1_vd_j_lfbk = pd.merge(lfa1_vd_j, data4, on='LIFNR', how='left')
+
+                    lfa1_vd_j1 = lfa1_vd_j_lfbk[['LIFNR', 'LAND1', 'NAME1', 'ORT01', 'STRAS', 'STCD3', 'Name', 'BANKN', 'J_1IPANNO_x', 'J_1IPANNO_y']]
+                    emp = lfa1_vd_j1[lfa1_vd_j1['Name'].str.contains('Empl')]
+                    vendor = lfa1_vd_j1[~(lfa1_vd_j1['Name'].str.contains('Empl'))]
+
+                    table1_bankn_set = set(vendor['BANKN'])
+                    employee_bankn_set = set(emp['BANKN'])
+
+                    common_bankn = table1_bankn_set.intersection(employee_bankn_set)
+                    common_bankn_count = len(common_bankn)
+                    emp[['LIFNR','BANKN']].dropna(inplace=True)
+                    st.write(f"Total number of persons having a common bank account: {common_bankn_count}")
+                    # for bankn in common_bankn:
+                    #     st.write(bankn)
+
+                    table1_J_1IPANNO_x_set = set(vendor['J_1IPANNO_x'])
+                    employee_J_1IPANNO_x_set = set(emp['J_1IPANNO_x'])
+
+                    common_J_1IPANNO_x = table1_J_1IPANNO_x_set.intersection(employee_J_1IPANNO_x_set)
+                    common_J_1IPANNO_x_count = len(common_J_1IPANNO_x)
+                    st.write(f"Total number of persons having a common pan: {common_J_1IPANNO_x_count}")
+
+                    # for pan in common_J_1IPANNO_x:
+                    #     st.write(pan)
+
+
+                    table1_bankn_set = set(vendor['STRAS'])
+                    employee_bankn_set = set(emp['STRAS'])
+
+                    common_J_1IPANNO_xa = table1_bankn_set.intersection(employee_bankn_set)
+                    common_J_1IPANNO_xa_count =len(common_J_1IPANNO_xa)
+                    st.write(f"Total number of persons having a common address: {common_J_1IPANNO_xa_count}")
+
+                    # for bankn in common_J_1IPANNO_x:
+                    #     print(bankn)
+                else:
+                    st.write("Please upload the j_1 file.")
+            else:
+                st.write("Please upload both lfa1 and Vendor_acc files.")
+
+
+
+
+
+
+
+
+   
+
+
+
+         
 
 
 
@@ -383,7 +555,7 @@ def main():
         anomaly_options = ["None",
                         "Z-Score/Standard Deviation",
                         "Boxplot",
-                        "Probabily Density function.",
+                        "Probability Density Function",
                         "RSF",
                         "Benford law"
         ]
@@ -486,6 +658,104 @@ def main():
             )
             
             st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
+
+
+        elif selected_anomalyAlgorithm == "Probability Density Function":
+            # Select the feature to analyze
+            selected_feature = st.selectbox("Select a feature:", data.columns)
+
+            # Calculate mean and standard deviation
+            mean = data[selected_feature].mean()
+            std = data[selected_feature].std()
+
+            # Create a range of values for the PDF
+            x = np.linspace(data[selected_feature].min(), data[selected_feature].max(), 100)
+
+            # Calculate the PDF using Gaussian distribution
+            pdf = norm.pdf(x, mean, std)
+
+            # Plot the PDF as a bar graph using Matplotlib
+            plt.figure(figsize=(8, 6))
+            plt.plot(x, pdf)
+            plt.xlabel(selected_feature)
+            plt.ylabel("PDF")
+            plt.title("Probability Density Function of " + selected_feature)
+            st.pyplot(plt)
+
+            # Apply the PDF to identify outliers
+            threshold = 0.01  # Adjust the threshold as needed
+            data['anomaly'] = 0  # Initialize anomaly feature as 0
+            data.loc[data[selected_feature] < norm.ppf(threshold, mean, std), 'anomaly'] = 1
+
+            # Calculate the percentage of outliers
+            total_data_points = data.shape[0]
+            total_outliers = data['anomaly'].sum()
+            percentage_outliers = (total_outliers / total_data_points) * 100
+
+
+            # Show the updated dataframe with the anomaly feature and the percentage of outliers
+            st.write("Updated Dataframe:")
+            st.write(data)
+
+            file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
+            st.download_button(
+                label="Download",
+                data=data.to_csv(index=False),
+                file_name=file_name,
+                mime="text/csv"
+            )
+            
+            st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
+
+            
+        elif selected_anomalyAlgorithm == "RSF":
+            selected_feature = st.selectbox("Select a feature:", data.columns)
+
+            # Calculate the relative strength factor (RSF)
+            rsf = data[selected_feature] / data[selected_feature].rolling(window=14).mean()
+
+            # Plot the RSF using Matplotlib
+            plt.figure(figsize=(8, 6))
+            plt.plot(rsf)
+            plt.xlabel("Data Point")
+            plt.ylabel("RSF")
+            plt.title("Relative Strength Factor of " + selected_feature)
+            st.pyplot(plt)
+
+            # Apply a threshold to identify outliers
+            threshold = 1.5  # Adjust the threshold as needed
+            data['anomaly'] = np.where(rsf > threshold, 1, 0)
+
+            # Calculate the percentage of outliers
+            total_data_points = data.shape[0]
+            total_outliers = data['anomaly'].sum()
+            percentage_outliers = (total_outliers / total_data_points) * 100
+
+            # Show the updated dataframe with the anomaly feature and the percentage of outliers
+            st.write("Updated Dataframe:")
+            st.write(data)
+
+            file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
+            st.download_button(
+                label="Download",
+                data=data.to_csv(index=False),
+                file_name=file_name,
+                mime="text/csv"
+            )
+
+            st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
+            
+        # elif selected_anomalyAlgorithm == "Benford law":
+
+
+
+
+            
+
+           
+
+
+
 
       
             

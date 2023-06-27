@@ -7,4 +7,5 @@ sklearn
 pyod
 tensorflow
 openpyxl
+fuzzywuzzy
 -e .
