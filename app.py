@@ -164,23 +164,42 @@ def main():
 
         if selected_info == "None":
             st.write(" ")
-        elif selected_info == "Number of one time vendor account":
-
-            # code for taking the input from two csv files over here
-            st.header("Upload you first csv file")
-            data_file1 = st.file_uploader("Upload CSV", type=["csv"],key=2)
+        elif selected_info == "Number of one-time vendor account":
+            st.header("Upload your lfa1 file")
+            data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
 
             if data_file1 is not None:
                 data1 = pd.read_csv(data_file1)
                 st.write(data1.head(2))
 
-            st.header("Upload you second csv file")
-            data_file2 = st.file_uploader("Upload CSV", type=["csv"],key=3)
+            st.header("Upload your lfb1 file")
+            data_file2 = st.file_uploader("Upload CSV", type=["csv"], key="lfb1")
 
             if data_file2 is not None:
                 data2 = pd.read_csv(data_file2)
                 st.write(data2.head(2))
 
+                # Merge data1 and data2 based on LIFNR using inner join
+                merged_data = pd.merge(data1, data2, on="LIFNR", how="inner")
+                st.write(merged_data.head(2))
+
+                # Calculate value counts of 'NAME1' column in the merged data
+                x2 = pd.DataFrame(merged_data['NAME1'].value_counts()).reset_index()
+                st.write(x2)
+
+                # Filter x2 for rows where NAME1 is equal to 1
+                filtered_x2 = x2[x2['NAME1'] == 1]
+                st.write(filtered_x2)
+
+                # Filter lf for rows where XCPDK is equal to 'X'
+                one_time_vendor = merged_data[merged_data['XCPDK'] == 'X']
+                st.write(one_time_vendor)
+
+
+
+            
+
+         
 
 
         # # Starting adding the feature engineering part over here separte options
@@ -423,6 +442,60 @@ def main():
                 file_name="ZScoreAnomaly.csv",
                 mime="text/csv"
             )
+
+        elif selected_anomalyAlgorithm == "Boxplot":
+            # Select the feature to visualize
+            selected_feature = st.selectbox("Select a feature:", data.columns)
+
+            # Generate the boxplot
+            plt.figure(figsize=(8, 6))
+            sns.boxplot(data=data[selected_feature])
+            plt.xlabel(selected_feature)
+            plt.title("Boxplot of " + selected_feature)
+            st.pyplot(plt)
+
+            # Calculate interquartile range (IQR)
+            Q1 = data[selected_feature].quantile(0.25)
+            Q3 = data[selected_feature].quantile(0.75)
+            IQR = Q3 - Q1
+
+            # Calculate upper and lower limits
+            lower_limit = Q1 - 1.5 * IQR
+            upper_limit = Q3 + 1.5 * IQR
+
+            # Find outliers and create the anomaly feature
+            data['anomaly'] = 0  # Initialize anomaly feature as 0
+            data.loc[(data[selected_feature] < lower_limit) | (data[selected_feature] > upper_limit), 'anomaly'] = 1
+
+            # Calculate the percentage of outliers
+            total_data_points = data.shape[0]
+            total_outliers = data['anomaly'].sum()
+            percentage_outliers = (total_outliers / total_data_points) * 100
+
+            # Show the updated dataframe with the anomaly feature and the percentage of outliers
+            st.write("Updated Dataframe:")
+            st.write(data)
+            
+            # Download the dataframe with the feature name in the file name
+            file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
+            st.download_button(
+                label="Download",
+                data=data.to_csv(index=False),
+                file_name=file_name,
+                mime="text/csv"
+            )
+            
+            st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
+
+      
+            
+
+            
+
+
+
+
+
 
 
     
