@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import pandas as pd
 import numpy as np
+from sklearn.mixture import GaussianMixture
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.decomposition import PCA
@@ -98,6 +99,21 @@ def get_download_link(file_path):
     encoded_file = base64.b64encode(contents).decode("utf-8")
     href = f'<a href="data:file/csv;base64,{encoded_file}" download="{file_path}">Click here to download</a>'
     return href
+
+
+# Applying the anomaly detection
+def apply_anomaly_detection_GMM(data):
+    gmm = GaussianMixture(n_components=2)  # Adjust the number of components as needed
+    gmm.fit(data)
+    anomaly_scores = gmm.score_samples(data)
+    threshold = anomaly_scores.mean() - (3 * anomaly_scores.std())  # Adjust the threshold as needed
+    anomalies = anomaly_scores < threshold
+    data_with_anomalies_GMM = data.copy()
+    data_with_anomalies_GMM['Anomaly'] = anomalies.astype(int)
+    data_with_anomalies_GMM['Anomaly'] = data_with_anomalies_GMM['Anomaly'].apply(lambda x: 1 if x else 0)  # Assign 1 if anomaly is present, 0 otherwise
+    return data_with_anomalies_GMM
+
+
 # Define the Autoencoder model architecture
 def build_autoencoder(input_dim):
     model = Sequential()
@@ -1050,6 +1066,65 @@ def main():
             st.write(f"Number of anomalies: {num_anomalies}")
             st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
+
+        elif selected_anomalyAlgorithm == "Gaussian Mixture Models (GMM)":
+            # Fit the GMM model to the data
+            gmm = GaussianMixture(n_components=2)  # Adjust the number of components as needed
+            gmm.fit(data)
+            anomaly_scores = gmm.score_samples(data)
+            threshold = anomaly_scores.mean() - (3 * anomaly_scores.std())  # Adjust the threshold as needed
+            anomalies = anomaly_scores < threshold
+            
+            # Create a copy of the data with an "Anomaly" column indicating anomalies
+            data_with_anomalies_gmm = data.copy()
+            data_with_anomalies_gmm['Anomaly'] = 0
+            data_with_anomalies_gmm.loc[anomalies, 'Anomaly'] = 1
+            
+            st.subheader("Data with Anomalies (GMM)")
+            st.write(data_with_anomalies_gmm)
+            
+            selected_x_col = st.selectbox("Select X-axis column", data.columns)
+            selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+            
+            # Plot the results
+            st.subheader("Anomaly Detection Plot (GMM)")
+            fig, ax = plt.subplots()
+            ax.scatter(data_with_anomalies_gmm[selected_x_col], data_with_anomalies_gmm[selected_y_col],
+                    c=data_with_anomalies_gmm['Anomaly'], cmap='RdYlBu')
+            ax.set_xlabel(selected_x_col)
+            ax.set_ylabel(selected_y_col)
+            ax.set_title('GMM Anomaly Detection')
+            st.pyplot(fig)
+            
+            # Counting the number of anomalies
+            num_anomalies = np.sum(anomalies)
+            
+            # Total number of data points
+            total_data_points = len(data_with_anomalies_gmm)
+            
+            # Calculating the percentage of anomalies
+            percentage_anomalies = (num_anomalies / total_data_points) * 100
+            
+            st.write(f"Number of anomalies: {num_anomalies}")
+            st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+            
+            # Download the data with anomaly indicator
+            st.write("Download the data with anomaly indicator (GMM)")
+            st.download_button(
+                label="Download",
+                data=data_with_anomalies_gmm.to_csv(index=False),
+                file_name="GMMAnomaly.csv",
+                mime="text/csv"
+            )
+
+
+
+                    
+
+
+
+
+
         elif selected_anomalyAlgorithm == "Kernel Density Estimation (KDE)":
             # Perform anomaly detection using Kernel Density Estimation
             kde = KernelDensity()
@@ -1191,23 +1266,67 @@ def main():
             
         # Perform Autoencoder anomaly detection
         elif selected_anomalyAlgorithm == "Autoencoder":
-            st.header("Upload your dataset")
-            data_file = st.file_uploader("Upload CSV", type=["csv"])
+            # Preprocess the data
+            scaler = StandardScaler()
+            scaled_data = scaler.fit_transform(data)
             
-            if data_file is not None:
-                data = pd.read_csv(data_file)
-                st.write(data.head(2))
-                
-                # Perform Autoencoder anomaly detection
-                data_with_anomalies = perform_autoencoder_anomaly_detection(data)
-                
-                # Calculate the percentage of anomalies
-                total_samples = len(data_with_anomalies)
-                total_anomalies = data_with_anomalies['anomaly'].sum()
-                percentage_anomalies = (total_anomalies / total_samples) * 100
-                
-                st.write(data_with_anomalies)
-                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+            # Split the data into train and test sets
+            X_train, X_test = train_test_split(scaled_data, test_size=0.2, random_state=42)
+            
+            # Define the autoencoder architecture
+            input_dim = X_train.shape[1]
+            encoding_dim = 64  # Adjust the encoding dimension as needed
+            
+            autoencoder = Sequential()
+            autoencoder.add(Dense(encoding_dim, activation='relu', input_shape=(input_dim,)))
+            autoencoder.add(Dense(input_dim, activation='sigmoid'))
+            
+            # Compile the autoencoder model
+            autoencoder.compile(optimizer='adam', loss='mse')
+            
+            # Train the autoencoder
+            autoencoder.fit(X_train, X_train, epochs=10, batch_size=32, validation_data=(X_test, X_test))
+            
+            # Reconstruct the data using the trained autoencoder
+            reconstructed_data = autoencoder.predict(scaled_data)
+            
+            # Calculate the reconstruction loss (mean squared error) for each sample
+            mse = np.mean(np.power(scaled_data - reconstructed_data, 2), axis=1)
+            
+            # Set a threshold to determine anomalies
+            threshold = np.percentile(mse, 95)  # Adjust the percentile as needed
+            
+            # Identify anomalies based on the threshold
+            anomalies = mse > threshold
+            
+            # Add the 'Anomaly' column to the original dataset
+            data_with_anomalies_autoencoder = data.copy()
+            data_with_anomalies_autoencoder['Anomaly'] = anomalies.astype(int)
+            
+            # Visualize the anomalies
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.scatter(data.index, mse, c=anomalies, cmap='RdYlBu')
+            ax.set_xlabel('Index')
+            ax.set_ylabel('Reconstruction Loss (MSE)')
+            ax.set_title('Anomaly Detection (Autoencoder)')
+            fig.colorbar(ax.scatter(data.index, mse, c=anomalies, cmap='RdYlBu'))
+            st.pyplot(fig)
+            
+            # Count the number of anomalies
+            num_anomalies = np.sum(anomalies)
+            
+            # Total number of data points
+            total_data_points = len(data_with_anomalies_autoencoder)
+            
+            # Calculate the percentage of anomalies
+            percentage_anomalies = (num_anomalies / total_data_points) * 100
+            
+            st.write(f"Number of anomalies: {num_anomalies}")
+            st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+            
+            # Optionally, you can return the dataset with anomaly indicator
+            # return data_with_anomalies_autoencoder
+
 
 
 
