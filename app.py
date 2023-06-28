@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.decomposition import PCA
 import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense
 from sklearn.ensemble import IsolationForest
 import scipy.stats as stats
 from sklearn.neighbors import KernelDensity
@@ -17,6 +15,13 @@ from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import norm
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+
 def calculate_first_digit(data):
     first_digits = data.astype(str).str.strip().str[0].astype(int)
     counts = first_digits.value_counts(normalize=True, sort=False)
@@ -93,6 +98,44 @@ def get_download_link(file_path):
     encoded_file = base64.b64encode(contents).decode("utf-8")
     href = f'<a href="data:file/csv;base64,{encoded_file}" download="{file_path}">Click here to download</a>'
     return href
+# Define the Autoencoder model architecture
+def build_autoencoder(input_dim):
+    model = Sequential()
+    model.add(Dense(64, activation='relu', input_dim=input_dim))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dense(input_dim, activation='linear'))
+    return model
+
+# Function to perform anomaly detection using Autoencoder
+def perform_autoencoder_anomaly_detection(data):
+    # Split the data into training and testing sets
+    train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
+
+    # Normalize the training and testing sets
+    scaler = StandardScaler()
+    train_data_normalized = scaler.fit_transform(train_data)
+    test_data_normalized = scaler.transform(test_data)
+
+    # Build and train the Autoencoder model
+    input_dim = train_data_normalized.shape[1]
+    autoencoder = build_autoencoder(input_dim)
+    autoencoder.compile(optimizer='adam', loss='mean_squared_error')
+    autoencoder.fit(train_data_normalized, train_data_normalized, epochs=10, batch_size=32, verbose=0)
+
+    # Reconstruct the testing set using the trained Autoencoder model
+    reconstructed_data = autoencoder.predict(test_data_normalized)
+
+    # Calculate the reconstruction error for each sample
+    mse = np.mean(np.power(test_data_normalized - reconstructed_data, 2), axis=1)
+
+    # Set a threshold for anomaly detection
+    threshold = np.mean(mse) + 2 * np.std(mse)
+
+    # Add an "anomaly" column to the testing set
+    test_data['anomaly'] = np.where(mse > threshold, 1, 0)
+
+    return test_data
 
 def drop_features_with_missing_values(data):
     # Calculate the number of missing values in each column
@@ -106,8 +149,22 @@ def drop_features_with_missing_values(data):
     
     return data_dropped
 
+private_limited_keywords = ['PRIVATE LIMITED', 'PVT LTD', 'PVT. LTD','PVT. LTD.']
+public_limited_keywords = ['PUBLIC LIMITED', 'LTD', 'LIMITED']
+llp_keywords = ['LLP']
 
-
+def is_vendor_not_private_public_llp(name):
+    name_upper = str(name).upper()  # Convert name to string and apply upper()
+    for keyword in private_limited_keywords:
+        if keyword in name_upper:
+            return False
+    for keyword in public_limited_keywords:
+        if keyword in name_upper:
+            return False
+    for keyword in llp_keywords:
+        if keyword in name_upper:
+            return False
+    return True
 
 
 def apply_anomaly_detection_IsolationForest(data):
@@ -386,6 +443,92 @@ def main():
                 filter_country = ltf1[ltf1['LANDX50'].isin(filter_values)]
                 country_counts = filter_country['LANDX50'].value_counts()
                 st.write(country_counts.head(5))
+
+
+        elif selected_info == "Vendor having email address domain as gmail, yahoomail, Hotmail, rediffmail etc":
+            st.header("Upload your lfa1 file")
+            data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
+            if data_file1 is not None:
+                data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
+                data1['ADRNR'] = pd.to_numeric(data1['ADRNR'], errors='coerce', downcast='float')  # Add this line
+                st.write(data1.head(2))
+
+            st.header("Upload your adr6 file")
+            data_file2 = st.file_uploader("Upload CSV", type=["csv"], key="adr6")
+
+            if data_file2 is not None:
+                data2 = pd.read_csv(data_file2, encoding='latin1')  # Specify the correct encoding
+                data2['Addr. No.'] = data2['Addr. No.'].astype(float)  # Add this line
+                st.write(data2.head(2))
+                
+                lfad = pd.merge(data1, data2, left_on='ADRNR', right_on='Addr. No.', how='left')  # Add this line
+                st.write(lfad.head(2))
+                
+                st.header("Upload your Vendor_acc file")  # Add this line
+                data_file3 = st.file_uploader("Upload CSV", type=["csv"], key="vendor_acc")  # Add this line
+
+                if data_file3 is not None:  # Add this line
+                    Vendor_acc = pd.read_csv(data_file3, encoding='latin1')  # Specify the correct encoding
+                    lfad = pd.merge(lfad, Vendor_acc, left_on='KTOKK', right_on='Group', how='left')  # Add this line
+                    lfad = lfad[~(lfad['Name'].fillna('').str.contains('Empl'))]
+                    lfad1 = lfad[['ADRNR', 'E-Mail Address', 'E-Mail Address.1']]
+                    lfad1=lfad1[~(lfad1['E-Mail Address'].isna())]
+                    lfad1=lfad1[['ADRNR','E-Mail Address']]
+
+
+                    official_domains = ['gmail.com', 'yahoomail.com', 'hotmail.com', 'rediffmail.com']
+                    filtered_df = lfad1[lfad1['E-Mail Address'].str.contains('|'.join(official_domains), case=False)]
+
+                    num_vendors_official = lfad1['E-Mail Address'].nunique()
+                    num_vendors_unofficial=filtered_df['E-Mail Address'].nunique()
+
+                    st.write(f"Number of vendors with email addresses having official domains: {num_vendors_official}")
+                    st.write(f"Number of vendors with email addresses having unofficial domains: {num_vendors_unofficial}")
+
+
+        # Rest of your code
+        elif selected_info == "Vendor is not private limited or public limited or LLP":
+            st.header("Upload your lfa1 file")
+            data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
+            if data_file1 is not None:
+                data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
+                st.write(data1.head(2))
+
+            st.header("Upload your Vendor_acc file")
+            data_file2 = st.file_uploader("Upload CSV", type=["csv"], key="Vendor_acc")
+
+            if data_file2 is not None:
+                data2 = pd.read_csv(data_file2, encoding='latin1')  # Specify the correct encoding
+                st.write(data2.head(2))
+
+                lfa1 = pd.merge(data1, data2, left_on='KTOKK', right_on='Group', how='left')
+                lfa1 = lfa1[~(lfa1['Name'].fillna('').str.contains('Empl'))]
+                with_ltd = lfa1[~(lfa1['NAME1'].apply(is_vendor_not_private_public_llp))]
+                st.write(with_ltd.head(2))
+
+                without_ltd = lfa1[(lfa1['NAME1'].apply(is_vendor_not_private_public_llp))]
+                st.write(without_ltd.head(2))
+
+
+                no_private_limited_vendor = without_ltd['NAME1'].nunique()
+                st.write(f"Number of vendors who are not private limited or public limited or LLP: {no_private_limited_vendor}")
+
+
+
+
+
+                
+            
+               
+
+
+        
+
+
+
+
+
+
 
 
 
@@ -1046,62 +1189,26 @@ def main():
         if selected_anomalyAlgorithm == "None":
             st.write(" ")
             
+        # Perform Autoencoder anomaly detection
         elif selected_anomalyAlgorithm == "Autoencoder":
-            # Define the autoencoder model
-            input_dim = data.shape[1]  # Assuming data is a DataFrame with the appropriate shape
-            encoding_dim = 64  # Adjust the encoding dimension as needed
-            input_layer = Input(shape=(input_dim,))
-            encoded = Dense(encoding_dim, activation='relu')(input_layer)
-            decoded = Dense(input_dim, activation='sigmoid')(encoded)
-            autoencoder = Model(inputs=input_layer, outputs=decoded)
-            autoencoder.compile(optimizer='adam', loss='mse')
+            st.header("Upload your dataset")
+            data_file = st.file_uploader("Upload CSV", type=["csv"])
+            
+            if data_file is not None:
+                data = pd.read_csv(data_file)
+                st.write(data.head(2))
+                
+                # Perform Autoencoder anomaly detection
+                data_with_anomalies = perform_autoencoder_anomaly_detection(data)
+                
+                # Calculate the percentage of anomalies
+                total_samples = len(data_with_anomalies)
+                total_anomalies = data_with_anomalies['anomaly'].sum()
+                percentage_anomalies = (total_anomalies / total_samples) * 100
+                
+                st.write(data_with_anomalies)
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
-            # Train the autoencoder
-            autoencoder.fit(data, data, epochs=10, batch_size=32)  # Adjust epochs and batch size as needed
-
-            # Obtain the reconstructed data
-            reconstructed_data = autoencoder.predict(data)
-
-            # Create a DataFrame with the data and the anomaly indicator
-            data_with_anomalies_autoencoder = data.copy()
-            data_with_anomalies_autoencoder['Anomaly'] = tf.keras.losses.mean_squared_error(data, reconstructed_data).numpy() > 95
-            data_with_anomalies_autoencoder['Anomaly'] = data_with_anomalies_autoencoder['Anomaly'].astype(int)
-
-            st.subheader("Data with Anomalies")
-            st.write(data_with_anomalies_autoencoder)
-
-            selected_x_col = st.selectbox("Select X-axis column", data.columns)
-            selected_y_col = st.selectbox("Select Y-axis column", data.columns)
-
-            # Plot the results
-            st.subheader("Anomaly Detection Plot")
-            fig, ax = plt.subplots()
-            ax.scatter(data_with_anomalies_autoencoder[selected_x_col], data_with_anomalies_autoencoder[selected_y_col],
-                    c=data_with_anomalies_autoencoder['Anomaly'], cmap='RdYlBu')
-            ax.set_xlabel(selected_x_col)
-            ax.set_ylabel(selected_y_col)
-            ax.set_title('Autoencoder Anomaly Detection')
-            st.pyplot(fig)
-
-            st.write("Download the data with anomaly indicator")
-            st.download_button(
-                label="Download",
-                data=data_with_anomalies_autoencoder.to_csv(index=False),
-                file_name="AutoencoderAnomaly.csv",
-                mime="text/csv"
-            )
-
-            # Count the number of anomalies
-            num_anomalies = data_with_anomalies_autoencoder['Anomaly'].sum()
-
-            # Total number of data points
-            total_data_points = len(data_with_anomalies_autoencoder)
-
-            # Calculate the percentage of anomalies
-            percentage_anomalies = (num_anomalies / total_data_points) * 100
-
-            st.write(f"Number of anomalies: {num_anomalies}")
-            st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
 
 
