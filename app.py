@@ -1238,23 +1238,9 @@ def main():
 
 
 
-
-
-
-
-
-
-
-
-
-
-      
-
-            
      
      
         # starting of visualization side bar over here 
-
 
 
         st.sidebar.header("Deep Learning Methods")
@@ -1323,9 +1309,22 @@ def main():
             
             st.write(f"Number of anomalies: {num_anomalies}")
             st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+            # Show the updated dataset with the 'Anomaly' feature
+            st.subheader("Data with Anomalies (Autoencoder)")
+            st.write(data_with_anomalies_autoencoder)
             
             # Optionally, you can return the dataset with anomaly indicator
             # return data_with_anomalies_autoencoder
+
+                        # Download the data with anomaly indicator
+            st.write("Download the data with anomaly indicator")
+            st.download_button(
+                label="Download",
+                data=data_with_anomalies_autoencoder.to_csv(index=False),
+                file_name="AutoEncoderAnomaly.csv",
+                mime="text/csv"
+            )
 
 
 
