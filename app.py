@@ -17,8 +17,10 @@ from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import norm
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
+import plotly.express as px
 
 import base64
+import warnings
 
 
 import streamlit as st
@@ -28,11 +30,7 @@ style.use("ggplot")
 st.set_option('deprecation.showPyplotGlobalUse', False)
 # Define the HTML code with CSS for the marquee
 
-import streamlit as st
 
-import streamlit as st
-
-import streamlit as st
 
 # Add custom CSS
 st.markdown(
@@ -49,8 +47,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Get the absolute path of the GIF file
-gif_path = os.path.abspath("infrared.gif")
 marquee_html = """
 <html>
 <head>
@@ -121,12 +117,12 @@ marquee_html = """
 This application provides an advanced method for understanding your dataset and detecting outliers. It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.    </span>
   </div>
   <center>
-    <img src="{}" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
+    <img src="https://github.com/MANMEET75/INFRARED/raw/main/infrared.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
   </center>
 </body>
 </html>
 
-""".format(gif_path)
+"""
 # .css-5rimss {background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgb(0, 104, 201) 0%, rgb(149 174 197) 19%, rgb(230, 234, 241) 62%)}
 
 
@@ -670,15 +666,10 @@ def main():
             selected_x_col = st.selectbox("Select X-axis column", data.columns)
             selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-            # Plot the results
-            st.subheader("Anomaly Detection Plot (Z-Score)")
-            fig, ax = plt.subplots()
-            ax.scatter(data_with_anomalies_zscore[selected_x_col], data_with_anomalies_zscore[selected_y_col],
-                    c=data_with_anomalies_zscore['Anomaly'], cmap='RdYlBu')
-            ax.set_xlabel(selected_x_col)
-            ax.set_ylabel(selected_y_col)
-            ax.set_title('Z-Score Anomaly Detection')
-            st.pyplot(fig)
+            # Plot the results using Plotly Express
+            fig = px.scatter(data_with_anomalies_zscore, x=selected_x_col, y=selected_y_col, color='Anomaly')
+            fig.update_layout(title='Z-Score Anomaly Detection')
+            st.plotly_chart(fig)
 
             # Counting the number of outliers
             num_outliers = len(outlier_indices)
@@ -705,12 +696,10 @@ def main():
             # Select the feature to visualize
             selected_feature = st.selectbox("Select a feature:", data.columns)
 
-            # Generate the boxplot
-            plt.figure(figsize=(8, 6))
-            sns.boxplot(data=data[selected_feature])
-            plt.xlabel(selected_feature)
-            plt.title("Boxplot of " + selected_feature)
-            st.pyplot(plt)
+            # Generate the boxplot using Plotly Express
+            fig = px.box(data, y=selected_feature)
+            fig.update_layout(title="Boxplot of " + selected_feature)
+            st.plotly_chart(fig)
 
             # Calculate interquartile range (IQR)
             Q1 = data[selected_feature].quantile(0.25)
@@ -745,7 +734,6 @@ def main():
 
             st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
 
-
         elif selected_anomalyAlgorithm == "Probability Density Function":
             # Select the feature to analyze
             selected_feature = st.selectbox("Select a feature:", data.columns)
@@ -760,13 +748,17 @@ def main():
             # Calculate the PDF using Gaussian distribution
             pdf = norm.pdf(x, mean, std)
 
-            # Plot the PDF as a bar graph using Matplotlib
-            plt.figure(figsize=(8, 6))
-            plt.plot(x, pdf)
-            plt.xlabel(selected_feature)
-            plt.ylabel("PDF")
-            plt.title("Probability Density Function of " + selected_feature)
-            st.pyplot(plt)
+            # Create a DataFrame for the PDF data
+            pdf_data = pd.DataFrame({'x': x, 'pdf': pdf})
+
+            # Plot the PDF using Plotly Express
+            fig = px.line(pdf_data, x='x', y='pdf')
+            fig.update_layout(
+                title="Probability Density Function of " + selected_feature,
+                xaxis_title=selected_feature,
+                yaxis_title="PDF"
+            )
+            st.plotly_chart(fig)
 
             # Apply the PDF to identify outliers
             threshold = 0.01  # Adjust the threshold as needed
@@ -777,7 +769,6 @@ def main():
             total_data_points = data.shape[0]
             total_outliers = data['anomaly'].sum()
             percentage_outliers = (total_outliers / total_data_points) * 100
-
 
             # Show the updated dataframe with the anomaly feature and the percentage of outliers
             st.write("Updated Dataframe:")
@@ -800,13 +791,17 @@ def main():
             # Calculate the relative strength factor (RSF)
             rsf = data[selected_feature] / data[selected_feature].rolling(window=14).mean()
 
-            # Plot the RSF using Matplotlib
-            plt.figure(figsize=(8, 6))
-            plt.plot(rsf)
-            plt.xlabel("Data Point")
-            plt.ylabel("RSF")
-            plt.title("Relative Strength Factor of " + selected_feature)
-            st.pyplot(plt)
+            # Create a DataFrame for RSF data
+            rsf_data = pd.DataFrame({'Data Point': data.index, 'RSF': rsf})
+
+            # Plot the RSF using Plotly Express
+            fig = px.line(rsf_data, x='Data Point', y='RSF')
+            fig.update_layout(
+                title="Relative Strength Factor of " + selected_feature,
+                xaxis_title="Data Point",
+                yaxis_title="RSF"
+            )
+            st.plotly_chart(fig)
 
             # Apply a threshold to identify outliers
             threshold = 1.5  # Adjust the threshold as needed
@@ -1050,15 +1045,10 @@ def main():
             selected_x_col = st.selectbox("Select X-axis column", data.columns)
             selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-            # Plot the results
-            st.subheader("Anomaly Detection Plot")
-            fig, ax = plt.subplots()
-            ax.scatter(data_with_anomalies_IsolationForest[selected_x_col], data_with_anomalies_IsolationForest[selected_y_col],
-                    c=data_with_anomalies_IsolationForest['Anomaly'], cmap='RdYlBu')
-            ax.set_xlabel(selected_x_col)
-            ax.set_ylabel(selected_y_col)
-            ax.set_title('Isolation Forest Anomaly Detection')
-            st.pyplot(fig)
+            # Plot the results using Plotly Express
+            fig = px.scatter(data_with_anomalies_IsolationForest, x=selected_x_col, y=selected_y_col, color='Anomaly')
+            fig.update_layout(title='Isolation Forest Anomaly Detection')
+            st.plotly_chart(fig)
 
             st.write("Download the data with anomaly indicator")
             st.download_button(
@@ -1100,15 +1090,17 @@ def main():
 
             selected_feature = st.selectbox("Select a feature", data.columns)
 
-            # Plot the results
-            st.subheader("Anomaly Detection Plot (KDE)")
-            fig, ax = plt.subplots()
-            ax.plot(data[selected_feature], np.exp(log_densities), 'k.', markersize=2)
-            ax.fill_between(data[selected_feature], np.exp(log_densities), alpha=0.5)
-            ax.set_xlabel(selected_feature)
-            ax.set_ylabel("Density")
-            ax.set_title('Kernel Density Estimation Anomaly Detection')
-            st.pyplot(fig)
+            # Create a DataFrame for the KDE results
+            kde_data = pd.DataFrame({'Feature': data[selected_feature], 'Density': np.exp(log_densities)})
+
+            # Plot the results using Plotly Express
+            fig = px.line(kde_data, x='Feature', y='Density')
+            fig.update_layout(
+                title='Kernel Density Estimation Anomaly Detection',
+                xaxis_title=selected_feature,
+                yaxis_title='Density'
+            )
+            st.plotly_chart(fig)
 
             # Counting the number of anomalies
             num_anomalies = data_with_anomalies_kde['Anomaly'].sum()
@@ -1130,6 +1122,14 @@ def main():
                 file_name="KDEAnomaly.csv",
                 mime="text/csv"
             )
+
+
+
+
+
+
+
+
 
 
         elif selected_anomalyAlgorithm == "K-Means":
@@ -1154,16 +1154,10 @@ def main():
             selected_x_col = st.selectbox("Select X-axis column", data.columns)
             selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-            # Plot the results
-            st.subheader("K-means Clustering Plot")
-            fig, ax = plt.subplots()
-            ax.scatter(data_with_clusters[selected_x_col], data_with_clusters[selected_y_col], c=data_with_clusters['Cluster'], cmap='viridis')
-            ax.set_xlabel(selected_x_col)
-            ax.set_ylabel(selected_y_col)
-            ax.set_title('K-means Clustering')
-            st.pyplot(fig)
-
-
+            # Plot the results using Plotly Express
+            fig = px.scatter(data_with_clusters, x=selected_x_col, y=selected_y_col, color='Cluster')
+            fig.update_layout(title='K-means Clustering')
+            st.plotly_chart(fig)
 
             # Counting the number of anomalies
             num_anomalies = data_with_clusters['Anomaly'].sum()
@@ -1246,15 +1240,10 @@ def main():
             selected_x_col = st.selectbox("Select X-axis column", data.columns)
             selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-            # Plot the results
-            st.subheader("Anomaly Detection Plot")
-            fig, ax = plt.subplots()
-            ax.scatter(data_with_anomalies_autoencoder[selected_x_col], data_with_anomalies_autoencoder[selected_y_col],
-                    c=data_with_anomalies_autoencoder['Anomaly'], cmap='RdYlBu')
-            ax.set_xlabel(selected_x_col)
-            ax.set_ylabel(selected_y_col)
-            ax.set_title('Autoencoder Anomaly Detection')
-            st.pyplot(fig)
+            # Plot the results using Plotly Express
+            fig = px.scatter(data_with_anomalies_autoencoder, x=selected_x_col, y=selected_y_col, color='Anomaly')
+            fig.update_layout(title='Autoencoder Anomaly Detection')
+            st.plotly_chart(fig)
 
             st.write("Download the data with anomaly indicator")
             st.download_button(
