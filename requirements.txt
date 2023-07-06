@@ -8,4 +8,6 @@ pyod
 tensorflow
 openpyxl
 fuzzywuzzy
+plotly
+
 -e .
