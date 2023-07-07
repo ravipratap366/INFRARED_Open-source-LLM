@@ -118,7 +118,7 @@ marquee_html = """
 This application provides an advanced method for understanding your dataset and detecting outliers. It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.    </span>
   </div>
   <center>
-    <img src="https://github.com/MANMEET75/INFRARED/raw/main/infrared.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
+    <img src="infrared.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
   </center>
 </body>
 </html>
