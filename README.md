@@ -1,3 +1,3 @@
 # INFRARED
 
-<img src="infrared1.gif">
+<img src="img.jpg">
