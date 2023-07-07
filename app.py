@@ -21,6 +21,7 @@ import plotly.express as px
 
 import base64
 import warnings
+import webbrowser
 
 
 import streamlit as st
@@ -669,7 +670,15 @@ def main():
             # Plot the results using Plotly Express
             fig = px.scatter(data_with_anomalies_zscore, x=selected_x_col, y=selected_y_col, color='Anomaly')
             fig.update_layout(title='Z-Score Anomaly Detection')
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "plot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a button to open the Plotly chart in a new tab
+            if st.button("Open Plotly Chart"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             # Counting the number of outliers
             num_outliers = len(outlier_indices)
@@ -699,7 +708,15 @@ def main():
             # Generate the boxplot using Plotly Express
             fig = px.box(data, y=selected_feature)
             fig.update_layout(title="Boxplot of " + selected_feature)
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "boxplot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a link to open the Plotly chart in a new tab
+            if st.button("Open Boxplot"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             # Calculate interquartile range (IQR)
             Q1 = data[selected_feature].quantile(0.25)
@@ -758,7 +775,15 @@ def main():
                 xaxis_title=selected_feature,
                 yaxis_title="PDF"
             )
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "pdf_plot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a link to open the Plotly chart in a new tab
+            if st.button("Open PDF Plot"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             # Apply the PDF to identify outliers
             threshold = 0.01  # Adjust the threshold as needed
@@ -801,7 +826,15 @@ def main():
                 xaxis_title="Data Point",
                 yaxis_title="RSF"
             )
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "rsf_plot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a link to open the Plotly chart in a new tab
+            if st.button("Open RSF Plot"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             # Apply a threshold to identify outliers
             threshold = 1.5  # Adjust the threshold as needed
@@ -1048,7 +1081,15 @@ def main():
             # Plot the results using Plotly Express
             fig = px.scatter(data_with_anomalies_IsolationForest, x=selected_x_col, y=selected_y_col, color='Anomaly')
             fig.update_layout(title='Isolation Forest Anomaly Detection')
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "isolation_forest_plot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a link to open the Plotly chart in a new tab
+            if st.button("Open Isolation Forest Plot"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             st.write("Download the data with anomaly indicator")
             st.download_button(
@@ -1100,7 +1141,15 @@ def main():
                 xaxis_title=selected_feature,
                 yaxis_title='Density'
             )
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "kde_plot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a link to open the Plotly chart in a new tab
+            if st.button("Open KDE Plot"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             # Counting the number of anomalies
             num_anomalies = data_with_anomalies_kde['Anomaly'].sum()
@@ -1122,7 +1171,6 @@ def main():
                 file_name="KDEAnomaly.csv",
                 mime="text/csv"
             )
-
 
 
 
@@ -1157,7 +1205,15 @@ def main():
             # Plot the results using Plotly Express
             fig = px.scatter(data_with_clusters, x=selected_x_col, y=selected_y_col, color='Cluster')
             fig.update_layout(title='K-means Clustering')
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "kmeans_plot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a link to open the Plotly chart in a new tab
+            if st.button("Open K-Means Plot"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             # Counting the number of anomalies
             num_anomalies = data_with_clusters['Anomaly'].sum()
@@ -1243,7 +1299,15 @@ def main():
             # Plot the results using Plotly Express
             fig = px.scatter(data_with_anomalies_autoencoder, x=selected_x_col, y=selected_y_col, color='Anomaly')
             fig.update_layout(title='Autoencoder Anomaly Detection')
-            st.plotly_chart(fig)
+
+            # Save the Plotly figure as an HTML file
+            fig_html_path = "autoencoder_plot.html"
+            fig.write_html(fig_html_path)
+
+            # Provide a link to open the Plotly chart in a new tab
+            if st.button("Open Autoencoder Plot"):
+                new_tab = webbrowser.get()
+                new_tab.open(fig_html_path, new=2)
 
             st.write("Download the data with anomaly indicator")
             st.download_button(
