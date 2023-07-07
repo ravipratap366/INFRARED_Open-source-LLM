@@ -9,8 +9,8 @@ tensorflow
 openpyxl
 fuzzywuzzy
 plotly
-lxml
+
 BeautifulSoup4
-html5lib
+
 
 -e .
