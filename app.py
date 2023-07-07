@@ -23,15 +23,13 @@ import base64
 import warnings
 import webbrowser
 
-
 import streamlit as st
 
 from matplotlib import style
 style.use("ggplot")
 st.set_option('deprecation.showPyplotGlobalUse', False)
+
 # Define the HTML code with CSS for the marquee
-
-
 
 # Add custom CSS
 st.markdown(
@@ -118,14 +116,12 @@ marquee_html = """
 This application provides an advanced method for understanding your dataset and detecting outliers. It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.    </span>
   </div>
   <center>
-    <img src="infrared.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
+    <img src="https://github.com/MANMEET75/INFRARED/raw/main/infrared1.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
   </center>
 </body>
 </html>
 
 """
-# .css-5rimss {background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgb(0, 104, 201) 0%, rgb(149 174 197) 19%, rgb(230, 234, 241) 62%)}
-
 
 # Render the marquee in Streamlit
 st.markdown(marquee_html, unsafe_allow_html=True)
