@@ -18,6 +18,7 @@ from scipy.stats import norm
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import plotly.express as px
+import plotly.graph_objects as go
 
 import base64
 import warnings
@@ -116,7 +117,7 @@ marquee_html = """
 This application provides an advanced method for understanding your dataset and detecting outliers. It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.    </span>
   </div>
   <center>
-    <img src="https://github.com/MANMEET75/INFRARED/raw/main/infrared1.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
+    <img src="https://github.com/MANMEET75/INFRARED/raw/main/infrared.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
   </center>
 </body>
 </html>
@@ -1063,7 +1064,7 @@ def main():
         if selected_anomalyAlgorithm == "None":
             st.write(" ")
 
-
+        # Rest of your code
         elif selected_anomalyAlgorithm == "Isolation Forest":
             # Applying the anomaly detection
             data_with_anomalies_IsolationForest = apply_anomaly_detection_IsolationForest(data)
@@ -1074,18 +1075,26 @@ def main():
             selected_x_col = st.selectbox("Select X-axis column", data.columns)
             selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-            # Plot the results using Plotly Express
-            fig = px.scatter(data_with_anomalies_IsolationForest, x=selected_x_col, y=selected_y_col, color='Anomaly')
-            fig.update_layout(title='Isolation Forest Anomaly Detection')
+            # Split the data into outliers and inliers
+            outliers = data_with_anomalies_IsolationForest[data_with_anomalies_IsolationForest['Anomaly'] == 1]
+            inliers = data_with_anomalies_IsolationForest[data_with_anomalies_IsolationForest['Anomaly'] == 0]
 
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "isolation_forest_plot.html"
-            fig.write_html(fig_html_path)
+            # Create a scatter plot using Seaborn for outliers
+            sns.scatterplot(data=outliers, x=selected_x_col, y=selected_y_col, color='red', label='Outliers')
 
-            # Provide a link to open the Plotly chart in a new tab
+            # Add scatter plot for inliers using Seaborn
+            sns.scatterplot(data=inliers, x=selected_x_col, y=selected_y_col, color='blue', label='Inliers')
+
+            # Set plot title
+            plt.title('Isolation Forest Anomaly Detection')
+
+            # Save the Seaborn plot as an image file
+            fig_path = "isolation_forest_plot.png"
+            plt.savefig(fig_path)
+
+            # Provide a link to open the Seaborn plot in a new tab
             if st.button("Open Isolation Forest Plot"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
+                webbrowser.open(fig_path, new=2)
 
             st.write("Download the data with anomaly indicator")
             st.download_button(
@@ -1096,7 +1105,7 @@ def main():
             )
 
             # Count the number of anomalies
-            num_anomalies = data_with_anomalies_IsolationForest['Anomaly'].sum()
+            num_anomalies = len(outliers)
 
             # Total number of data points
             total_data_points = len(data_with_anomalies_IsolationForest)
