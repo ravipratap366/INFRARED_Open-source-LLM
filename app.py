@@ -219,8 +219,10 @@ def main():
         file_extension = data_file.name.split(".")[-1]
         if file_extension == "csv":
             data = pd.read_csv(data_file)
+            original_data=data.copy()
         elif file_extension in ["xlsx", "XLSX"]:
             data = pd.read_excel(data_file)
+            original_data=data.copy()
         else:
             st.error("Unsupported file format. Please upload a CSV or Excel file.")
 
@@ -643,45 +645,42 @@ def main():
 
         if selected_anomalyAlgorithm == "None":
             st.write(" ")
+
         elif selected_anomalyAlgorithm == "Z-Score/Standard Deviation":
             # Calculate the Z-score for each feature in the dataset
-            z_scores = stats.zscore(data)
+            z_scores = (data - data.mean()) / data.std()
 
             # Set a threshold for anomaly detection
             threshold = 3
 
-            # Identify outliers based on the Z-score exceeding the threshold
-            outlier_indices = np.where(np.abs(z_scores) > threshold)[0]
+            # Identify outliers based on the Z-score exceeding the threshold for any feature
+            outlier_indices = np.any(np.abs(z_scores) > threshold, axis=1)
 
-            # Create a copy of the data with an "Anomaly" column indicating outliers
-            data_with_anomalies_zscore = data.copy()
-            data_with_anomalies_zscore['Anomaly'] = 0
-            data_with_anomalies_zscore.iloc[outlier_indices, -1] = 1
+            # Create the "Anomaly" column indicating outliers directly in the original dataset
+            data['Anomaly'] = 0
+            data.loc[outlier_indices, 'Anomaly'] = 1
 
             st.subheader("Data with Anomalies (Z-Score)")
-            st.write(data_with_anomalies_zscore)
+            st.write(data)
 
             selected_x_col = st.selectbox("Select X-axis column", data.columns)
             selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-            # Plot the results using Plotly Express
-            fig = px.scatter(data_with_anomalies_zscore, x=selected_x_col, y=selected_y_col, color='Anomaly')
-            fig.update_layout(title='Z-Score Anomaly Detection')
-
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "plot.html"
-            fig.write_html(fig_html_path)
-
-            # Provide a button to open the Plotly chart in a new tab
-            if st.button("Open Plotly Chart"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
+            # Plot the results using Matplotlib and Seaborn
+            plt.figure(figsize=(10, 6))
+            sns.scatterplot(data=data, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+            plt.title('Z-Score Anomaly Detection')
+            plt.xlabel(selected_x_col)
+            plt.ylabel(selected_y_col)
+            plt.legend(title='Anomaly', labels=['Normal', 'Anomaly'])
+            plt.grid(True)
+            st.pyplot()
 
             # Counting the number of outliers
-            num_outliers = len(outlier_indices)
+            num_outliers = np.sum(outlier_indices)
 
             # Total number of data points
-            total_data_points = len(data_with_anomalies_zscore)
+            total_data_points = len(data)
 
             # Calculating the percentage of outliers
             percentage_outliers = (num_outliers / total_data_points) * 100
@@ -693,7 +692,7 @@ def main():
             st.write("Download the data with anomaly indicator (Z-Score)")
             st.download_button(
                 label="Download",
-                data=data_with_anomalies_zscore.to_csv(index=False),
+                data=data.to_csv(index=False),
                 file_name="ZScoreAnomaly.csv",
                 mime="text/csv"
             )
@@ -702,18 +701,16 @@ def main():
             # Select the feature to visualize
             selected_feature = st.selectbox("Select a feature:", data.columns)
 
-            # Generate the boxplot using Plotly Express
-            fig = px.box(data, y=selected_feature)
-            fig.update_layout(title="Boxplot of " + selected_feature)
+            # Generate the boxplot using Seaborn
+            plt.figure(figsize=(8, 6))
+            sns.boxplot(x=data[selected_feature])
+            plt.title("Boxplot of " + selected_feature)
+            plt.xlabel(selected_feature)
+            plt.grid(True)
+            st.pyplot()
 
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "boxplot.html"
-            fig.write_html(fig_html_path)
-
-            # Provide a link to open the Plotly chart in a new tab
-            if st.button("Open Boxplot"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
+            # Save the Seaborn figure as an image (optional)
+            # plt.savefig("boxplot.png")
 
             # Calculate interquartile range (IQR)
             Q1 = data[selected_feature].quantile(0.25)
@@ -724,29 +721,37 @@ def main():
             lower_limit = Q1 - 1.5 * IQR
             upper_limit = Q3 + 1.5 * IQR
 
-            # Find outliers and create the anomaly feature
-            data['anomaly'] = 0  # Initialize anomaly feature as 0
-            data.loc[(data[selected_feature] < lower_limit) | (data[selected_feature] > upper_limit), 'anomaly'] = 1
+            # Find outliers and create the anomaly feature in the copied dataframe
+            data_copy = data.copy()  # Create a copy of the original dataframe
+            data_copy['anomaly'] = 0  # Initialize anomaly feature as 0
+            data_copy.loc[(data_copy[selected_feature] < lower_limit) | (data_copy[selected_feature] > upper_limit), 'anomaly'] = 1
 
-            # Calculate the percentage of outliers
-            total_data_points = data.shape[0]
-            total_outliers = data['anomaly'].sum()
+            # Calculate the percentage of outliers for the selected feature
+            total_data_points = data_copy.shape[0]
+            total_outliers = data_copy['anomaly'].sum()
             percentage_outliers = (total_outliers / total_data_points) * 100
 
-            # Show the updated dataframe with the anomaly feature and the percentage of outliers
-            st.write("Updated Dataframe:")
-            st.write(data)
+            # Drop all columns except the 'anomaly' feature from the 'data_copy' dataframe
+            data_copy.drop(columns=data_copy.columns.difference(['anomaly']), inplace=True)
+
+            # Concatenate the original dataframe and the updated dataframe
+            combined_data = pd.concat([original_data, data_copy], axis=1)  # Concatenate along columns
+
+            # Show the combined dataframe with the anomaly feature and the percentage of outliers
+            st.write("Combined Dataframe:")
+            st.write(combined_data.head())
 
             # Download the dataframe with the feature name in the file name
             file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
             st.download_button(
                 label="Download",
-                data=data.to_csv(index=False),
+                data=combined_data.to_csv(index=False),
                 file_name=file_name,
                 mime="text/csv"
             )
 
-            st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
+            st.write("Percentage of outliers for {}: {:.2f}%".format(selected_feature, percentage_outliers))
+
 
         elif selected_anomalyAlgorithm == "Probability Density Function":
             # Select the feature to analyze
