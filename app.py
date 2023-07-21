@@ -1,10 +1,24 @@
 import os
-import streamlit as st
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.decomposition import PCA
+import io
+import pptx
+import base64
+import warnings
+from sklearn.preprocessing import OrdinalEncoder
+import plotly.graph_objs as go
+import plotly.io as pio
+import io
+import pptx
+import base64
+import tempfile
+import numpy as np
+import plotly.graph_objs as go
+import plotly.io as pio
+import pandas as pd
+import base64
+from io import BytesIO
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
@@ -12,23 +26,30 @@ from sklearn.ensemble import IsolationForest
 import scipy.stats as stats
 from sklearn.neighbors import KernelDensity
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import norm
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import plotly.express as px
-import plotly.graph_objects as go
-
-import base64
-import warnings
 import webbrowser
-
 import streamlit as st
-
 from matplotlib import style
 style.use("ggplot")
 st.set_option('deprecation.showPyplotGlobalUse', False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Define the HTML code with CSS for the marquee
 
@@ -46,6 +67,39 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+
+
+# Add CSS styling to position the HTML code near the top
+st.markdown(
+    """
+    <style>
+    #right {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Display the HTML code
+st.markdown(
+    """
+    <div id="right">
+        <img src="https://i.ibb.co/VQCBVxg/templogo.jpg" class="P_logo" style="max-width: 70%; height: auto;">
+        <a href="http://revoquant.com/">
+            <img src="https://revoquant.com/assets/img/logo/logo-dark.png" class="logo" style="max-width: 75px; height: auto;" />
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 
 marquee_html = """
 <html>
@@ -72,24 +126,21 @@ marquee_html = """
       display: inline-block;
       animation: marquee 20s linear infinite;
       color: #111;
-      background-color: #fff;
+      background-color: #111;
       font-size: 1.2rem;
       width: 2000px; /* Slim the span */
       /* height: 50px; Slim the span in height */
       max-height: 40px; /* This will make the span 50px tall at most */
-      
-  
-
     }
 
     .logo {
-      width: 150px;
+      width: 75px;
       position: relative;
       bottom: 20px;
     }
 
     .P_logo {
-      width: 300px;
+      width: 150px;
       position: relative;
       bottom: 20px;
     }
@@ -108,24 +159,498 @@ marquee_html = """
   </style>
 </head>
 <body>
-  <div id="right" style="display: flex;justify-content: space-between;">
-    <img src="https://i.ibb.co/VQCBVxg/templogo.jpg" class="P_logo" style="max-width: 70%; height: auto;">
-    <img src="https://revoquant.com/assets/img/logo/logo-dark.png" class="logo" style="max-width: 100%; height: auto;">
-  </div>
+
   <div class="marquee">
     <span style="color: #000; background-color: #fff;">
-This application provides an advanced method for understanding your dataset and detecting outliers. It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.    </span>
+This application provides an advanced method for understanding your dataset and detecting outliers. 
+It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
   <center>
-    <img src="https://github.com/MANMEET75/INFRARED/raw/main/infrared.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
+    <img src="https://github.com/MANMEET75/INFRARED/raw/main/gif2.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
   </center>
 </body>
 </html>
 
+
 """
+
+# Create a search bar
+#search_bar = st.text_input(label="Search", placeholder="Enter your search term")
+#if search_bar:
+#    search_term = search_bar.lower()
+#    st.write("Search results for '{}'".format(search_term))
+
+def main():
+    with st.sidebar:
+        st.markdown(
+            f"""
+            <a href="http://revoquant.com" target="_blank">
+              <div style="background-color: #ffffff; color: white; padding: 0px; border-radius: 0px; text-decoration: none; font-family: cursive; font-size: 16px; white-space: nowrap; text-align: center; position: absolute; bottom: 0; width: 100%;">
+                <h2 style="font-weight: bold; text-transform: uppercase;">INFRARED</h2>
+              </div>
+            </a>
+            """,
+            unsafe_allow_html=True,
+        )
+
+if __name__ == "__main__":
+    main()
+
+
+
+# Set the background color using CSS styling
+background_color = """
+    <style>
+    body {
+        background-color: #ffffff;
+        font-family: Roboto, sans-serif;
+    }
+
+    .stApp {
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stTabs {
+        margin-bottom: 2rem;
+    }
+
+    .stTab {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 5px 5px 0 0;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        font-weight: bold;
+    }
+
+    .stTab:hover {
+        background-color: #0056b3;
+        cursor: pointer;
+    }
+
+    .stTab--active {
+        background-color: #0056b3;
+        color: #ffffff;
+    }
+
+    .stTabContent {
+        padding: 1.5rem;
+        border: 1px solid #dddddd;
+        border-radius: 0 5px 5px 5px;
+        background-color: #ffffff;
+    }
+    </style>
+"""
+
+
+
+
+
+# Define the CSS styles for each tab
+tab_styles1 = """
+<style>
+    /* Main Tab */
+    .button[data-baseweb="tab"]::before {
+        color: red;
+    }
+
+    /* About Infrared Tab */
+    .button[data-baseweb="tab"]::before {
+        color: green;
+    }
+
+    /* Benford's Law Tab */
+    .button[data-baseweb="tab"]::before {
+        color: blue;
+    }
+
+    /* pdf Tab */
+    .button[data-baseweb="tab"]::before {
+        color: orange;
+    }
+
+    /* Z-score Tab */
+    .button[data-baseweb="tab"]::before {
+        color: purple;
+    }
+
+    /* Isolation Forest Tab */
+    .button[data-baseweb="tab"]::before {
+        color: teal;
+    }
+
+    /* Auto-encoder Tab */
+    .button[data-baseweb="tab"]::before {
+        color: brown;
+    }
+
+    /* Process Mining Tab */
+    .button[data-baseweb="tab"]::before {
+        color: pink;
+    }
+
+    /* Other Tab Here */
+    .button[data-baseweb="tab"]::before {
+        color: gray;
+    }
+</style>
+"""
+
+
+
+# Render the CSS styling
+st.markdown(tab_styles1, unsafe_allow_html=True)
+
+# Add your Streamlit code here
+tabs = ["Main", "About Infrared","Convert excel to csv", "Process Mining", "Benford's Law", "pdf", "Z-score", "Isolation Forest", "Auto-encoder" ,"other tab here"]
+tab1, tab0,tab9, tab8, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
+
+
+with tab1:
+    pass
+
+with tab0:
+    st.header("Infrared")
+    st.write("A first of its kind concept that lets you discover counterintuitive patterns and insights often invisible due to limitations of the human mind, biases, and voluminous data.")
+    st.write("Unleash the power of machine learning and advanced statistics to find outliers and exceptions in your data. This application provides an instant output that can be reviewed and acted upon with agility to stop revenue leakages, improve efficiency, and detect/prevent fraud.")
+
+    st.image("http://revoquant.com/assets/img/infra.jpg", use_column_width=True)
+
+with tab2:
+        st.header("Benford's Law: The Mystery Behind the Numbers")
+        st.image("https://image2.slideserve.com/4817711/what-is-benford-s-law-l.jpg", use_column_width=True)
+        st.write("Have you ever wondered why certain numbers appear more frequently as the first digit in a dataset? "
+                 "This phenomenon is known as Benford's Law, and it has been a subject of fascination for mathematicians, "
+                 "statisticians, and data analysts for decades.")
+
+        st.subheader("What is Benford's Law?")
+        st.write(
+            "Benford's Law, also called the First-Digit Law, states that in many naturally occurring numerical datasets, "
+            "the first digit is more likely to be small (e.g., 1, 2, or 3) than large (e.g., 8 or 9). Specifically, "
+            "the probability of a number starting with digit d is given by the formula: P(d) = log10(1 + 1/d), where "
+            "log10 represents the base-10 logarithm.")
+
+        st.subheader("Applications of Benford's Law")
+        st.write(
+            "Benford's Law has found applications in various fields, including forensic accounting, fraud detection, "
+            "election analysis, and quality control. Its ability to uncover anomalies in large datasets makes it "
+            "particularly useful for identifying potential irregularities or discrepancies.")
+
+        st.subheader("Real-World Examples")
+        st.write(
+            "Benford's Law can be observed in numerous real-world datasets. For instance, if you examine the lengths "
+            "of rivers worldwide, the population numbers of cities, or even the stock prices of companies, you are "
+            "likely to find that the leading digits follow the predicted distribution.")
+
+        st.subheader("Exceptions and Limitations")
+        st.write("While Benford's Law holds true for many datasets, it is not universally applicable. Certain datasets "
+                 "with specific characteristics may deviate from the expected distribution. Additionally, Benford's Law "
+                 "should not be considered as definitive proof of fraudulent or irregular activities but rather as a tool "
+                 "for further investigation.")
+
+        st.subheader("Conclusion")
+        st.write("Benford's Law offers a fascinating insight into the distribution of numbers in various datasets. "
+                 "Understanding its principles can help data analysts and researchers identify potential outliers and "
+                 "anomalies in their data. By harnessing the power of Benford's Law, we can gain valuable insights and "
+                 "uncover hidden patterns in the vast sea of numerical information that surrounds us.")
+
+        st.write("---")
+        st.write("References:")
+        st.write("1. Hill, T. P. (1995). A Statistical Derivation of the Significant-Digit Law. _Statistical Science_, "
+                 "10(4), 354-363.")
+        st.write("2. Berger, A., & Hill, T. P. (2015). Benford’s Law Strikes Back: No Simple Explanation in Sight for "
+                 "Mathematician’s Rule. _Mathematical Association of America_, 122(9), 887-903.")
+
+# Move this code block below the page
+
+with tab9:
+
+
+
+    def convert_excel_to_csv(uploaded_file, page_number):
+        if page_number == 1:
+            excel_data = pd.read_excel(uploaded_file)
+        else:
+            excel_data = pd.read_excel(uploaded_file, sheet_name=page_number - 1)
+        csv_file = BytesIO()
+        excel_data.to_csv(csv_file, index=False)
+        csv_file.seek(0)
+        return csv_file.getvalue()
+
+
+    st.header("Excel to CSV Converter")
+    uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx", "xls"])
+    selected_page = st.number_input("Enter the page number", min_value=1, value=1)
+
+    if uploaded_file is not None:
+        csv_data = convert_excel_to_csv(uploaded_file, selected_page)
+        st.download_button(
+            "Download CSV file",
+            csv_data,
+            file_name="output.csv",
+            mime="text/csv"
+        )
+
+        with st.expander("Excel Data"):
+            excel_data = pd.read_excel(uploaded_file, sheet_name=selected_page - 1)
+            st.dataframe(excel_data)
+
+        with st.expander("Converted CSV Data"):
+            csv_data = pd.read_csv(BytesIO(csv_data))
+            st.dataframe(csv_data)
+
+# Define content for Tab 3
+with tab3:
+    st.write(
+        "In probability theory and statistics, a Probability Distribution Function (PDF) is a function that describes the likelihood of a random variable taking on a particular value or falling within a specific range of values. It provides valuable information about the probabilities associated with different outcomes of a random variable.")
+
+    st.subheader("Properties of PDF")
+    st.write(
+        "1. Non-negative: The PDF is always non-negative, meaning its values are greater than or equal to zero for all possible values of the random variable.")
+    st.write(
+        "2. Area under the curve: The total area under the PDF curve is equal to 1, representing the total probability of all possible outcomes.")
+    st.write(
+        "3. Describes likelihood: The PDF describes the likelihood of different values or ranges of values of the random variable.")
+
+    st.subheader("Example: Normal Distribution")
+    st.write(
+        "One of the most commonly used probability distributions is the Normal Distribution, also known as the Gaussian Distribution. It is characterized by its bell-shaped curve.")
+
+    st.image("https://image3.slideserve.com/6467891/properties-of-normal-distributions3-l.jpg", use_column_width=True, caption="Normal Distribution")
+
+    st.write("The PDF of the Normal Distribution is given by the equation:")
+    st.latex(r"f(x) = \frac{1}{{\sigma \sqrt{2\pi}}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}")
+
+    st.write("Where:")
+    st.write("- \(\mu\) is the mean of the distribution.")
+    st.write("- \(\sigma\) is the standard deviation of the distribution.")
+    st.write("- \(e\) is the base of the natural logarithm.")
+
+    st.subheader("Applications of PDF")
+    st.write("The PDF is used in various areas such as:")
+    st.write("- Statistical modeling and inference.")
+    st.write("- Risk analysis and decision-making.")
+    st.write("- Machine learning and data science.")
+    st.write("- Finance and investment analysis.")
+    st.write("- Quality control and process optimization.")
+
+    st.write(
+        "Understanding and utilizing PDFs is essential for analyzing and interpreting data, making predictions, and solving problems involving uncertainty.")
+
+    st.markdown("---")
+    st.write(
+        "This blog post provides a brief introduction to Probability Distribution Functions (PDFs) and their significance in probability theory and statistics. PDFs are fundamental tools for understanding and quantifying uncertainty in various fields. They describe the probabilities associated with different outcomes of a random variable and play a crucial role in statistical modeling, risk analysis, and decision-making.")
+    st.write(
+        "Whether you are a data scientist, a researcher, or simply interested in understanding the principles of probability, having a solid grasp of PDFs is essential. They provide a mathematical framework for describing the likelihood of events and enable us to make informed decisions based on probabilities.")
+    st.write(
+        "In this blog post, we explored the properties of PDFs, highlighted the example of the Normal Distribution as a widely used PDF, and discussed the applications of PDFs in different domains. We hope this introduction has piqued your curiosity and motivated you to dive deeper into the fascinating world of probability and statistics.")
+    st.write(
+        "Remember, probabilities are all around us, and understanding them can empower us to make better decisions and gain valuable insights from data!")
+
+with tab4:
+    st.write(
+        "In statistics, a Z-score, also known as a standard score, is a measurement that indicates how many standard deviations an element or observation is from the mean of a distribution. It provides a standardized way to compare and interpret data points in different distributions.")
+
+    st.subheader("Calculating Z-Score")
+    st.write("The formula to calculate the Z-score of a data point is:")
+    st.latex(r"Z = \frac{{X - \mu}}{{\sigma}}")
+
+    st.write("Where:")
+    st.write("- X is the individual data point.")
+    st.write("- \(\mu\) is the mean of the distribution.")
+    st.write("- \(\sigma\) is the standard deviation of the distribution.")
+
+    st.subheader("Interpreting Z-Score")
+    st.write(
+        "The Z-score tells us how many standard deviations a data point is away from the mean. Here's how to interpret the Z-score:")
+    st.write("- A Z-score of 0 means the data point is exactly at the mean.")
+    st.write("- A Z-score of +1 indicates the data point is 1 standard deviation above the mean.")
+    st.write("- A Z-score of -1 indicates the data point is 1 standard deviation below the mean.")
+    st.write("- A Z-score greater than +1 suggests the data point is above average, farther from the mean.")
+    st.write("- A Z-score less than -1 suggests the data point is below average, farther from the mean.")
+
+    st.subheader("Standardizing Data with Z-Score")
+    st.write(
+        "One of the main applications of Z-scores is to standardize data. By converting data points into Z-scores, we can compare observations from different distributions and identify outliers or extreme values.")
+
+    st.subheader("Example:")
+    st.write(
+        "Let's consider a dataset of students' test scores. The mean score is 75, and the standard deviation is 10. We want to calculate the Z-score for a student who scored 85.")
+
+    st.write("Using the formula, we can calculate the Z-score as:")
+    st.latex(r"Z = \frac{{85 - 75}}{{10}} = 1")
+
+    st.write("The Z-score of 1 indicates that the student's score is 1 standard deviation above the mean.")
+
+    st.subheader("Applications of Z-Score")
+    st.write("Z-scores have various applications in statistics and data analysis, including:")
+    st.write("- Identifying outliers: Z-scores can help identify data points that are unusually far from the mean.")
+    st.write(
+        "- Comparing data points: Z-scores enable us to compare and rank data points from different distributions.")
+    st.write("- Hypothesis testing: Z-scores are used in hypothesis testing to assess the significance of results.")
+    st.write("- Data normalization: Z-scores are used to standardize data and bring it to a common scale.")
+
+    st.markdown("---")
+    st.write(
+        "This blog post provides an overview of Z-scores and their significance in statistics. Z-scores allow us to standardize data and compare observations from different distributions. They provide valuable insights into the relative position of data points within a distribution and help identify outliers or extreme values.")
+    st.write(
+        "We discussed how to calculate Z-scores using the formula and interpret their values in terms of standard deviations from the mean. Additionally, we explored the applications of Z-scores in various statistical analyses, including outlier detection, data comparison, hypothesis testing, and data normalization.")
+    st.write(
+        "By understanding and utilizing Z-scores, we can gain deeper insights into our data and make informed decisions based on standardized measurements. Whether you're working with test scores, financial data, or any other quantitative information, Z-scores can be a valuable tool in your statistical toolkit.")
+    st.write(
+        "We hope this blog post has provided you with a clear understanding of Z-scores and their applications. Remember to explore further and practice applying Z-scores to real-world datasets to enhance your statistical analysis skills.")
+    st.write("Happy analyzing!")
+
+with tab5:
+    st.write(
+        "Isolation Forest is an unsupervised machine learning algorithm used for anomaly detection. It is particularly effective in detecting outliers or anomalies in large datasets. The algorithm works by isolating anomalous observations by recursively partitioning the data into subsets. The main idea behind the Isolation Forest is that anomalies are more likely to be isolated into small partitions compared to normal data points.")
+
+    st.subheader("How does Isolation Forest work?")
+    st.write(
+        "1. Random Selection: Isolation Forest selects a random feature and a random split value to create a binary tree partition of the data.")
+    st.write(
+        "2. Recursive Partitioning: The algorithm recursively partitions the data by creating more binary tree partitions. Each partitioning step creates a split point by selecting a random feature and a random split value.")
+    st.write(
+        "3. Isolation: Anomalies are expected to be isolated in smaller partitions since they require fewer partitioning steps to be separated from the majority of the data points.")
+    st.write(
+        "4. Anomaly Scoring: The algorithm assigns an anomaly score to each data point based on the average path length required to isolate it. The shorter the path length, the more likely it is an anomaly.")
+
+    st.subheader("Advantages of Isolation Forest")
+    st.write("- It is efficient for outlier detection, especially in large datasets.")
+    st.write("- It does not rely on assumptions about the distribution of the data.")
+    st.write("- It can handle high-dimensional data effectively.")
+    st.write("- It is robust to the presence of irrelevant or redundant features.")
+
+    st.subheader("Applications of Isolation Forest")
+    st.write("Isolation Forest can be applied in various domains, including:")
+    st.write("- Fraud detection: Identifying fraudulent transactions or activities.")
+    st.write("- Network intrusion detection: Detecting anomalous behavior in network traffic.")
+    st.write("- Manufacturing quality control: Identifying defective products or anomalies in production processes.")
+    st.write("- Anomaly detection in sensor data: Detecting abnormalities in IoT sensor readings.")
+    st.write("- Credit card fraud detection: Identifying fraudulent credit card transactions.")
+
+    st.subheader("Example: Anomaly Detection in Network Traffic")
+    st.write(
+        "Let's consider the application of Isolation Forest in network intrusion detection. The algorithm can help identify anomalous network traffic patterns that may indicate potential attacks or breaches.")
+
+    st.image("https://velog.velcdn.com/images%2Fvvakki_%2Fpost%2Fc59d0a7f-7a1c-4589-b799-cf40c6463d26%2Fimage.png", use_column_width=True, caption="Isolation Forest Anomaly Detection")
+
+    st.write(
+        "In this example, the Isolation Forest algorithm analyzes network traffic data and identifies anomalies that deviate from the normal patterns. By isolating and scoring the anomalies, security teams can prioritize their investigation and take appropriate actions to prevent potential threats.")
+
+    st.markdown("---")
+    st.write(
+        "In this blog post, we explored Isolation Forest, an unsupervised machine learning algorithm used for anomaly detection. The algorithm leverages the concept of isolation to identify anomalies by recursively partitioning the data into subsets. It is particularly effective in detecting outliers or anomalies in large datasets.")
+    st.write(
+        "We discussed the working principle of Isolation Forest, which involves random selection, recursive partitioning, isolation, and anomaly scoring. We also highlighted the advantages of Isolation Forest, such as its efficiency, distribution-free nature, and ability to handle high-dimensional data.")
+    st.write(
+        "Furthermore, we explored several real-world applications of Isolation Forest, including fraud detection, network intrusion detection, quality control, and anomaly detection in sensor data.")
+    st.write(
+        "By utilizing Isolation Forest, data scientists and analysts can effectively identify anomalies and outliers in various domains, enabling them to make informed decisions and take appropriate actions. The algorithm's ability to handle large datasets and its robustness to irrelevant features make it a valuable tool for anomaly detection tasks.")
+    st.write(
+        "We hope this blog post has provided you with a comprehensive understanding of Isolation Forest and its applications. Remember to explore further and apply the algorithm to real-world datasets to enhance your anomaly detection capabilities.")
+    st.write("Happy anomaly detection!")
+with tab6:
+    st.write(
+        "Autoencoders are a type of artificial neural network used for unsupervised learning and data compression. They are particularly useful for feature extraction and anomaly detection tasks. The basic idea behind autoencoders is to learn a compressed representation of the input data and then reconstruct it as accurately as possible.")
+
+    st.subheader("Architecture of Autoencoder")
+    st.write("An autoencoder consists of two main parts: the encoder and the decoder.")
+    st.write(
+        "1. Encoder: The encoder takes the input data and learns a compressed representation, also known as the encoding or latent space.")
+    st.write(
+        "2. Decoder: The decoder takes the encoded representation and reconstructs the original input data from it.")
+
+    st.write(
+        "The encoder and decoder are typically symmetric in structure, with the number of neurons decreasing in the encoder and increasing in the decoder.")
+
+    st.subheader("Training an Autoencoder")
+    st.write(
+        "Autoencoders are trained using an unsupervised learning approach. The goal is to minimize the reconstruction error between the original input and the reconstructed output. This is typically done by minimizing a loss function, such as mean squared error (MSE) or binary cross-entropy (BCE).")
+
+    st.subheader("Applications of Autoencoder")
+    st.write("Autoencoders have various applications, including:")
+    st.write(
+        "- Dimensionality reduction: Learning compressed representations that capture the most important features of the data.")
+    st.write(
+        "- Anomaly detection: Detecting unusual or anomalous patterns in the data by comparing reconstruction errors.")
+    st.write(
+        "- Image denoising: Removing noise or artifacts from images by training the autoencoder to reconstruct clean images.")
+    st.write("- Recommendation systems: Learning user preferences and generating personalized recommendations.")
+    st.write("- Data generation: Generating new data samples similar to the training data.")
+
+    st.subheader("Example: Image Denoising")
+    st.write(
+        "One application of autoencoders is image denoising. By training an autoencoder on noisy images and minimizing the reconstruction error, we can effectively remove the noise and reconstruct clean images.")
+
+    st.image("https://miro.medium.com/v2/resize:fit:4266/1*QEmCZtruuWwtEOUzew2D4A.png", use_column_width=True, caption="Autoencoder Image Denoising")
+
+    st.markdown("---")
+    st.write(
+        "In this blog post, we explored autoencoders, a type of artificial neural network used for unsupervised learning and data compression. Autoencoders consist of an encoder and a decoder, which learn a compressed representation of the input data and reconstruct it as accurately as possible.")
+    st.write(
+        "We discussed the training process of autoencoders, which involves minimizing the reconstruction error between the original input and the reconstructed output. Autoencoders have various applications, including dimensionality reduction, anomaly detection, image denoising, recommendation systems, and data generation.")
+    st.write(
+        "We also provided an example of image denoising using autoencoders, where the network learns to remove noise from noisy images and reconstruct clean images.")
+    st.write(
+        "By utilizing autoencoders, data scientists and researchers can effectively extract features, detect anomalies, denoise images, and generate new data samples. Autoencoders have wide-ranging applications and are particularly valuable in unsupervised learning scenarios.")
+    st.write(
+        "We hope this blog post has provided you with a clear understanding of autoencoders and their applications. Remember to explore further and apply autoencoders to different domains and datasets to unlock their full potential.")
+    st.write("Happy autoencoding!")
+
+
+with tab8:
+
+
+    # Get the Power BI iframe URL
+    #'<iframe title="Report Section" width="800" height="450" src="https://app.powerbi.com/view?r=eyJrIjoiNzBlNTM4ZmQtMWZhOC00YWRmLWEwNmMtZjQ5NjFhZjU2ODE1IiwidCI6IjMyNTRjOGVlLWQxZDUtNDFmNy05ZTY5LTUxMzQxYjJhZWU3NCJ9" frameborder="0" allowFullScreen="true"></iframe>'
+    iframe_url = '<iframe title="process mining" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNWE5ZDM0MDYtYmUwNC00ZjhiLTllOGMtNjFjNmY2M2M4YzkxIiwidCI6IjMyNTRjOGVlLWQxZDUtNDFmNy05ZTY5LTUxMzQxYjJhZWU3NCJ9&embedImagePlaceholder=true" frameborder="0" allowFullScreen="true"></iframe>'
+
+    # Embed the Power BI report in the Streamlit app
+    st.markdown(iframe_url, unsafe_allow_html=True)
+
+    #################################################################### for PDF
+    # pdf_file = 'r"C:\Users\LENOVO\Downloads\jindal (1).pdf"'
+    #def embed_pdf(pdf_file):
+    #    with open(pdf_file, "rb") as f:
+    #        base64_pdf = base64.b64encode(f.read()).decode("utf-8")
+    #    pdf_display = f"<iframe src='data:application/pdf;base64,{base64_pdf}' width='700' height='1000' type='application/pdf'></iframe>"
+    #    st.markdown(pdf_display, unsafe_allow_html=True)
+
+
+    #if __name__ == "__main__":
+    #    embed_pdf(pdf_file)
+
+with tab7:
+
+    video_url = "https://revoquant.com/assets/img/bnr-vid.mp4"
+    st.title("Video Demo")
+    st.video(video_url, format="video/mp4")
+
+    #st.image("https://revoquant.com/assets/img/bnr-vid.mp4", use_column_width=True,)
+
 
 # Render the marquee in Streamlit
 st.markdown(marquee_html, unsafe_allow_html=True)
+
+
+
+
+
+
+
+################################################################################excel
+
+
+
+
+
+
+
+
 
 def get_download_link(file_path):
     with open(file_path, "rb") as file:
@@ -133,6 +658,8 @@ def get_download_link(file_path):
     encoded_file = base64.b64encode(contents).decode("utf-8")
     href = f'<a href="data:file/csv;base64,{encoded_file}" download="{file_path}">Click here to download</a>'
     return href
+
+
 
 def drop_features_with_missing_values(data):
     # Calculate the number of missing values in each column
@@ -189,42 +716,82 @@ def find_duplicate_vendors(vendors_df, threshold):
     return duplicates, df_duplicates
 
 
+
+
+
 def calculate_first_digit(data):
+    idx = np.arange(0, 10)
     first_digits = data.astype(str).str.strip().str[0].astype(int)
     counts = first_digits.value_counts(normalize=True, sort=False)
     benford = np.log10(1 + 1 / np.arange(0, 10))
-    return counts, benford
+
+    df = pd.DataFrame(data.astype(str).str.strip().str[0].astype(int).value_counts(normalize=True, sort=False)).reset_index()
+    df1 = pd.DataFrame({'index': idx, 'benford': benford})
+    return df, df1, counts, benford
+
 def calculate_2th_digit(data):
+    idx = np.arange(0, 100)
     nth_digits = data.astype(int).astype(str).str.strip().str[:2]
     numeric_mask = nth_digits.str.isnumeric()
     counts = nth_digits[numeric_mask].astype(int).value_counts(normalize=True, sort=False)
     benford = np.log10(1 + 1 / np.arange(0, 100))
-    return counts, benford
+
+    df = pd.DataFrame(data.astype(int).astype(str).str.strip().str[:2].astype(int).value_counts(normalize=True, sort=False)).reset_index()
+    df1 = pd.DataFrame({'index': idx, 'benford': benford})
+
+    return df, df1, counts, benford
 
 def calculate_3th_digit(data):
+    idx = np.arange(100, 1000)
     nth_digits = data.astype(int).astype(str).str.strip().str[:3]
     numeric_mask = nth_digits.str.isnumeric()
     counts = nth_digits[numeric_mask].astype(int).value_counts(normalize=True, sort=False)
-    benford = np.log10(1 + 1 / np.arange(0, 1000))
-    return counts, benford
+    benford = np.log10(1 + 1 / np.arange(100, 1000))
+
+    df = pd.DataFrame(data.astype(int).astype(str).str.strip().str[:3].astype(int).value_counts(normalize=True, sort=False)).reset_index()
+    df1 = pd.DataFrame({'index': idx, 'benford': benford})
+
+    return df, df1, counts, benford
+
+
+
+
+
+
+
+def z_score_anomaly_detection(data, column, threshold):
+
+    # Calculate the z-score for the specified column
+    z_scores = stats.zscore(data[column])
+
+    # Identify outliers based on the z-score exceeding the threshold
+    outlier_indices = np.where(np.abs(z_scores) > threshold)[0]
+
+    # Create a copy of the data with an "Anomaly" column indicating outliers
+    data_with_anomalies_zscore = data.copy()
+    data_with_anomalies_zscore['Anomaly'] = 0
+    data_with_anomalies_zscore.iloc[outlier_indices, -1] = 1
+
+    return data_with_anomalies_zscore
+
+
+
+
+
+
+
+
+
+
 def main():
 
 
 
 
-    st.header("Upload your data file")
-    data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
-    if data_file is not None:
-        file_extension = data_file.name.split(".")[-1]
-        if file_extension == "csv":
-            data = pd.read_csv(data_file)
-            original_data=data.copy()
-        elif file_extension in ["xlsx", "XLSX"]:
-            data = pd.read_excel(data_file)
-            original_data=data.copy()
-        else:
-            st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+
 
 
         # starting of basic information side bar
@@ -252,14 +819,15 @@ def main():
         if selected_info == "None":
             st.write(" ")
         elif selected_info == "Number of one time vendor account":
-            st.header("Upload your lfa1 file")
+            st.header("Upload your :blue[lfa1] file")
             data_file1 = st.file_uploader("Upload CSV", type=["csv"], key="lfa1")
 
             if data_file1 is not None:
                 data1 = pd.read_csv(data_file1, encoding='latin1')  # Specify the correct encoding
                 st.write(data1.head(2))
 
-            st.header("Upload your lfb1 file")
+            st.header("Upload your :blue[lfb1] file")
+
             data_file2 = st.file_uploader("Upload CSV", type=["csv"], key="lfb1")
 
             if data_file2 is not None:
@@ -442,6 +1010,433 @@ def main():
 
 
 
+                #st.sidebar.header("Feature Engineering")
+                #info_options = [
+                #    "None",
+                #    "Perform feature engineering",
+                #]
+
+
+                #selected_info = st.sidebar.selectbox("Choose the option", info_options)
+
+                #if selected_info == "None":
+                #    st.write(" ")
+                #else:
+                    #pass
+
+
+
+
+
+
+
+
+
+
+         # ending of basic information side bar
+
+
+        #  starting of anomaly detection algorithms over here
+        #  starting of anomaly detection algorithms over here
+        st.sidebar.header("Statistical Methods for Numerical Variable")
+        anomaly_options = ["None",
+                           "Z-Score/Standard Deviation",
+                           "Boxplot",
+                           "Probability Density Function",
+                           "RSF",
+                           "Benford law 1st digit",
+                           "Benford law 2nd digit",
+                           "Benford law 3rd digit"
+                           ]
+        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose statistical methods", anomaly_options)
+
+        if selected_anomalyAlgorithm == "None":
+            st.write(" ")
+        elif selected_anomalyAlgorithm == "Z-Score/Standard Deviation":
+
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+                st.write(data.head())
+                st.write("Dealing with missing values:")
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                columns_to_drop = missing_percentages[
+                    missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+                st.write(f"Features with more than {threshold * 100:.2f}% missing values dropped successfully.")
+
+                data = drop_features_with_missing_values(data)
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+
+                st.write("Downloading the dataset...")
+
+                # Select the column to use for z-score calculation
+                column = st.selectbox("Select column for z-score", data.columns)
+
+                # Set the threshold for anomaly detection
+                # threshold = st.slider("Threshold", value=3, min=1, max=10, step=1)
+                threshold = st.slider('Threshold', 3, 10, )
+
+                # Calculate the z-score and perform anomaly detection
+                data_with_anomalies_zscore = z_score_anomaly_detection(data, column, threshold)
+
+                st.download_button(
+                    label="Download Data",
+                    data=data_with_anomalies_zscore.to_csv(index=False),
+                    file_name="ZScoreAnomaly.csv",
+                    mime="text/csv"
+                )
+
+                # Plot the results using Plotly Express
+                fig = px.scatter(data_with_anomalies_zscore, x=column, y="Anomaly")
+                fig.update_layout(title='Z-Score Anomaly Detection')
+
+                # Save the Plotly figure as an HTML file
+                fig_html_path = "plot.html"
+                fig.write_html(fig_html_path)
+
+                # Provide a button to open the Plotly chart in a new tab
+                if st.button("Open Plotly Chart"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
+
+                # Display the data with anomaly indicator
+                st.write(data_with_anomalies_zscore)
+
+
+
+        elif selected_anomalyAlgorithm == "Boxplot":
+
+            st.markdown(
+
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+
+                unsafe_allow_html=True)
+
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+
+                file_extension = data_file.name.split(".")[-1]
+
+                if file_extension == "csv":
+
+                    data = pd.read_csv(data_file)
+
+                elif file_extension in ["xlsx", "XLSX"]:
+
+                    data = pd.read_excel(data_file)
+
+                else:
+
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+                st.write(data.head())
+
+                st.write("Dealing with missing values:")
+
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+
+                columns_to_drop = missing_percentages[
+                    missing_percentages > threshold].index  # Get the columns exceeding the threshold
+
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+
+                st.write(f"Features with more than {threshold * 100:.2f}% missing values dropped successfully.")
+
+                data = drop_features_with_missing_values(data)
+
+                st.write("Dealing with duplicate values...")
+
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+
+                st.write("Downloading the dataset...")
+
+                # Select the feature to visualize
+
+                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                # Generate the boxplot using Plotly Express
+
+                fig = px.box(data, y=selected_feature)
+
+                fig.update_layout(title="Boxplot of " + selected_feature)
+
+                # Save the Plotly figure as an HTML file
+
+                fig_html_path = "boxplot.html"
+
+                fig.write_html(fig_html_path)
+
+                # Provide a link to open the Plotly chart in a new tab
+
+                if st.button("Open Boxplot"):
+                    new_tab = webbrowser.get()
+
+                    new_tab.open(fig_html_path, new=2)
+
+                # Calculate interquartile range (IQR)
+
+                Q1 = data[selected_feature].quantile(0.25)
+
+                Q3 = data[selected_feature].quantile(0.75)
+
+                IQR = Q3 - Q1
+
+                # Calculate upper and lower limits
+
+                lower_limit = Q1 - 1.5 * IQR
+
+                upper_limit = Q3 + 1.5 * IQR
+
+                # Find outliers and create the anomaly feature
+
+                data['anomaly'] = 0  # Initialize anomaly feature as 0
+
+                data.loc[(data[selected_feature] < lower_limit) | (data[selected_feature] > upper_limit), 'anomaly'] = 1
+
+                # Calculate the percentage of outliers
+
+                total_data_points = data.shape[0]
+
+                total_outliers = data['anomaly'].sum()
+
+                percentage_outliers = (total_outliers / total_data_points) * 100
+
+                # Show the updated dataframe with the anomaly feature and the percentage of outliers
+
+                st.write("Updated Dataframe:")
+
+                st.write(data)
+
+                # Download the dataframe with the feature name in the file name
+
+                file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
+
+                st.download_button(
+
+                    label="Download",
+
+                    data=data.to_csv(index=False),
+
+                    file_name=file_name,
+
+                    mime="text/csv"
+
+                )
+
+                st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
+
+
+
+        elif selected_anomalyAlgorithm == "Probability Density Function":
+
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+                st.write(data.head())
+                st.write("Dealing with missing values:")
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                columns_to_drop = missing_percentages[
+                    missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+                st.write(f"Features with more than {threshold * 100:.2f}% missing values dropped successfully.")
+
+                data = drop_features_with_missing_values(data)
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+
+                st.write("Downloading the dataset...")
+
+
+
+
+                # Select the feature to analyze
+                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                # Calculate mean and standard deviation
+                mean = data[selected_feature].mean()
+                std = data[selected_feature].std()
+
+                # Create a range of values for the PDF
+                x = np.linspace(data[selected_feature].min(), data[selected_feature].max(), 100)
+                # Calculate the PDF using Gaussian distribution
+                pdf = norm.pdf(x, mean, std)
+
+                # Create a DataFrame for the PDF data
+                pdf_data = pd.DataFrame({'x': x, 'pdf': pdf})
+                # Plot the PDF using Plotly Express
+                fig = px.line(pdf_data, x='x', y='pdf')
+                fig.update_layout(
+                    title="Probability Density Function of " + selected_feature,
+                    xaxis_title=selected_feature,
+                    yaxis_title="PDF"
+                )
+
+                # Save the Plotly figure as an HTML file
+                fig_html_path = "pdf_plot.html"
+                fig.write_html(fig_html_path)
+
+                # Provide a link to open the Plotly chart in a new tab
+                if st.button("Open PDF Plot"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
+
+                # Apply the PDF to identify outliers
+                threshold = 0.01  # Adjust the threshold as needed
+                data['anomaly'] = 0  # Initialize anomaly feature as 0
+                data.loc[data[selected_feature] < norm.ppf(threshold, mean, std), 'anomaly'] = 1
+
+                # Calculate the percentage of outliers
+                total_data_points = data.shape[0]
+                total_outliers = data['anomaly'].sum()
+                percentage_outliers = (total_outliers / total_data_points) * 100
+
+                # Show the updated dataframe with the anomaly feature and the percentage of outliers
+                st.write("Updated Dataframe:")
+                st.write(data)
+
+                file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
+                st.download_button(
+                    label="Download",
+                    data=data.to_csv(index=False),
+                    file_name=file_name,
+                    mime="text/csv"
+                )
+
+                st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
+
+
+        elif selected_anomalyAlgorithm == "RSF":
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File EKKO_EKPO data with these column ['WERKS', 'MATNR', 'EBELN', 'EBELP', 'LIFNR', 'MENGE', 'NETPR', 'PEINH', 'NETWR',]", type=["csv", "xlsx", "XLSX"])
+            columns_to_include = ['WERKS', 'MATNR', 'EBELN', 'EBELP', 'LIFNR', 'MENGE', 'NETPR', 'PEINH', 'NETWR', ]
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file,usecols=columns_to_include)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file,usecols=columns_to_include)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+
+                st.write("Downloading the dataset...")
+
+                #dfx = pd.read_csv(r"C:\Users\LENOVO\Downloads\ekko_ekpo_v1.csv",encoding='latin1',
+                #usecols=['WERKS', 'MATNR', 'EBELN', 'EBELP', 'LIFNR', 'MENGE', 'NETPR', 'PEINH','NETWR'])
+
+                st.write(data.head())
+                dfx=data[['WERKS','MATNR','EBELN','EBELP','LIFNR','MENGE','NETPR','PEINH','NETWR']]
+                ebeln_count = dfx.groupby('LIFNR')['EBELN'].nunique().reset_index()
+                ebeln_count.rename(columns={'EBELN': 'EBELN_Count'}, inplace=True)
+
+                netwr_sum_by_vendor = dfx.groupby('LIFNR')['NETWR'].sum().reset_index()
+                netwr_sum_by_vendor.rename(columns={'NETWR': 'NETWR_Sum_ByVendor'}, inplace=True)
+
+                netwr_sum_by_vendor_ebeln = dfx.groupby(['LIFNR', 'EBELN'])['NETWR'].sum().reset_index()
+                netwr_sum_by_vendor_ebeln.rename(columns={'NETWR': 'NETWR_Sum_ByVendor_EBELN'}, inplace=True)
+
+                dfx = pd.merge(dfx, ebeln_count, on='LIFNR')
+                dfx = pd.merge(dfx, netwr_sum_by_vendor, on='LIFNR')
+                dfx = pd.merge(dfx, netwr_sum_by_vendor_ebeln, on=['LIFNR', 'EBELN'])
+
+                netwr_max = dfx.groupby(['LIFNR'])['NETWR_Sum_ByVendor_EBELN'].max().reset_index()
+                netwr_max.rename(columns={'NETWR_Sum_ByVendor_EBELN': 'netwr_max'}, inplace=True)
+
+                dfx = pd.merge(dfx, netwr_max, on='LIFNR')
+
+                dfx['Avg_exclu_max'] = (dfx['NETWR_Sum_ByVendor'] - dfx['netwr_max']) / (dfx['EBELN_Count'] - 1)
+                dfx['RSF'] = dfx['netwr_max'] / dfx['Avg_exclu_max']
+
+                anomaly = np.where((dfx['EBELN_Count'] > 5) & (dfx['RSF'] > 10), 1, 0)
+                dfx['Anomaly'] = anomaly
+
+                #dfx1 = dfx[(dfx['EBELN_Count'] > 5) & (dfx['RSF'] > 10)]
+                #dfx.to_csv("RSF_ekko_ekpo_after_excluding_zero.csv")
+
+                st.write(dfx)
+
+                file_name = "Anomaly_" + "rsf".replace(" ", "_") + ".csv"
+                st.download_button(
+                    label="Download",
+                    data=dfx.to_csv(index=False),
+                    file_name=file_name,
+                    mime="text/csv"
+                )
+
+                dfx['Anomaly Flag'] = dfx['Anomaly'].apply(lambda x: 'Anomaly' if x == 1 else 'Not Anomaly')
+                dfx['Anomaly Flag'] = dfx['Anomaly Flag'].astype(str)
+
+                # Create the graph
+                fig = px.scatter(
+                    dfx,
+                    x="RSF",
+                    y="EBELN_Count",
+                    hover_name="LIFNR",
+                    color="Anomaly Flag"
+
+                )
+
+                # Set the colors of the Anomaly Flag column
+                fig.update_traces(color={"False": "blue", "True": "red"})
+
+                # Add the title and caption
+                fig.update_layout(title="Higher the RSF and EBELN_Count more the Chances of Anomaly")
+
+                #fig.show()
+
+                fig_html_path = "RSF_Anomaly_graph.html"
+                fig.write_html(fig_html_path)
+
+                # Provide a link to open the Plotly chart in a new tab
+                if st.button("Open PDF Plot"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
 
 
 
@@ -459,110 +1454,319 @@ def main():
 
 
 
+        elif selected_anomalyAlgorithm == "Benford law 1st digit":
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+                st.write(data.head())
+
+
+
+                # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
+                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                # Calculate the distribution of first digits using Benford's Law
+                df, df1, counts, benford  = calculate_first_digit(data[selected_feature])
+                df2 = pd.merge(df, df1, on='index')
+                st.write(df2)
+
+
+
+                # Exclude the first digit (0) from the observed distribution
+                #counts = counts.iloc[1:]
+
+                # Create the observed and expected bar plots
+                observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed')
+                expected_trace = go.Scatter(x=np.arange(0, 10), y=benford * 100, mode='lines', name='Expected')
+
+                # Create the layout
+                layout = go.Layout(
+                    title="Benford's Law Analysis of " + selected_feature,
+                    xaxis=dict(title="First Digit"),
+                    yaxis=dict(title="Percentage"),
+                    legend=dict(x=0, y=1)
+                )
+
+                # Create the figure and add the traces
+                fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
+
+                # Display the figure
+                fig.show()
+
+                # Option to save the plot
+                save_plot_option = st.checkbox("Save plot")
+                if save_plot_option:
+                    file_name = "Benford_Plot_" + selected_feature.replace(" ", "_") + ".html"
+                    pio.write_html(fig, file_name)
+                    st.write(f"Plot saved as {file_name}")
+
+                # Calculate the deviation from expected percentages
+                deviation = (counts - benford) * 100
+
+                # Create the results DataFrame
+                results = pd.DataFrame(
+                    {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford * 100,
+                     'Deviation (%)': deviation})
+
+                # Option to save the results as CSV
+                save_csv_option = st.checkbox("Save results as CSV")
+                if save_csv_option:
+                    file_name = "Benford_Analysis_" + selected_feature.replace(" ", "_") + ".csv"
+                    st.download_button(
+                        label="Download CSV",
+                        data=df2.to_csv(index=False),
+                        file_name=file_name,
+                        mime="text/csv"
+                    )
+
+                # Display the results DataFrame
+                st.write("Results:")
+                st.write(df2)
+
+            #  ending of anomaly detection algorithms over here
+
+        elif selected_anomalyAlgorithm == "Benford law 2nd digit":
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+                st.write(data.head())
 
 
 
 
 
 
+                # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
+
+                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                # Calculate the distribution of second digits using Benford's Law
+                df, df1, counts, benford = calculate_2th_digit(data[selected_feature])
+                df2 = pd.merge(df, df1, on='index')
+                st.write(df2)
+
+                #counts, benford = calculate_2th_digit(data[selected_feature])
 
 
 
+                # Exclude the first digit (0) from the observed distribution
+                #counts = counts.iloc[1:]
 
-        # # Starting adding the feature engineering part over here separte options
-        # st.sidebar.header("Feature Engineering")
-        # info_options = [
-        #     "None",
-        #     "Deal with missing values",
-        #     "Deal with duplicate values if present",
-        #     "Encoding the categorical features",
-        #     "Feature Scaling",
-        #     "Download your dataset"
-        # ]
+                # Create the observed and expected bar plots
+                observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
+                expected_trace = go.Scatter(x=np.arange(0, 100), y=benford * 100, mode='lines', line=dict(color='red'),
+                                            name='Expected')
 
-        # selected_info = st.sidebar.selectbox("Perform feature engineering", info_options)
+                # Create the layout
+                layout = go.Layout(
+                    title="Benford's Law Analysis of Second Digit in " + selected_feature,
+                    xaxis=dict(title="Second Digit"),
+                    yaxis=dict(title="Percentage"),
+                    legend=dict(x=0, y=1)
+                )
 
-        # if selected_info == "None":
-        #     st.write(" ")
-        # else:
-        #     if selected_info == "Deal with missing values":
-        #         st.write("Please select a method to deal with missing values:")
-        #         method_options = ["Drop missing values", "Fill missing values"]
-        #         selected_method = st.selectbox("Method", method_options)
+                # Create the figure and add the traces
+                fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
 
-        #         if selected_method == "None":
-        #             st.write("")
-        #         elif selected_method == "Drop missing values":
-        #             threshold = 0.1  # Set the threshold to 10% (0.1)
-        #             missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
-        #             columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
-        #             data.drop(columns=columns_to_drop, inplace=True)  # Drop the columns
-        #             st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
-        #         elif selected_method == "Fill missing values":
-        #             # Your code for filling missing values goes here
-        #             st.write("Missing values filled successfully.")
+                # Display the figure
+                fig.show()
 
-        #     if selected_info == "Deal with duplicate values if present":
-        #         st.write("Dealing with duplicate values...")
+                # Option to save the plot
+                save_plot_option = st.checkbox("Save plot")
+                if save_plot_option:
+                    file_name = "Benford_Plot_2nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
+                    pio.write_html(fig, file_name)
+                    st.write(f"Plot saved as {file_name}")
 
-        #         num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                # Calculate the deviation from expected percentages
+                deviation = (counts - benford) * 100
 
-        #         data.drop_duplicates(inplace=True)  # Drop the duplicate rows
+                # Create the results DataFrame
+                results = pd.DataFrame(
+                    {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford[:len(counts)] * 100,
+                     'Deviation (%)': deviation})
 
-        #         st.write(f"Number of duplicate rows: {num_duplicates}")
-        #         st.write("Duplicate values removed successfully.")
+                # Option to save the results as CSV
+                save_csv_option = st.checkbox("Save results as CSV")
+                if save_csv_option:
+                    file_name = "Benford_Analysis_2nd_Digit_" + selected_feature.replace(" ", "_") + ".csv"
+                    st.download_button(
+                        label="Download CSV",
+                        data=df2.to_csv(index=False),
+                        file_name=file_name,
+                        mime="text/csv"
+                    )
 
-        #     if selected_info == "Encoding the categorical features":
-        #         st.write("Performing categorical feature encoding...")
-
-        #         categorical_features = [feature for feature in data.columns if data[feature].dtype == 'object']
-
-        #         for feature in categorical_features:
-        #             labels_ordered = data.groupby([feature]).size().sort_values().index
-        #             labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
-        #             data[feature] = data[feature].map(labels_ordered)
-
-        #         st.write("Categorical features encoded successfully.")
-
-        #     if selected_info == "Feature Scaling":
-        #         st.write("Performing feature scaling...")
-
-        #         # Identify numeric columns
-        #         numeric_columns = data.select_dtypes(include=["int", "float"]).columns
-
-        #         if len(numeric_columns) == 0:
-        #             st.write("No numeric columns found.")
-        #         else:
-        #             scaler = MinMaxScaler()
-        #             data[numeric_columns] = scaler.fit_transform(data[numeric_columns])
-
-        #         st.write("Feature scaling performed successfully.")
-
-        #     if selected_info == "Download your dataset":
-        #         st.write("Downloading the dataset...")
-
-        #         # Perform any necessary feature engineering operations
-
-        #         # Save the modified dataset to a file
-        #         modified_dataset_filename = "modified_dataset.csv"
-        #         data.to_csv(modified_dataset_filename, index=False)
-        #         st.write(data.head())
+                # Display the results DataFrame
+                st.write("Results:")
+                st.write(df2)
 
 
-        # Starting adding the feature engineering part over here
+        elif selected_anomalyAlgorithm == "Benford law 3rd digit":
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
-        st.sidebar.header("Feature Engineering")
-        info_options = [
-            "None",
-            "Perform feature engineering",
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+                st.write(data.head())
+
+
+                # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
+
+                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                # Calculate the distribution of second digits using Benford's Law
+                df, df1, counts, benford = calculate_3th_digit(data[selected_feature])
+
+                df2 = pd.merge(df, df1, on='index')
+                st.write(df2)
+
+
+
+                # Exclude the first digit (0) from the observed distribution
+                #counts = counts.iloc[1:]
+
+
+                # Create the observed and expected bar plots
+                counts=counts[counts.index > 99]
+                observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
+                expected_trace = go.Scatter(x=np.arange(100, 1000), y=benford * 100, mode='lines', line=dict(color='red'),
+                                            name='Expected')
+
+                # Create the layout
+                layout = go.Layout(
+                    title="Benford's Law Analysis of 3rd Digit in " + selected_feature,
+                    xaxis=dict(title="3rd Digit"),
+                    yaxis=dict(title="Percentage"),
+                    legend=dict(x=0, y=1)
+                )
+
+                # Create the figure and add the traces
+                fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
+
+                # Display the figure
+                fig.show()
+
+                # Option to save the plot
+                save_plot_option = st.checkbox("Save plot")
+                if save_plot_option:
+                    file_name = "Benford_Plot_3nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
+                    pio.write_html(fig, file_name)
+                    st.write(f"Plot saved as {file_name}")
+
+                # Calculate the deviation from expected percentages
+                deviation = (counts - benford) * 100
+
+                # Create the results DataFrame
+                results = pd.DataFrame(
+                    {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford[:len(counts)] * 100,
+                     'Deviation (%)': deviation})
+
+                # Option to save the results as CSV
+                save_csv_option = st.checkbox("Save results as CSV")
+                if save_csv_option:
+                    file_name = "Benford_Analysis_3nd_Digit_" + selected_feature.replace(" ", "_") + ".csv"
+                    st.download_button(
+                        label="Download CSV",
+                        data=df2.to_csv(index=False),
+                        file_name=file_name,
+                        mime="text/csv"
+                    )
+
+                # Display the results DataFrame
+                st.write("Results:")
+                #st.write(results)
+            #  starting of anomaly detection algorithms over here
+
+
+
+        # starting of basic information side bar
+        st.sidebar.header("Categorical Statistical method (WIP)")
+        info_options = ["None","Chi-Square Test","ANOVA",
         ]
-
-        selected_info = st.sidebar.selectbox("Choose the option", info_options)
+        selected_info = st.sidebar.selectbox("Choose an EDA type", info_options)
 
         if selected_info == "None":
             st.write(" ")
-        else:
-            if selected_info == "Perform feature engineering":
+        elif selected_info == "Chi-Square Test":
+            st.header("Try other technique we are working on Chi-Square Test.......")
+        elif selected_info == "ANOVA":
+            st.header("Try other technique we are working on ANOVA.......")
+
+
+
+
+
+
+
+        st.sidebar.header("Machine Learning Methods")
+        anomaly_options = ["None",
+                        "Isolation Forest",
+                        "Gaussian Mixture Models (GMM)",
+                        "Kernel Density Estimation (KDE)",
+                        "K-Means",
+                        "DBSCAN"
+        ]
+        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose density-based method", anomaly_options)
+
+
+
+        if selected_anomalyAlgorithm == "None":
+            st.write(" ")
+
+
+        elif selected_anomalyAlgorithm == "Isolation Forest":
+
+
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+
+
+
 
                 st.write("Dealing with missing values:")
                 threshold = 0.1  # Set the threshold to 10% (0.1)
@@ -619,568 +1823,180 @@ def main():
 
 
 
+                # Applying the anomaly detection
+                data_with_anomalies_IsolationForest = apply_anomaly_detection_IsolationForest(data)
 
+                st.subheader("Data with Anomalies")
+                st.write(data_with_anomalies_IsolationForest)
 
+                selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
+                # Plot the results using Plotly Express
+                fig = px.scatter(data_with_anomalies_IsolationForest, x=selected_x_col, y=selected_y_col, color='Anomaly')
+                fig.update_layout(title='Isolation Forest Anomaly Detection')
 
+                # Save the Plotly figure as an HTML file
+                fig_html_path = "isolation_forest_plot.html"
+                fig.write_html(fig_html_path)
 
+                # Provide a link to open the Plotly chart in a new tab
+                if st.button("Open Isolation Forest Plot"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
 
-
-
-
-
-         # ending of basic information side bar
-
-
-        #  starting of anomaly detection algorithms over here
-        st.sidebar.header("Statistical Methods")
-        anomaly_options = ["None",
-                        "Z-Score/Standard Deviation",
-                        "Boxplot",
-                        "Probability Density Function",
-                        "RSF",
-                        "Benford law 1st digit", "Benford law 2nd digit", "Benford law 3rd digit"
-        ]
-        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose statistical methods", anomaly_options)
-
-        if selected_anomalyAlgorithm == "None":
-            st.write(" ")
-
-        elif selected_anomalyAlgorithm == "Z-Score/Standard Deviation":
-            # Calculate the Z-score for each feature in the dataset
-            z_scores = (data - data.mean()) / data.std()
-
-            # Set a threshold for anomaly detection
-            threshold = 3
-
-            # Identify outliers based on the Z-score exceeding the threshold for any feature
-            outlier_indices = np.any(np.abs(z_scores) > threshold, axis=1)
-
-            # Create the "Anomaly" column indicating outliers directly in the original dataset
-            data['Anomaly'] = 0
-            data.loc[outlier_indices, 'Anomaly'] = 1
-
-            st.subheader("Data with Anomalies (Z-Score)")
-            st.write(data)
-
-            selected_x_col = st.selectbox("Select X-axis column", data.columns)
-            selected_y_col = st.selectbox("Select Y-axis column", data.columns)
-
-            # Plot the results using Matplotlib and Seaborn
-            plt.figure(figsize=(10, 6))
-            sns.scatterplot(data=data, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
-            plt.title('Z-Score Anomaly Detection')
-            plt.xlabel(selected_x_col)
-            plt.ylabel(selected_y_col)
-            plt.legend(title='Anomaly', labels=['Normal', 'Anomaly'])
-            plt.grid(True)
-            st.pyplot()
-
-            # Counting the number of outliers
-            num_outliers = np.sum(outlier_indices)
-
-            # Total number of data points
-            total_data_points = len(data)
-
-            # Calculating the percentage of outliers
-            percentage_outliers = (num_outliers / total_data_points) * 100
-
-            st.write(f"Number of outliers: {num_outliers}")
-            st.write(f"Percentage of outliers: {percentage_outliers:.2f}%")
-
-            # Download the data with anomaly indicator
-            st.write("Download the data with anomaly indicator (Z-Score)")
-            st.download_button(
-                label="Download",
-                data=data.to_csv(index=False),
-                file_name="ZScoreAnomaly.csv",
-                mime="text/csv"
-            )
-
-        elif selected_anomalyAlgorithm == "Boxplot":
-            # Select the feature to visualize
-            selected_feature = st.selectbox("Select a feature:", data.columns)
-
-            # Generate the boxplot using Seaborn
-            plt.figure(figsize=(8, 6))
-            sns.boxplot(x=data[selected_feature])
-            plt.title("Boxplot of " + selected_feature)
-            plt.xlabel(selected_feature)
-            plt.grid(True)
-            st.pyplot()
-
-            # Save the Seaborn figure as an image (optional)
-            # plt.savefig("boxplot.png")
-
-            # Calculate interquartile range (IQR)
-            Q1 = data[selected_feature].quantile(0.25)
-            Q3 = data[selected_feature].quantile(0.75)
-            IQR = Q3 - Q1
-
-            # Calculate upper and lower limits
-            lower_limit = Q1 - 1.5 * IQR
-            upper_limit = Q3 + 1.5 * IQR
-
-            # Find outliers and create the anomaly feature in the copied dataframe
-            data_copy = data.copy()  # Create a copy of the original dataframe
-            data_copy['anomaly'] = 0  # Initialize anomaly feature as 0
-            data_copy.loc[(data_copy[selected_feature] < lower_limit) | (data_copy[selected_feature] > upper_limit), 'anomaly'] = 1
-
-            # Calculate the percentage of outliers for the selected feature
-            total_data_points = data_copy.shape[0]
-            total_outliers = data_copy['anomaly'].sum()
-            percentage_outliers = (total_outliers / total_data_points) * 100
-
-            # Drop all columns except the 'anomaly' feature from the 'data_copy' dataframe
-            data_copy.drop(columns=data_copy.columns.difference(['anomaly']), inplace=True)
-
-            # Concatenate the original dataframe and the updated dataframe
-            combined_data = pd.concat([original_data, data_copy], axis=1)  # Concatenate along columns
-
-            # Show the combined dataframe with the anomaly feature and the percentage of outliers
-            st.write("Combined Dataframe:")
-            st.write(combined_data.head())
-
-            # Download the dataframe with the feature name in the file name
-            file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
-            st.download_button(
-                label="Download",
-                data=combined_data.to_csv(index=False),
-                file_name=file_name,
-                mime="text/csv"
-            )
-
-            st.write("Percentage of outliers for {}: {:.2f}%".format(selected_feature, percentage_outliers))
-
-
-        elif selected_anomalyAlgorithm == "Probability Density Function":
-            # Select the feature to analyze
-            selected_feature = st.selectbox("Select a feature:", data.columns)
-
-            # Calculate mean and standard deviation
-            mean = data[selected_feature].mean()
-            std = data[selected_feature].std()
-
-            # Create a range of values for the PDF
-            x = np.linspace(data[selected_feature].min(), data[selected_feature].max(), 100)
-
-            # Calculate the PDF using Gaussian distribution
-            pdf = norm.pdf(x, mean, std)
-
-            # Create a DataFrame for the PDF data
-            pdf_data = pd.DataFrame({'x': x, 'pdf': pdf})
-
-            # Plot the PDF using Plotly Express
-            fig = px.line(pdf_data, x='x', y='pdf')
-            fig.update_layout(
-                title="Probability Density Function of " + selected_feature,
-                xaxis_title=selected_feature,
-                yaxis_title="PDF"
-            )
-
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "pdf_plot.html"
-            fig.write_html(fig_html_path)
-
-            # Provide a link to open the Plotly chart in a new tab
-            if st.button("Open PDF Plot"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
-
-            # Apply the PDF to identify outliers
-            threshold = 0.01  # Adjust the threshold as needed
-            data['anomaly'] = 0  # Initialize anomaly feature as 0
-            data.loc[data[selected_feature] < norm.ppf(threshold, mean, std), 'anomaly'] = 1
-
-            # Calculate the percentage of outliers
-            total_data_points = data.shape[0]
-            total_outliers = data['anomaly'].sum()
-            percentage_outliers = (total_outliers / total_data_points) * 100
-
-            # Show the updated dataframe with the anomaly feature and the percentage of outliers
-            st.write("Updated Dataframe:")
-            st.write(data)
-
-            file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
-            st.download_button(
-                label="Download",
-                data=data.to_csv(index=False),
-                file_name=file_name,
-                mime="text/csv"
-            )
-
-            st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
-
-
-        elif selected_anomalyAlgorithm == "RSF":
-            selected_feature = st.selectbox("Select a feature:", data.columns)
-
-            # Calculate the relative strength factor (RSF)
-            rsf = data[selected_feature] / data[selected_feature].rolling(window=14).mean()
-
-            # Create a DataFrame for RSF data
-            rsf_data = pd.DataFrame({'Data Point': data.index, 'RSF': rsf})
-
-            # Plot the RSF using Plotly Express
-            fig = px.line(rsf_data, x='Data Point', y='RSF')
-            fig.update_layout(
-                title="Relative Strength Factor of " + selected_feature,
-                xaxis_title="Data Point",
-                yaxis_title="RSF"
-            )
-
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "rsf_plot.html"
-            fig.write_html(fig_html_path)
-
-            # Provide a link to open the Plotly chart in a new tab
-            if st.button("Open RSF Plot"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
-
-            # Apply a threshold to identify outliers
-            threshold = 1.5  # Adjust the threshold as needed
-            data['anomaly'] = np.where(rsf > threshold, 1, 0)
-
-            # Calculate the percentage of outliers
-            total_data_points = data.shape[0]
-            total_outliers = data['anomaly'].sum()
-            percentage_outliers = (total_outliers / total_data_points) * 100
-
-            # Show the updated dataframe with the anomaly feature and the percentage of outliers
-            st.write("Updated Dataframe:")
-            st.write(data)
-
-            file_name = "Anomaly_" + selected_feature.replace(" ", "_") + ".csv"
-            st.download_button(
-                label="Download",
-                data=data.to_csv(index=False),
-                file_name=file_name,
-                mime="text/csv"
-            )
-
-            st.write("Percentage of outliers: {:.2f}%".format(percentage_outliers))
-
-        elif selected_anomalyAlgorithm == "Benford law 1st digit":
-            # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
-            selected_feature = st.selectbox("Select a feature:", data.columns)
-
-            # Calculate the distribution of first digits using Benford's Law
-            counts, benford = calculate_first_digit(data[selected_feature])
-
-            import plotly.graph_objs as go
-            import plotly.io as pio
-            # import pandas as pd
-            # import numpy as np
-
-            # Calculate the distribution of first digits using Benford's Law
-            counts, benford = calculate_first_digit(data[selected_feature])
-
-            # Exclude the first digit (0) from the observed distribution
-            #counts = counts.iloc[1:]
-
-            # Create the observed and expected bar plots
-            observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed')
-            expected_trace = go.Scatter(x=np.arange(0, 10), y=benford * 100, mode='lines', name='Expected')
-
-            # Create the layout
-            layout = go.Layout(
-                title="Benford's Law Analysis of " + selected_feature,
-                xaxis=dict(title="First Digit"),
-                yaxis=dict(title="Percentage"),
-                legend=dict(x=0, y=1)
-            )
-
-            # Create the figure and add the traces
-            fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
-
-            # Display the figure
-            fig.show()
-
-            # Option to save the plot
-            save_plot_option = st.checkbox("Save plot")
-            if save_plot_option:
-                file_name = "Benford_Plot_" + selected_feature.replace(" ", "_") + ".html"
-                pio.write_html(fig, file_name)
-                st.write(f"Plot saved as {file_name}")
-
-            # Calculate the deviation from expected percentages
-            deviation = (counts - benford) * 100
-
-            # Create the results DataFrame
-            results = pd.DataFrame(
-                {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford * 100,
-                 'Deviation (%)': deviation})
-
-            # Option to save the results as CSV
-            save_csv_option = st.checkbox("Save results as CSV")
-            if save_csv_option:
-                file_name = "Benford_Analysis_" + selected_feature.replace(" ", "_") + ".csv"
+                st.write("Download the data with anomaly indicator")
                 st.download_button(
-                    label="Download CSV",
-                    data=results.to_csv(index=False),
-                    file_name=file_name,
+                    label="Download",
+                    data=data_with_anomalies_IsolationForest.to_csv(index=False),
+                    file_name="IsolationForestAnomaly.csv",
                     mime="text/csv"
                 )
 
-            # Display the results DataFrame
-            st.write("Results:")
-            st.write(results)
+                # Count the number of anomalies
+                num_anomalies = data_with_anomalies_IsolationForest['Anomaly'].sum()
 
-        #  ending of anomaly detection algorithms over here
+                # Total number of data points
+                total_data_points = len(data_with_anomalies_IsolationForest)
 
-        elif selected_anomalyAlgorithm == "Benford law 2nd digit":
-            # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
+                # Calculate the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
 
-            selected_feature = st.selectbox("Select a feature:", data.columns)
-
-            # Calculate the distribution of second digits using Benford's Law
-            counts, benford = calculate_2th_digit(data[selected_feature])
-
-            import plotly.graph_objs as go
-            import plotly.io as pio
-
-            # Exclude the first digit (0) from the observed distribution
-            #counts = counts.iloc[1:]
-
-            # Create the observed and expected bar plots
-            observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
-            expected_trace = go.Scatter(x=np.arange(0, 100), y=benford * 100, mode='lines', line=dict(color='red'),
-                                        name='Expected')
-
-            # Create the layout
-            layout = go.Layout(
-                title="Benford's Law Analysis of Second Digit in " + selected_feature,
-                xaxis=dict(title="Second Digit"),
-                yaxis=dict(title="Percentage"),
-                legend=dict(x=0, y=1)
-            )
-
-            # Create the figure and add the traces
-            fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
-
-            # Display the figure
-            fig.show()
-
-            # Option to save the plot
-            save_plot_option = st.checkbox("Save plot")
-            if save_plot_option:
-                file_name = "Benford_Plot_2nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
-                pio.write_html(fig, file_name)
-                st.write(f"Plot saved as {file_name}")
-
-            # Calculate the deviation from expected percentages
-            deviation = (counts - benford) * 100
-
-            # Create the results DataFrame
-            results = pd.DataFrame(
-                {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford[:len(counts)] * 100,
-                 'Deviation (%)': deviation})
-
-            # Option to save the results as CSV
-            save_csv_option = st.checkbox("Save results as CSV")
-            if save_csv_option:
-                file_name = "Benford_Analysis_2nd_Digit_" + selected_feature.replace(" ", "_") + ".csv"
-                st.download_button(
-                    label="Download CSV",
-                    data=results.to_csv(index=False),
-                    file_name=file_name,
-                    mime="text/csv"
-                )
-
-            # Display the results DataFrame
-            st.write("Results:")
-            st.write(results)
-
-
-        elif selected_anomalyAlgorithm == "Benford law 3rd digit":
-            # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
-
-            selected_feature = st.selectbox("Select a feature:", data.columns)
-
-            # Calculate the distribution of second digits using Benford's Law
-            counts, benford = calculate_3th_digit(data[selected_feature])
-
-            import plotly.graph_objs as go
-            import plotly.io as pio
-
-            # Exclude the first digit (0) from the observed distribution
-            #counts = counts.iloc[1:]
-
-            # Create the observed and expected bar plots
-            observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
-            expected_trace = go.Scatter(x=np.arange(0, 1000), y=benford * 100, mode='lines', line=dict(color='red'),
-                                        name='Expected')
-
-            # Create the layout
-            layout = go.Layout(
-                title="Benford's Law Analysis of Second Digit in " + selected_feature,
-                xaxis=dict(title="Second Digit"),
-                yaxis=dict(title="Percentage"),
-                legend=dict(x=0, y=1)
-            )
-
-            # Create the figure and add the traces
-            fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
-
-            # Display the figure
-            fig.show()
-
-            # Option to save the plot
-            save_plot_option = st.checkbox("Save plot")
-            if save_plot_option:
-                file_name = "Benford_Plot_3nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
-                pio.write_html(fig, file_name)
-                st.write(f"Plot saved as {file_name}")
-
-            # Calculate the deviation from expected percentages
-            deviation = (counts - benford) * 100
-
-            # Create the results DataFrame
-            results = pd.DataFrame(
-                {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford[:len(counts)] * 100,
-                 'Deviation (%)': deviation})
-
-            # Option to save the results as CSV
-            save_csv_option = st.checkbox("Save results as CSV")
-            if save_csv_option:
-                file_name = "Benford_Analysis_3nd_Digit_" + selected_feature.replace(" ", "_") + ".csv"
-                st.download_button(
-                    label="Download CSV",
-                    data=results.to_csv(index=False),
-                    file_name=file_name,
-                    mime="text/csv"
-                )
-
-            # Display the results DataFrame
-            st.write("Results:")
-            st.write(results)
-        #  starting of anomaly detection algorithms over here
-        st.sidebar.header("Machine Learning Methods")
-        anomaly_options = ["None",
-                        "Isolation Forest",
-                        "Gaussian Mixture Models (GMM)",
-                        "Kernel Density Estimation (KDE)",
-                        "K-Means",
-                        "DBSCAN"
-        ]
-        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose density-based method", anomaly_options)
-
-        if selected_anomalyAlgorithm == "None":
-            st.write(" ")
-
-        # Rest of your code
-        elif selected_anomalyAlgorithm == "Isolation Forest":
-            # Applying the anomaly detection
-            data_with_anomalies_IsolationForest = apply_anomaly_detection_IsolationForest(data)
-
-            st.subheader("Data with Anomalies")
-            st.write(data_with_anomalies_IsolationForest)
-
-            selected_x_col = st.selectbox("Select X-axis column", data.columns)
-            selected_y_col = st.selectbox("Select Y-axis column", data.columns)
-
-            # Split the data into outliers and inliers
-            outliers = data_with_anomalies_IsolationForest[data_with_anomalies_IsolationForest['Anomaly'] == 1]
-            inliers = data_with_anomalies_IsolationForest[data_with_anomalies_IsolationForest['Anomaly'] == 0]
-
-            # Create a scatter plot using Seaborn for outliers
-            sns.scatterplot(data=outliers, x=selected_x_col, y=selected_y_col, color='red', label='Outliers')
-
-            # Add scatter plot for inliers using Seaborn
-            sns.scatterplot(data=inliers, x=selected_x_col, y=selected_y_col, color='blue', label='Inliers')
-
-            # Set plot title
-            plt.title('Isolation Forest Anomaly Detection')
-
-            # Save the Seaborn plot as an image file
-            fig_path = "isolation_forest_plot.png"
-            plt.savefig(fig_path)
-
-            # Provide a link to open the Seaborn plot in a new tab
-            if st.button("Open Isolation Forest Plot"):
-                webbrowser.open(fig_path, new=2)
-
-            st.write("Download the data with anomaly indicator")
-            st.download_button(
-                label="Download",
-                data=data_with_anomalies_IsolationForest.to_csv(index=False),
-                file_name="IsolationForestAnomaly.csv",
-                mime="text/csv"
-            )
-
-            # Count the number of anomalies
-            num_anomalies = len(outliers)
-
-            # Total number of data points
-            total_data_points = len(data_with_anomalies_IsolationForest)
-
-            # Calculate the percentage of anomalies
-            percentage_anomalies = (num_anomalies / total_data_points) * 100
-
-            st.write(f"Number of anomalies: {num_anomalies}")
-            st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
         elif selected_anomalyAlgorithm == "Kernel Density Estimation (KDE)":
-            # Perform anomaly detection using Kernel Density Estimation
-            kde = KernelDensity()
-            kde.fit(data)
-            log_densities = kde.score_samples(data)
-            threshold = np.percentile(log_densities, 5)  # Adjust the percentile as needed
 
-            # Identify outliers based on log densities below the threshold
-            outlier_indices = np.where(log_densities < threshold)[0]
 
-            # Create a copy of the data with an "Anomaly" column indicating outliers
-            data_with_anomalies_kde = data.copy()
-            data_with_anomalies_kde['Anomaly'] = 0
-            data_with_anomalies_kde.iloc[outlier_indices, -1] = 1
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
-            st.subheader("Data with Anomalies (KDE)")
-            st.write(data_with_anomalies_kde)
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
 
-            selected_feature = st.selectbox("Select a feature", data.columns)
 
-            # Create a DataFrame for the KDE results
-            kde_data = pd.DataFrame({'Feature': data[selected_feature], 'Density': np.exp(log_densities)})
 
-            # Plot the results using Plotly Express
-            fig = px.line(kde_data, x='Feature', y='Density')
-            fig.update_layout(
-                title='Kernel Density Estimation Anomaly Detection',
-                xaxis_title=selected_feature,
-                yaxis_title='Density'
-            )
 
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "kde_plot.html"
-            fig.write_html(fig_html_path)
 
-            # Provide a link to open the Plotly chart in a new tab
-            if st.button("Open KDE Plot"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
 
-            # Counting the number of anomalies
-            num_anomalies = data_with_anomalies_kde['Anomaly'].sum()
+                st.write("Dealing with missing values:")
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+                st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
 
-            # Total number of data points
-            total_data_points = len(data_with_anomalies_kde)
 
-            # Calculating the percentage of anomalies
-            percentage_anomalies = (num_anomalies / total_data_points) * 100
 
-            st.write(f"Number of anomalies: {num_anomalies}")
-            st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+                data = drop_features_with_missing_values(data)
 
-            # Download the data with anomaly indicator
-            st.write("Download the data with anomaly indicator (KDE)")
-            st.download_button(
-                label="Download",
-                data=data_with_anomalies_kde.to_csv(index=False),
-                file_name="KDEAnomaly.csv",
-                mime="text/csv"
-            )
+
+
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+                st.write("Dealing done with duplicates.")
+
+                st.write("Performing categorical feature encoding...")
+                categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                data_encoded = data_unique.copy()
+                for feature in categorical_features:
+                    labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                    labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                    data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                data = data_encoded  # Update the original dataset with encoded features
+                st.write("Categorical features encoded successfully.")
+
+                st.write("Performing feature scaling...")
+                numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                if len(numeric_columns) == 0:
+                    st.write("No numeric columns found.")
+                else:
+                    scaler = MinMaxScaler()
+                    data_scaled = data.copy()
+                    data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                    data = data_scaled  # Update the original dataset with scaled features
+                    st.write("Feature scaling performed successfully.")
+
+                st.write("Downloading the dataset...")
+
+                # Save the modified dataset to a file
+                modified_dataset_filename = "modified_dataset.csv"
+                # data.to_csv(modified_dataset_filename, index=False)
+                st.write(data.head())
+                st.write(data.shape)
+
+
+                # Perform anomaly detection using Kernel Density Estimation
+                kde = KernelDensity()
+                kde.fit(data)
+                log_densities = kde.score_samples(data)
+                threshold = np.percentile(log_densities, 5)  # Adjust the percentile as needed
+
+                # Identify outliers based on log densities below the threshold
+                outlier_indices = np.where(log_densities < threshold)[0]
+
+                # Create a copy of the data with an "Anomaly" column indicating outliers
+                data_with_anomalies_kde = data.copy()
+                data_with_anomalies_kde['Anomaly'] = 0
+                data_with_anomalies_kde.iloc[outlier_indices, -1] = 1
+
+                st.subheader("Data with Anomalies (KDE)")
+                st.write(data_with_anomalies_kde)
+
+                selected_feature = st.selectbox("Select a feature", data.columns)
+
+                # Create a DataFrame for the KDE results
+                kde_data = pd.DataFrame({'Feature': data[selected_feature], 'Density': np.exp(log_densities)})
+
+                # Plot the results using Plotly Express
+                fig = px.line(kde_data, x='Feature', y='Density')
+                fig.update_layout(
+                    title='Kernel Density Estimation Anomaly Detection',
+                    xaxis_title=selected_feature,
+                    yaxis_title='Density'
+                )
+
+                # Save the Plotly figure as an HTML file
+                fig_html_path = "kde_plot.html"
+                fig.write_html(fig_html_path)
+
+                # Provide a link to open the Plotly chart in a new tab
+                if st.button("Open KDE Plot"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
+
+                # Counting the number of anomalies
+                num_anomalies = data_with_anomalies_kde['Anomaly'].sum()
+
+                # Total number of data points
+                total_data_points = len(data_with_anomalies_kde)
+
+                # Calculating the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+                # Download the data with anomaly indicator
+                st.write("Download the data with anomaly indicator (KDE)")
+                st.download_button(
+                    label="Download",
+                    data=data_with_anomalies_kde.to_csv(index=False),
+                    file_name="KDEAnomaly.csv",
+                    mime="text/csv"
+                )
 
 
 
@@ -1191,65 +2007,149 @@ def main():
 
 
         elif selected_anomalyAlgorithm == "K-Means":
-            # Applying K-means clustering
-            kmeans = KMeans(n_clusters=2)  # You can adjust the number of clusters as needed
-            kmeans.fit(data)
 
-            # Predicting cluster labels
-            cluster_labels = kmeans.predict(data)
-            data_with_clusters = data.copy()
-            data_with_clusters['Cluster'] = cluster_labels
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
-            # Calculate the percentage of outliers
-            outlier_percentage = (data_with_clusters['Cluster'].value_counts()[1] / len(data_with_clusters)) * 100
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
 
-            # Create an anomaly indicator
-            data_with_clusters['Anomaly'] = np.where(data_with_clusters['Cluster'] == 1, 1, 0)
 
-            st.subheader("Data with Anomaly Indicator")
-            st.write(data_with_clusters)
 
-            selected_x_col = st.selectbox("Select X-axis column", data.columns)
-            selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-            # Plot the results using Plotly Express
-            fig = px.scatter(data_with_clusters, x=selected_x_col, y=selected_y_col, color='Cluster')
-            fig.update_layout(title='K-means Clustering')
 
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "kmeans_plot.html"
-            fig.write_html(fig_html_path)
 
-            # Provide a link to open the Plotly chart in a new tab
-            if st.button("Open K-Means Plot"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
+                st.write("Dealing with missing values:")
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+                st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
 
-            # Counting the number of anomalies
-            num_anomalies = data_with_clusters['Anomaly'].sum()
 
-            # Total number of data points
-            total_data_points = len(data_with_clusters)
 
-            # Calculating the percentage of anomalies
-            percentage_anomalies = (num_anomalies / total_data_points) * 100
+                data = drop_features_with_missing_values(data)
 
-            st.write(f"Number of anomalies: {num_anomalies}")
-            st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
-            # Download the data with anomaly indicator
-            st.write("Download the data with anomaly indicator")
-            st.download_button(
-                label="Download",
-                data=data_with_clusters.to_csv(index=False),
-                file_name="KMeansAnomaly.csv",
-                mime="text/csv"
-            )
+
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+                st.write("Dealing done with duplicates.")
+
+                st.write("Performing categorical feature encoding...")
+                categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                data_encoded = data_unique.copy()
+                for feature in categorical_features:
+                    labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                    labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                    data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                data = data_encoded  # Update the original dataset with encoded features
+                st.write("Categorical features encoded successfully.")
+
+                st.write("Performing feature scaling...")
+                numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                if len(numeric_columns) == 0:
+                    st.write("No numeric columns found.")
+                else:
+                    scaler = MinMaxScaler()
+                    data_scaled = data.copy()
+                    data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                    data = data_scaled  # Update the original dataset with scaled features
+                    st.write("Feature scaling performed successfully.")
+
+                st.write("Downloading the dataset...")
+
+                # Save the modified dataset to a file
+                modified_dataset_filename = "modified_dataset.csv"
+                # data.to_csv(modified_dataset_filename, index=False)
+                st.write(data.head())
+                st.write(data.shape)
+
+
+
+
+
+
+                # Applying K-means clustering
+                kmeans = KMeans(n_clusters=2)  # You can adjust the number of clusters as needed
+                kmeans.fit(data)
+
+                # Predicting cluster labels
+                cluster_labels = kmeans.predict(data)
+                data_with_clusters = data.copy()
+                data_with_clusters['Cluster'] = cluster_labels
+
+                # Calculate the percentage of outliers
+                outlier_percentage = (data_with_clusters['Cluster'].value_counts()[1] / len(data_with_clusters)) * 100
+
+                # Create an anomaly indicator
+                data_with_clusters['Anomaly'] = np.where(data_with_clusters['Cluster'] == 1, 1, 0)
+
+                st.subheader("Data with Anomaly Indicator")
+                st.write(data_with_clusters)
+
+                selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                # Plot the results using Plotly Express
+                fig = px.scatter(data_with_clusters, x=selected_x_col, y=selected_y_col, color='Cluster')
+                fig.update_layout(title='K-means Clustering')
+
+                # Save the Plotly figure as an HTML file
+                fig_html_path = "kmeans_plot.html"
+                fig.write_html(fig_html_path)
+
+                # Provide a link to open the Plotly chart in a new tab
+                if st.button("Open K-Means Plot"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
+
+                # Counting the number of anomalies
+                num_anomalies = data_with_clusters['Anomaly'].sum()
+
+                # Total number of data points
+                total_data_points = len(data_with_clusters)
+
+                # Calculating the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+                # Download the data with anomaly indicator
+                st.write("Download the data with anomaly indicator")
+                st.download_button(
+                    label="Download",
+                    data=data_with_clusters.to_csv(index=False),
+                    file_name="KMeansAnomaly.csv",
+                    mime="text/csv"
+                )
 
 
 
 
         #  ending of anomaly detection algorithms over here
+
+
+        elif selected_anomalyAlgorithm == "Gaussian Mixture Models (GMM)":
+            st.header("Try other technique we are working on Gaussian Mixture Models (GMM).......")
+
+
+
+        elif selected_anomalyAlgorithm == "DBSCAN":
+            st.header("Try other technique we are working on DBSCAN.......")
 
 
 
@@ -1272,6 +2172,7 @@ def main():
 
 
 
+
         st.sidebar.header("Deep Learning Methods")
         anomaly_options = ["None", "Autoencoder"]
         selected_anomalyAlgorithm = st.sidebar.selectbox("Choose an algorithm", anomaly_options)
@@ -1280,69 +2181,182 @@ def main():
             st.write(" ")
 
         elif selected_anomalyAlgorithm == "Autoencoder":
-            # Define the autoencoder model
-            input_dim = data.shape[1]  # Assuming data is a DataFrame with the appropriate shape
-            encoding_dim = 64  # Adjust the encoding dimension as needed
-            input_layer = Input(shape=(input_dim,))
-            encoded = Dense(encoding_dim, activation='relu')(input_layer)
-            decoded = Dense(input_dim, activation='sigmoid')(encoded)
-            autoencoder = Model(inputs=input_layer, outputs=decoded)
-            autoencoder.compile(optimizer='adam', loss='mse')
 
-            # Train the autoencoder
-            autoencoder.fit(data, data, epochs=10, batch_size=32)  # Adjust epochs and batch size as needed
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
-            # Obtain the reconstructed data
-            reconstructed_data = autoencoder.predict(data)
-
-            # Create a DataFrame with the data and the anomaly indicator
-            data_with_anomalies_autoencoder = data.copy()
-            data_with_anomalies_autoencoder['Anomaly'] = tf.keras.losses.mean_squared_error(data, reconstructed_data).numpy() > 95
-            data_with_anomalies_autoencoder['Anomaly'] = data_with_anomalies_autoencoder['Anomaly'].astype(int)
-
-            st.subheader("Data with Anomalies")
-            st.write(data_with_anomalies_autoencoder)
-
-            selected_x_col = st.selectbox("Select X-axis column", data.columns)
-            selected_y_col = st.selectbox("Select Y-axis column", data.columns)
-
-            # Plot the results using Plotly Express
-            fig = px.scatter(data_with_anomalies_autoencoder, x=selected_x_col, y=selected_y_col, color='Anomaly')
-            fig.update_layout(title='Autoencoder Anomaly Detection')
-
-            # Save the Plotly figure as an HTML file
-            fig_html_path = "autoencoder_plot.html"
-            fig.write_html(fig_html_path)
-
-            # Provide a link to open the Plotly chart in a new tab
-            if st.button("Open Autoencoder Plot"):
-                new_tab = webbrowser.get()
-                new_tab.open(fig_html_path, new=2)
-
-            st.write("Download the data with anomaly indicator")
-            st.download_button(
-                label="Download",
-                data=data_with_anomalies_autoencoder.to_csv(index=False),
-                file_name="AutoencoderAnomaly.csv",
-                mime="text/csv"
-            )
-
-            # Count the number of anomalies
-            num_anomalies = data_with_anomalies_autoencoder['Anomaly'].sum()
-
-            # Total number of data points
-            total_data_points = len(data_with_anomalies_autoencoder)
-
-            # Calculate the percentage of anomalies
-            percentage_anomalies = (num_anomalies / total_data_points) * 100
-
-            st.write(f"Number of anomalies: {num_anomalies}")
-            st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
 
 
 
-    
+
+
+
+                st.write("Dealing with missing values:")
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+                st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
+
+
+
+                data = drop_features_with_missing_values(data)
+
+
+
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+                st.write("Dealing done with duplicates.")
+
+                st.write("Performing categorical feature encoding...")
+                categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                data_encoded = data_unique.copy()
+                for feature in categorical_features:
+                    labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                    labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                    data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                data = data_encoded  # Update the original dataset with encoded features
+                st.write("Categorical features encoded successfully.")
+
+                st.write("Performing feature scaling...")
+                numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                if len(numeric_columns) == 0:
+                    st.write("No numeric columns found.")
+                else:
+                    scaler = MinMaxScaler()
+                    data_scaled = data.copy()
+                    data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                    data = data_scaled  # Update the original dataset with scaled features
+                    st.write("Feature scaling performed successfully.")
+
+                st.write("Downloading the dataset...")
+
+                # Save the modified dataset to a file
+                modified_dataset_filename = "modified_dataset.csv"
+                # data.to_csv(modified_dataset_filename, index=False)
+                st.write(data.head())
+                st.write(data.shape)
+
+
+
+
+
+
+                # Define the autoencoder model
+                input_dim = data.shape[1]  # Assuming data is a DataFrame with the appropriate shape
+                encoding_dim = 64  # Adjust the encoding dimension as needed
+                input_layer = Input(shape=(input_dim,))
+                encoded = Dense(encoding_dim, activation='relu')(input_layer)
+                decoded = Dense(input_dim, activation='sigmoid')(encoded)
+                autoencoder = Model(inputs=input_layer, outputs=decoded)
+                autoencoder.compile(optimizer='adam', loss='mse')
+
+                # Train the autoencoder
+                autoencoder.fit(data, data, epochs=10, batch_size=32)  # Adjust epochs and batch size as needed
+
+                # Obtain the reconstructed data
+                reconstructed_data = autoencoder.predict(data)
+
+                # Create a DataFrame with the data and the anomaly indicator
+                data_with_anomalies_autoencoder = data.copy()
+                data_with_anomalies_autoencoder['Anomaly'] = tf.keras.losses.mean_squared_error(data, reconstructed_data).numpy() > 95
+                data_with_anomalies_autoencoder['Anomaly'] = data_with_anomalies_autoencoder['Anomaly'].astype(int)
+
+                st.subheader("Data with Anomalies")
+                st.write(data_with_anomalies_autoencoder)
+
+                selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                # Plot the results using Plotly Express
+                fig = px.scatter(data_with_anomalies_autoencoder, x=selected_x_col, y=selected_y_col, color='Anomaly')
+                fig.update_layout(title='Autoencoder Anomaly Detection')
+
+                # Save the Plotly figure as an HTML file
+                fig_html_path = "autoencoder_plot.html"
+                fig.write_html(fig_html_path)
+
+                # Provide a link to open the Plotly chart in a new tab
+                if st.button("Open Autoencoder Plot"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
+
+                st.write("Download the data with anomaly indicator")
+                st.download_button(
+                    label="Download",
+                    data=data_with_anomalies_autoencoder.to_csv(index=False),
+                    file_name="AutoencoderAnomaly.csv",
+                    mime="text/csv"
+                )
+
+                # Count the number of anomalies
+                num_anomalies = data_with_anomalies_autoencoder['Anomaly'].sum()
+
+                # Total number of data points
+                total_data_points = len(data_with_anomalies_autoencoder)
+
+                # Calculate the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+        # Rest of your Streamlit app code...
+
+        # Place the Time Series Analysis selection code at a different location
+
+        st.sidebar.header("Time Series Analysis (WIP)")
+
+        #st.sidebar.header("Time Series Analysis",: color = 'blue')
+
+        #"<h2 style='font-size: 24px; color: blue;'>Time Series Analysis</h2>",
+        info_options_ts = [
+            "None",
+            "ARIMA",
+            "FBPROPHET",
+            "HOLT-WINTER",
+            # Add more options here...
+        ]
+
+
+
+        # Prompt the user to select a time series analysis method
+        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose density-based method", info_options_ts)
+
+        if selected_anomalyAlgorithm == "None":
+            st.write(" ")
+
+        elif selected_anomalyAlgorithm == "ARIMA":
+            st.header("Try other technique we are working on ARIMA.......")
+
+        elif selected_anomalyAlgorithm == "FBPROPHET":
+            st.header("Try other technique we are working on FBPROPHET.......")
+
+        elif selected_anomalyAlgorithm == "HOLT-WINTER":
+            st.header("Try other technique we are working on HOLT-WINTER.......")
+
+
+
+
 if __name__ == "__main__":
     main()
+
+
+
+
 
 
