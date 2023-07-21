@@ -9,7 +9,7 @@ tensorflow
 openpyxl
 fuzzywuzzy
 plotly
-
+python-pptx
 BeautifulSoup4
 
 
