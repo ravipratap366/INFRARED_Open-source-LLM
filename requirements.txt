@@ -11,6 +11,7 @@ fuzzywuzzy
 plotly
 python-pptx
 BeautifulSoup4
+python-pptx
 
 
 -e .
