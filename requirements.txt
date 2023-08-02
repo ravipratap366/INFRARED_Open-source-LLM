@@ -14,5 +14,3 @@ BeautifulSoup4
 python-pptx
 
 
-
--e .
