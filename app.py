@@ -706,7 +706,7 @@ def train_autoencoder(data):
 
     # Compile and train the autoencoder with verbose=1
     autoencoder.compile(optimizer='adam', loss='mean_squared_error')
-    autoencoder.fit(scaled_data, scaled_data, epochs=10, batch_size=32, shuffle=True, verbose=1)  # Set verbose to 1
+    autoencoder.fit(scaled_data, scaled_data, epochs=10, batch_size=64, shuffle=True, verbose=1)  # Set verbose to 1
 
     # Get the encoded data
     encoded_data = autoencoder.predict(scaled_data)
@@ -1178,7 +1178,7 @@ def main():
         elif selected_anomalyAlgorithm == "Z-Score/Standard Deviation":
 
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Unleash Statistical Magic for Numerical Variables!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -1248,7 +1248,7 @@ def main():
 
             st.markdown(
 
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Unleash Statistical Magic for Numerical Variables!</h2>",
 
                 unsafe_allow_html=True)
 
@@ -1377,7 +1377,7 @@ def main():
         elif selected_anomalyAlgorithm == "Probability Density Function":
 
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Unleash Statistical Magic for Numerical Variables!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -1469,7 +1469,7 @@ def main():
 
         elif selected_anomalyAlgorithm == "RSF":
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Unleash Statistical Magic for Numerical Variables!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File EKKO_EKPO data with these column ['WERKS', 'MATNR', 'EBELN', 'EBELP', 'LIFNR', 'MENGE', 'NETPR', 'PEINH', 'NETWR',]", type=["csv", "xlsx", "XLSX"])
             columns_to_include = ['WERKS', 'MATNR', 'EBELN', 'EBELP', 'LIFNR', 'MENGE', 'NETPR', 'PEINH', 'NETWR', ]
@@ -1579,7 +1579,7 @@ def main():
 
         elif selected_anomalyAlgorithm == "Benford law 1st digit":
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Unleash Statistical Magic for Numerical Variables!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -1661,7 +1661,7 @@ def main():
 
         elif selected_anomalyAlgorithm == "Benford law 2nd digit":
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Unleash Statistical Magic for Numerical Variables!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -1749,7 +1749,7 @@ def main():
 
         elif selected_anomalyAlgorithm == "Benford law 3rd digit":
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Unleash Statistical Magic for Numerical Variables!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -1868,7 +1868,7 @@ def main():
 
 
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -1998,7 +1998,7 @@ def main():
 
 
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -2138,7 +2138,7 @@ def main():
         elif selected_anomalyAlgorithm == "K-Means":
 
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -2293,7 +2293,7 @@ def main():
         elif selected_anomalyAlgorithm == "Local Outlier Factor":
 
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
@@ -2455,7 +2455,7 @@ def main():
         elif selected_anomalyAlgorithm == "Autoencoder":
 
             st.markdown(
-                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                "<h2 style='font-size: 24px; color: blue;'>Upload Your Dataset, Fuel Deep Learning!</h2>",
                 unsafe_allow_html=True)
             data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
 
