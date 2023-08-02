@@ -183,7 +183,7 @@ This application provides an advanced method for understanding your dataset and 
 It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
   <center>
-    <img src="https://raw.githubusercontent.com/MANMEET75/INFRARED/main/NewGif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 450px;">
+    <img src="https://raw.githubusercontent.com/MANMEET75/INFRARED/main/NewGif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
     <br>
     <br>
     <br>
@@ -889,6 +889,7 @@ def calculate_3th_digit(data):
 
 def apply_anomaly_detection_GMM(data):
 
+    from sklearn.mixture import GaussianMixture
     gmm = GaussianMixture()
     data['Anomaly'] = gmm.fit_predict(data)
     data['Anomaly'] = np.where(data['Anomaly'] == 1, 0, 1)
@@ -1915,7 +1916,7 @@ def main():
                         "Kernel Density Estimation (KDE)",
                         "K-Means",
                         "Gaussian Mixture Models (GMM)",
-                        # "DBSCAN",
+                        "DBSCAN",
                         "Local Outlier Factor",
                         "Robust Covariance",
                         "One-Class SVM",
@@ -2946,58 +2947,58 @@ def main():
 
 
                         # Applying the anomaly detection using SGD-based One-Class SVM
-                    data_with_anomalies_SGDOCSVM = apply_anomaly_detection_SGDOCSVM(data)
+                data_with_anomalies_SGDOCSVM = apply_anomaly_detection_SGDOCSVM(data)
 
-                    st.subheader("Data with Anomalies (SGD-based One-Class SVM)")
-                    st.write(data_with_anomalies_SGDOCSVM)
+                st.subheader("Data with Anomalies (SGD-based One-Class SVM)")
+                st.write(data_with_anomalies_SGDOCSVM)
 
-                    selected_x_col = st.selectbox("Select X-axis column", data.columns)
-                    selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+                selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-                    # Create a scatter plot using Seaborn
-                    plt.figure(figsize=(10, 6))
-                    sns.scatterplot(data=data_with_anomalies_SGDOCSVM, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+                # Create a scatter plot using Seaborn
+                plt.figure(figsize=(10, 6))
+                sns.scatterplot(data=data_with_anomalies_SGDOCSVM, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
 
-                    # Get the current legend
-                    current_handles, current_labels = plt.gca().get_legend_handles_labels()
+                # Get the current legend
+                current_handles, current_labels = plt.gca().get_legend_handles_labels()
 
-                    # Customize the legend
-                    legend_labels = ['Not Anomaly', 'Anomaly']
-                    legend_title = 'Anomaly'
-                    custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+                # Customize the legend
+                legend_labels = ['Not Anomaly', 'Anomaly']
+                legend_title = 'Anomaly'
+                custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
 
-                    # Set colors for the legend
-                    for handle, label in zip(custom_legend.legendHandles, legend_labels):
-                        if label == 'Not Anomaly':
-                            handle.set_color('blue')
-                        elif label == 'Anomaly':
-                            handle.set_color('red')
+                # Set colors for the legend
+                for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                    if label == 'Not Anomaly':
+                        handle.set_color('blue')
+                    elif label == 'Anomaly':
+                        handle.set_color('red')
 
-                    # Show the Seaborn plot
-                    st.pyplot()
+                # Show the Seaborn plot
+                st.pyplot()
 
-                    # Save the Seaborn plot as an image file (optional)
-                    # plt.savefig("sgd_one_class_svm_plot.png")
+                # Save the Seaborn plot as an image file (optional)
+                # plt.savefig("sgd_one_class_svm_plot.png")
 
-                    st.write("Download the data with anomaly indicator")
-                    st.download_button(
-                        label="Download",
-                        data=data_with_anomalies_SGDOCSVM.to_csv(index=False),
-                        file_name="SGD_OneClassSVM_Anomaly.csv",
-                        mime="text/csv"
-                    )
+                st.write("Download the data with anomaly indicator")
+                st.download_button(
+                    label="Download",
+                    data=data_with_anomalies_SGDOCSVM.to_csv(index=False),
+                    file_name="SGD_OneClassSVM_Anomaly.csv",
+                    mime="text/csv"
+                )
 
-                    # Count the number of anomalies
-                    num_anomalies = data_with_anomalies_SGDOCSVM['Anomaly'].sum()
+                # Count the number of anomalies
+                num_anomalies = data_with_anomalies_SGDOCSVM['Anomaly'].sum()
 
-                    # Total number of data points
-                    total_data_points = len(data_with_anomalies_SGDOCSVM)
+                # Total number of data points
+                total_data_points = len(data_with_anomalies_SGDOCSVM)
 
-                    # Calculate the percentage of anomalies
-                    percentage_anomalies = (num_anomalies / total_data_points) * 100
+                # Calculate the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
 
-                    st.write(f"Number of anomalies: {num_anomalies}")
-                    st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
 
 
