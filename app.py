@@ -20,6 +20,7 @@ import pandas as pd
 import base64
 from io import BytesIO
 import tensorflow as tf
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 from sklearn.ensemble import IsolationForest
@@ -138,6 +139,15 @@ marquee_html = """
       position: relative;
       bottom: 20px;
     }
+   
+       .logo1 {
+      width: 75px;
+      position: relative;
+      bottom: 20px;
+    }
+
+
+
 
     .P_logo {
       width: 150px;
@@ -166,11 +176,10 @@ This application provides an advanced method for understanding your dataset and 
 It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
   <center>
-    <img src="https://github.com/MANMEET75/INFRARED/raw/main/gif3.gif" alt="GIF" style="max-width: 100%; height: auto; width: 150%; height: 350px;">
+    <img src="https://raw.githubusercontent.com/MANMEET75/INFRARED/main/NewGif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 450px;">
   </center>
 </body>
 </html>
-
 
 """
 
@@ -607,7 +616,7 @@ with tab8:
 
     # Get the Power BI iframe URL
     #'<iframe title="Report Section" width="800" height="450" src="https://app.powerbi.com/view?r=eyJrIjoiNzBlNTM4ZmQtMWZhOC00YWRmLWEwNmMtZjQ5NjFhZjU2ODE1IiwidCI6IjMyNTRjOGVlLWQxZDUtNDFmNy05ZTY5LTUxMzQxYjJhZWU3NCJ9" frameborder="0" allowFullScreen="true"></iframe>'
-    iframe_url = '<iframe title="process mining" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNWE5ZDM0MDYtYmUwNC00ZjhiLTllOGMtNjFjNmY2M2M4YzkxIiwidCI6IjMyNTRjOGVlLWQxZDUtNDFmNy05ZTY5LTUxMzQxYjJhZWU3NCJ9&embedImagePlaceholder=true" frameborder="0" allowFullScreen="true"></iframe>'
+    iframe_url = '<iframe title="process mining" width="1000" height="700" src="https://app.powerbi.com/view?r=eyJrIjoiNWE5ZDM0MDYtYmUwNC00ZjhiLTllOGMtNjFjNmY2M2M4YzkxIiwidCI6IjMyNTRjOGVlLWQxZDUtNDFmNy05ZTY5LTUxMzQxYjJhZWU3NCJ9&embedImagePlaceholder=true" frameborder="0" allowFullScreen="true"></iframe>'
 
     # Embed the Power BI report in the Streamlit app
     st.markdown(iframe_url, unsafe_allow_html=True)
@@ -681,7 +690,7 @@ def apply_anomaly_detection_IsolationForest(data):
     data_copy = data.copy()
 
     # Fit the Isolation Forest model
-    isolation_forest = IsolationForest(contamination=0.05, random_state=42)
+    isolation_forest = IsolationForest(contamination=0.03, random_state=42)
     isolation_forest.fit(data_copy)
 
     # Predict the anomaly labels
@@ -690,7 +699,20 @@ def apply_anomaly_detection_IsolationForest(data):
     # Create a new column in the original DataFrame for the anomaly indicator
     data['Anomaly'] = np.where(anomaly_labels == -1, 1, 0)
     return data
+def apply_anomaly_detection_LocalOutlierFactor(data):
+    # Make a copy of the data
+    data_copy = data.copy()
 
+    from sklearn.neighbors import LocalOutlierFactor
+
+    # Step 3: Apply Local Outlier Factor
+    lof = LocalOutlierFactor(n_neighbors=200, metric='euclidean', contamination=0.04)
+
+    outlier_labels = lof.fit_predict(data_copy)
+
+    # Display the outlier labels for each data point
+    data['Outlier_Label'] = outlier_labels
+    return data
 
 
 
@@ -778,18 +800,75 @@ def z_score_anomaly_detection(data, column, threshold):
 
 
 
+# Display the HTML code
+import streamlit as st
+image = "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png"
+width = 200
+
+st.write(" ")
+st.write(" ")
+st.write(" ")
+
+st.write("<p style='text-align: end;'>Ask Question related to Infrared click below! 😎</p>",unsafe_allow_html=True,)#lfb1
+#st.markdown(f"""<img src="{image}" width="{width}" style="float: right;" />""",unsafe_allow_html=True,)
+
+# Using f-string to embed the image URL and width in the HTML code
+image_html = f'<img src="{image}" width="{width}" style="float: right;" />'
+
+# Adding the anchor tag around the image to create a clickable link
+link_html = '<a href="link to chatbot" target="_parent">' + image_html + '</a>'
+
+# Display the combined HTML code with the link and image
+st.markdown(link_html, unsafe_allow_html=True)
+
+
+
+# Display the HTML code
+import streamlit as st
+image = "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180"
+width = 200
+
+st.write(" ")
+st.write(" ")
+st.write(" ")
+
+st.write("<p style='text-align: end;'>Ask Question from your PDF click below! 📚</p>",unsafe_allow_html=True,)#lfb1
+
+# Using f-string to embed the image URL and width in the HTML code
+image_html = f'<img src="{image}" width="{width}" style="float: right;" />'
+
+# Adding the anchor tag around the image to create a clickable link
+link_html = '<a href="link to chatbot" target="_parent">' + image_html + '</a>'
+
+# Display the combined HTML code with the link and image
+st.markdown(link_html, unsafe_allow_html=True)
+
+
+
+
+image = "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png"
+width = 200
+
+st.write(" ")
+st.write(" ")
+st.write(" ")
+#https://engineeringinterviewquestions.com/wp-content/uploads/2018/08/MS-EXCEL-Questions-and-Answers.png
+st.write("<p style='text-align: end;'>Ask Question from your excel click below! 📚</p>",unsafe_allow_html=True,)#lfb1
+
+# Using f-string to embed the image URL and width in the HTML code
+image_html = f'<img src="{image}" width="{width}" style="float: right;" />'
+
+# Adding the anchor tag around the image to create a clickable link
+link_html = '<a href="link to chatbot" target="_parent">' + image_html + '</a>'
+
+# Display the combined HTML code with the link and image
+st.markdown(link_html, unsafe_allow_html=True)
 
 
 
 
 
 def main():
-
-
-
-
-
-
 
 
 
@@ -1711,18 +1790,7 @@ def main():
 
 
 
-        # starting of basic information side bar
-        st.sidebar.header("Categorical Statistical method (WIP)")
-        info_options = ["None","Chi-Square Test","ANOVA",
-        ]
-        selected_info = st.sidebar.selectbox("Choose an EDA type", info_options)
 
-        if selected_info == "None":
-            st.write(" ")
-        elif selected_info == "Chi-Square Test":
-            st.header("Try other technique we are working on Chi-Square Test.......")
-        elif selected_info == "ANOVA":
-            st.header("Try other technique we are working on ANOVA.......")
 
 
 
@@ -1733,10 +1801,16 @@ def main():
         st.sidebar.header("Machine Learning Methods")
         anomaly_options = ["None",
                         "Isolation Forest",
-                        "Gaussian Mixture Models (GMM)",
                         "Kernel Density Estimation (KDE)",
                         "K-Means",
-                        "DBSCAN"
+                        "Gaussian Mixture Models (GMM)",
+                        "DBSCAN",
+                        "Local Outlier Factor",
+                        "Robust Covariance",
+                        "One-Class SVM",
+                        "One-Class SVM (SGD)"
+
+
         ]
         selected_anomalyAlgorithm = st.sidebar.selectbox("Choose density-based method", anomaly_options)
 
@@ -1822,28 +1896,39 @@ def main():
 
 
 
-
                 # Applying the anomaly detection
                 data_with_anomalies_IsolationForest = apply_anomaly_detection_IsolationForest(data)
 
                 st.subheader("Data with Anomalies")
                 st.write(data_with_anomalies_IsolationForest)
-
+                ##################################################
                 selected_x_col = st.selectbox("Select X-axis column", data.columns)
                 selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-                # Plot the results using Plotly Express
-                fig = px.scatter(data_with_anomalies_IsolationForest, x=selected_x_col, y=selected_y_col, color='Anomaly')
-                fig.update_layout(title='Isolation Forest Anomaly Detection')
+                # Create a scatter plot using Seaborn
+                plt.figure(figsize=(10, 6))
+                sns.scatterplot(data=data_with_anomalies_IsolationForest, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
 
-                # Save the Plotly figure as an HTML file
-                fig_html_path = "isolation_forest_plot.html"
-                fig.write_html(fig_html_path)
+                # Get the current legend
+                current_handles, current_labels = plt.gca().get_legend_handles_labels()
 
-                # Provide a link to open the Plotly chart in a new tab
-                if st.button("Open Isolation Forest Plot"):
-                    new_tab = webbrowser.get()
-                    new_tab.open(fig_html_path, new=2)
+                # Customize the legend
+                legend_labels = ['Not Anomaly', 'Anomaly']
+                legend_title = 'Anomaly'
+                custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+
+                # Set colors for the legend
+                for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                    if label == 'Not Anomaly':
+                        handle.set_color('blue')
+                    elif label == 'Anomaly':
+                        handle.set_color('red')
+
+                # Show the Seaborn plot
+                st.pyplot()
+
+                # Save the Seaborn plot as an image file (optional)
+                # plt.savefig("isolation_forest_plot.png")
 
                 st.write("Download the data with anomaly indicator")
                 st.download_button(
@@ -2103,18 +2188,26 @@ def main():
                 selected_x_col = st.selectbox("Select X-axis column", data.columns)
                 selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-                # Plot the results using Plotly Express
-                fig = px.scatter(data_with_clusters, x=selected_x_col, y=selected_y_col, color='Cluster')
-                fig.update_layout(title='K-means Clustering')
+                # Define custom color palette for Seaborn
+                colors = {0: 'blue', 1: 'red'}
 
-                # Save the Plotly figure as an HTML file
-                fig_html_path = "kmeans_plot.html"
-                fig.write_html(fig_html_path)
+                # Create a scatter plot using Seaborn with the custom color palette
+                plt.figure(figsize=(10, 6))
+                sns.scatterplot(data=data_with_clusters, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette=colors)
+                plt.title('K-means Clustering')
+                plt.xlabel(selected_x_col)
+                plt.ylabel(selected_y_col)
 
-                # Provide a link to open the Plotly chart in a new tab
-                if st.button("Open K-Means Plot"):
-                    new_tab = webbrowser.get()
-                    new_tab.open(fig_html_path, new=2)
+                # Customize the legend
+                legend_labels = ['Not Anomaly', 'Anomaly']
+                legend_title = 'Anomaly'
+                plt.legend(title=legend_title, labels=legend_labels, loc='upper right')
+
+                # Show the Seaborn plot
+                st.pyplot()
+
+                # Save the Seaborn plot as an image file (optional)
+                # plt.savefig("kmeans_plot.png")
 
                 # Counting the number of anomalies
                 num_anomalies = data_with_clusters['Anomaly'].sum()
@@ -2139,7 +2232,6 @@ def main():
 
 
 
-
         #  ending of anomaly detection algorithms over here
 
 
@@ -2150,6 +2242,142 @@ def main():
 
         elif selected_anomalyAlgorithm == "DBSCAN":
             st.header("Try other technique we are working on DBSCAN.......")
+
+
+
+
+        elif selected_anomalyAlgorithm == "Local Outlier Factor":
+
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload your data file for Statistical and Machine Learning Algo</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+
+
+
+
+                st.write("Dealing with missing values:")
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+                st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
+
+
+
+                data = drop_features_with_missing_values(data)
+
+
+
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+                st.write("Dealing done with duplicates.")
+
+                st.write("Performing categorical feature encoding...")
+                categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                data_encoded = data_unique.copy()
+                for feature in categorical_features:
+                    labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                    labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                    data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                data = data_encoded  # Update the original dataset with encoded features
+                st.write("Categorical features encoded successfully.")
+
+                st.write("Performing feature scaling...")
+                numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                if len(numeric_columns) == 0:
+                    st.write("No numeric columns found.")
+                else:
+                    scaler = MinMaxScaler()
+                    data_scaled = data.copy()
+                    data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                    data = data_scaled  # Update the original dataset with scaled features
+                    st.write("Feature scaling performed successfully.")
+
+                st.write("Downloading the dataset...")
+
+                # Save the modified dataset to a file
+                modified_dataset_filename = "modified_dataset.csv"
+                # data.to_csv(modified_dataset_filename, index=False)
+                st.write(data.head())
+                st.write(data.shape)
+
+
+
+
+
+
+                # Applying the anomaly detection
+                data_with_anomalies_LocalOutlierFactor = apply_anomaly_detection_LocalOutlierFactor(data)
+
+                st.subheader("Data with Anomalies")
+                st.write(data_with_anomalies_LocalOutlierFactor)
+
+
+
+                ##################################################
+                selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                # Plot the results using Plotly Express
+                fig = px.scatter(data_with_anomalies_LocalOutlierFactor, x=selected_x_col, y=selected_y_col, color='Anomaly')
+                fig.update_layout(title='LocalOutlierFactor Anomaly Detection')
+
+                # Save the Plotly figure as an HTML file
+                fig_html_path = "LocalOutlierFactor_plot.html"
+                fig.write_html(fig_html_path)
+
+                # Provide a link to open the Plotly chart in a new tab
+                if st.button("Open LocalOutlierFactor Plot"):
+                    new_tab = webbrowser.get()
+                    new_tab.open(fig_html_path, new=2)
+
+                st.write("Download the data with anomaly indicator")
+                st.download_button(
+                    label="Download",
+                    data=data_with_anomalies_LocalOutlierFactor.to_csv(index=False),
+                    file_name="LocalOutlierFactor.csv",
+                    mime="text/csv"
+                )
+
+                # Count the number of anomalies
+                num_anomalies = data_with_anomalies_IsolationForest['Anomaly'].sum()
+
+                # Total number of data points
+                total_data_points = len(data_with_anomalies_IsolationForest)
+
+                # Calculate the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+        elif selected_anomalyAlgorithm == "Robust Covariance":
+            st.header("Try other technique we are working on Robust Covariance.......")
+
+        elif selected_anomalyAlgorithm == "One-Class SVM":
+            st.header("Try other technique we are working on One-Class SVM.......")
+
+        elif selected_anomalyAlgorithm == "One-Class SVM (SGD)":
+            st.header("Try other technique we are working on One-Class SVM (SGD).......")
+
+
+
 
 
 
@@ -2256,68 +2484,30 @@ def main():
 
 
 
-                # Define the autoencoder model
-                input_dim = data.shape[1]  # Assuming data is a DataFrame with the appropriate shape
-                encoding_dim = 64  # Adjust the encoding dimension as needed
-                input_layer = Input(shape=(input_dim,))
-                encoded = Dense(encoding_dim, activation='relu')(input_layer)
-                decoded = Dense(input_dim, activation='sigmoid')(encoded)
-                autoencoder = Model(inputs=input_layer, outputs=decoded)
-                autoencoder.compile(optimizer='adam', loss='mse')
-
-                # Train the autoencoder
-                autoencoder.fit(data, data, epochs=10, batch_size=32)  # Adjust epochs and batch size as needed
-
-                # Obtain the reconstructed data
-                reconstructed_data = autoencoder.predict(data)
-
-                # Create a DataFrame with the data and the anomaly indicator
-                data_with_anomalies_autoencoder = data.copy()
-                data_with_anomalies_autoencoder['Anomaly'] = tf.keras.losses.mean_squared_error(data, reconstructed_data).numpy() > 95
-                data_with_anomalies_autoencoder['Anomaly'] = data_with_anomalies_autoencoder['Anomaly'].astype(int)
-
-                st.subheader("Data with Anomalies")
-                st.write(data_with_anomalies_autoencoder)
-
-                selected_x_col = st.selectbox("Select X-axis column", data.columns)
-                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
-
-                # Plot the results using Plotly Express
-                fig = px.scatter(data_with_anomalies_autoencoder, x=selected_x_col, y=selected_y_col, color='Anomaly')
-                fig.update_layout(title='Autoencoder Anomaly Detection')
-
-                # Save the Plotly figure as an HTML file
-                fig_html_path = "autoencoder_plot.html"
-                fig.write_html(fig_html_path)
-
-                # Provide a link to open the Plotly chart in a new tab
-                if st.button("Open Autoencoder Plot"):
-                    new_tab = webbrowser.get()
-                    new_tab.open(fig_html_path, new=2)
-
-                st.write("Download the data with anomaly indicator")
-                st.download_button(
-                    label="Download",
-                    data=data_with_anomalies_autoencoder.to_csv(index=False),
-                    file_name="AutoencoderAnomaly.csv",
-                    mime="text/csv"
-                )
-
-                # Count the number of anomalies
-                num_anomalies = data_with_anomalies_autoencoder['Anomaly'].sum()
-
-                # Total number of data points
-                total_data_points = len(data_with_anomalies_autoencoder)
-
-                # Calculate the percentage of anomalies
-                percentage_anomalies = (num_anomalies / total_data_points) * 100
-
-                st.write(f"Number of anomalies: {num_anomalies}")
-                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
-
+         
         # Rest of your Streamlit app code...
 
         # Place the Time Series Analysis selection code at a different location
+
+
+
+        # starting of basic information side bar
+        #st.sidebar.header("Categorical Statistical method (WIP)")
+        #info_options = ["None", "Chi-Square Test", "ANOVA",]
+        #selected_info = st.sidebar.selectbox("Choose an EDA type", info_options)
+
+        #if selected_info == "None":
+        #    st.write(" ")
+        #elif selected_info == "Chi-Square Test":
+        #    st.header("Try other technique we are working on Chi-Square Test.......")
+        #elif selected_info == "ANOVA":
+        #    st.header("Try other technique we are working on ANOVA.......")
+
+
+
+
+
+
 
         st.sidebar.header("Time Series Analysis (WIP)")
 
@@ -2348,6 +2538,9 @@ def main():
 
         elif selected_anomalyAlgorithm == "HOLT-WINTER":
             st.header("Try other technique we are working on HOLT-WINTER.......")
+
+
+
 
 
 
