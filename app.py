@@ -1915,7 +1915,7 @@ def main():
                         "Isolation Forest",
                         "Kernel Density Estimation (KDE)",
                         "K-Means",
-                        "Gaussian Mixture Models (GMM)",
+                        # "Gaussian Mixture Models (GMM)",
                         "DBSCAN",
                         "Local Outlier Factor",
                         "Robust Covariance",
