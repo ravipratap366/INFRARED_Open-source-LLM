@@ -1,18 +1,11 @@
-streamlit
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
-pyod
-tensorflow
-openpyxl
 fuzzywuzzy
+matplotlib
+numpy
+pandas
 plotly
-python-pptx
-BeautifulSoup4
-python-pptx
-pip==23.2.1
-
-
--e .
+scikit_learn
+scipy
+seaborn
+streamlit
+tensorflow
+tensorflow_intel
