@@ -11,6 +11,7 @@ import plotly.graph_objs as go
 import plotly.io as pio
 import io
 import pptx
+from scipy.spatial.distance import mahalanobis
 import base64
 import tempfile
 import numpy as np
@@ -689,6 +690,27 @@ def drop_features_with_missing_values(data):
 
 
 
+def apply_anomaly_detection_Mahalanobis(data):
+    # Assuming 'data' is a pandas DataFrame with numerical columns
+    # You may need to preprocess and select appropriate features for Mahalanobis distances
+
+    # Calculate the mean and covariance matrix of the data
+    data_mean = data.mean()
+    data_cov = data.cov()
+
+    # Calculate the inverse of the covariance matrix
+    data_cov_inv = np.linalg.inv(data_cov)
+
+    # Calculate Mahalanobis distances for each data point
+    mahalanobis_distances = data.apply(lambda row: mahalanobis(row, data_mean, data_cov_inv), axis=1)
+
+    # Set a threshold to identify anomalies (you can adjust this threshold based on your dataset)
+    threshold = mahalanobis_distances.mean() + 2 * mahalanobis_distances.std()
+
+    # Create a new column 'Anomaly' to indicate anomalies (1 for anomalies, 0 for inliers)
+    data['Anomaly'] = (mahalanobis_distances > threshold).astype(int)
+
+    return data
 
 # Function to define and train the autoencoder model
 def train_autoencoder(data):
@@ -2412,7 +2434,135 @@ def main():
                 st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
         elif selected_anomalyAlgorithm == "Robust Covariance":
-            st.header("Try other technique we are working on Robust Covariance.......")
+                st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
+                unsafe_allow_html=True)
+                data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+                if data_file is not None:
+                    file_extension = data_file.name.split(".")[-1]
+                    if file_extension == "csv":
+                        data = pd.read_csv(data_file)
+                    elif file_extension in ["xlsx", "XLSX"]:
+                        data = pd.read_excel(data_file)
+                    else:
+                        st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+
+
+
+
+                    st.write("Dealing with missing values:")
+                    threshold = 0.1  # Set the threshold to 10% (0.1)
+                    missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                    columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                    data = data.drop(columns=columns_to_drop)  # Drop the columns
+                    st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
+
+
+
+                    data = drop_features_with_missing_values(data)
+
+
+
+
+                    st.write("Dealing with duplicate values...")
+                    num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                    data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                    st.write(f"Number of duplicate rows: {num_duplicates}")
+                    st.write("Dealing done with duplicates.")
+
+                    st.write("Performing categorical feature encoding...")
+                    categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                    data_encoded = data_unique.copy()
+                    for feature in categorical_features:
+                        labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                        labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                        data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                    data = data_encoded  # Update the original dataset with encoded features
+                    st.write("Categorical features encoded successfully.")
+
+                    st.write("Performing feature scaling...")
+                    numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                    if len(numeric_columns) == 0:
+                        st.write("No numeric columns found.")
+                    else:
+                        scaler = MinMaxScaler()
+                        data_scaled = data.copy()
+                        data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                        data = data_scaled  # Update the original dataset with scaled features
+                        st.write("Feature scaling performed successfully.")
+
+                    st.write("Downloading the dataset...")
+
+                    # Save the modified dataset to a file
+                    modified_dataset_filename = "modified_dataset.csv"
+                    # data.to_csv(modified_dataset_filename, index=False)
+                    st.write(data.head())
+                    st.write(data.shape)
+
+
+
+
+
+
+
+                    # Applying the anomaly detection
+                    data_with_anomalies_RobustCovariance = apply_anomaly_detection_Mahalanobis(data)
+
+                    st.subheader("Data with Anomalies")
+                    st.write(data_with_anomalies_RobustCovariance)
+                    ##################################################
+                    selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                    selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                    # Create a scatter plot using Seaborn
+                    plt.figure(figsize=(10, 6))
+                    sns.scatterplot(data=data_with_anomalies_RobustCovariance, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+
+                    # Get the current legend
+                    current_handles, current_labels = plt.gca().get_legend_handles_labels()
+
+                    # Customize the legend
+                    legend_labels = ['Not Anomaly', 'Anomaly']
+                    legend_title = 'Anomaly'
+                    custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+
+                    # Set colors for the legend
+                    for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                        if label == 'Not Anomaly':
+                            handle.set_color('blue')
+                        elif label == 'Anomaly':
+                            handle.set_color('red')
+
+                    # Show the Seaborn plot
+                    st.pyplot()
+
+                    # Save the Seaborn plot as an image file (optional)
+                    # plt.savefig("robust_covariance_plot.png")
+
+                    st.write("Download the data with anomaly indicator")
+                    st.download_button(
+                        label="Download",
+                        data=data_with_anomalies_RobustCovariance.to_csv(index=False),
+                        file_name="RobustCovarianceAnomaly.csv",
+                        mime="text/csv"
+                    )
+
+                    # Count the number of anomalies
+                    num_anomalies = data_with_anomalies_RobustCovariance['Anomaly'].sum()
+
+                    # Total number of data points
+                    total_data_points = len(data_with_anomalies_RobustCovariance)
+
+                    # Calculate the percentage of anomalies
+                    percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                    st.write(f"Number of anomalies: {num_anomalies}")
+                    st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
 
         elif selected_anomalyAlgorithm == "One-Class SVM":
             st.header("Try other technique we are working on One-Class SVM.......")
