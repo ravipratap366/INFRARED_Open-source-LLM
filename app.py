@@ -1557,7 +1557,7 @@ def main():
 
                 # Calculate the distribution of first digits using Benford's Law
                 df, df1, counts, benford  = calculate_first_digit(data[selected_feature])
-                df2 = pd.merge(df, df1, on='index')
+                df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
                 st.write(df2)
 
 
@@ -1643,7 +1643,7 @@ def main():
 
                 # Calculate the distribution of second digits using Benford's Law
                 df, df1, counts, benford = calculate_2th_digit(data[selected_feature])
-                df2 = pd.merge(df, df1, on='index')
+                df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
                 st.write(df2)
 
                 #counts, benford = calculate_2th_digit(data[selected_feature])
@@ -1728,7 +1728,7 @@ def main():
                 # Calculate the distribution of second digits using Benford's Law
                 df, df1, counts, benford = calculate_3th_digit(data[selected_feature])
 
-                df2 = pd.merge(df, df1, on='index')
+                df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
                 st.write(df2)
 
 
