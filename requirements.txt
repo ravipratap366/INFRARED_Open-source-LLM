@@ -1,11 +1,16 @@
-fuzzywuzzy
-matplotlib
-numpy
-pandas
-plotly
-scikit_learn
-scipy
-seaborn
 streamlit
+pandas
+numpy
+matplotlib
+seaborn
+sklearn
+pyod
 tensorflow
-tensorflow_intel
+openpyxl
+fuzzywuzzy
+plotly
+python-pptx
+BeautifulSoup4
+python-pptx
+
+-e .
