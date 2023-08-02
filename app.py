@@ -178,6 +178,11 @@ It comes with pre-built statistical and machine learning models specifically des
   </div>
   <center>
     <img src="https://raw.githubusercontent.com/MANMEET75/INFRARED/main/NewGif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 450px;">
+    <br>
+    <br>
+    <br>
+    <br>
+    <h3><span style="color: blue;font-weight:800;">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>
   </center>
 </body>
 </html>
