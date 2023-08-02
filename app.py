@@ -15,6 +15,7 @@ import base64
 import tempfile
 import numpy as np
 import plotly.graph_objs as go
+from sklearn.preprocessing import StandardScaler
 import plotly.io as pio
 import pandas as pd
 import base64
@@ -684,6 +685,47 @@ def drop_features_with_missing_values(data):
 
 
 
+# Function to define and train the autoencoder model
+def train_autoencoder(data):
+    # Standardize the data
+    scaler = StandardScaler()
+    scaled_data = scaler.fit_transform(data)
+
+    # Define the autoencoder model architecture
+    input_dim = data.shape[1]
+    encoding_dim = int(input_dim / 2)  # You can adjust this value as needed
+    autoencoder = tf.keras.models.Sequential([
+        tf.keras.layers.Dense(encoding_dim, activation='relu', input_shape=(input_dim,)),
+        tf.keras.layers.Dense(input_dim, activation='linear')
+    ])
+
+    # Compile and train the autoencoder with verbose=1
+    autoencoder.compile(optimizer='adam', loss='mean_squared_error')
+    autoencoder.fit(scaled_data, scaled_data, epochs=10, batch_size=32, shuffle=True, verbose=1)  # Set verbose to 1
+
+    # Get the encoded data
+    encoded_data = autoencoder.predict(scaled_data)
+
+    # Calculate the reconstruction error
+    reconstruction_error = np.mean(np.square(scaled_data - encoded_data), axis=1)
+
+    # Add the reconstruction error as a new column 'ReconstructionError' to the data
+    data['ReconstructionError'] = reconstruction_error
+
+    return data
+
+# Function to apply autoencoder for anomaly detection
+def apply_anomaly_detection_autoencoder(data):
+    # Train the autoencoder and get the reconstruction error
+    data_with_reconstruction_error = train_autoencoder(data)
+
+    # Set a threshold for anomaly detection (you can adjust this threshold)
+    threshold = data_with_reconstruction_error['ReconstructionError'].mean() + 3 * data_with_reconstruction_error['ReconstructionError'].std()
+
+    # Classify anomalies based on the threshold
+    data_with_reconstruction_error['Anomaly'] = np.where(data_with_reconstruction_error['ReconstructionError'] > threshold, 1, 0)
+
+    return data_with_reconstruction_error
 
 def apply_anomaly_detection_IsolationForest(data):
     # Make a copy of the data
@@ -800,70 +842,67 @@ def z_score_anomaly_detection(data, column, threshold):
 
 
 
-# Display the HTML code
+
+
+
 import streamlit as st
-image = "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png"
-width = 200
-
-st.write(" ")
-st.write(" ")
-st.write(" ")
-
-st.write("<p style='text-align: end;'>Ask Question related to Infrared click below! 😎</p>",unsafe_allow_html=True,)#lfb1
-#st.markdown(f"""<img src="{image}" width="{width}" style="float: right;" />""",unsafe_allow_html=True,)
-
-# Using f-string to embed the image URL and width in the HTML code
-image_html = f'<img src="{image}" width="{width}" style="float: right;" />'
-
-# Adding the anchor tag around the image to create a clickable link
-link_html = '<a href="link to chatbot" target="_parent">' + image_html + '</a>'
-
-# Display the combined HTML code with the link and image
-st.markdown(link_html, unsafe_allow_html=True)
 
 
 
-# Display the HTML code
-import streamlit as st
-image = "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180"
-width = 200
+# Define the logos and their related text
+logos = [
+    {
+        'image': "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png",
+        'text': "Ask Question related to Infrared click below! 😎"
+    },
+    {
+        'image': "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180",
+        'text': "Ask Question from your PDF click below! 📚"
+    },
+    {
+        'image': "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png",
+        'text': "Ask Question from your Excel click below! 📚"
+    }
+]
 
-st.write(" ")
-st.write(" ")
-st.write(" ")
+# Custom CSS to align images and text
+custom_css = """
+<style>
+    .subHeading{
+        position: relative;
+        bottom:50px;
+    }
+    .logo-container {
+        display: inline;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+    }
+    .logo-item {
+        text-align: center;
+        padding: 10px;
+    }
+    .logo-image {
+        width: 150px;
+        margin-bottom: 10px;
+    }
+</style>
+"""
 
-st.write("<p style='text-align: end;'>Ask Question from your PDF click below! 📚</p>",unsafe_allow_html=True,)#lfb1
+# Display the custom CSS
+st.write(custom_css, unsafe_allow_html=True)
 
-# Using f-string to embed the image URL and width in the HTML code
-image_html = f'<img src="{image}" width="{width}" style="float: right;" />'
+# Display the logos and their related text in a single line
+with st.container():
 
-# Adding the anchor tag around the image to create a clickable link
-link_html = '<a href="link to chatbot" target="_parent">' + image_html + '</a>'
-
-# Display the combined HTML code with the link and image
-st.markdown(link_html, unsafe_allow_html=True)
-
-
-
-
-image = "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png"
-width = 200
-
-st.write(" ")
-st.write(" ")
-st.write(" ")
-#https://engineeringinterviewquestions.com/wp-content/uploads/2018/08/MS-EXCEL-Questions-and-Answers.png
-st.write("<p style='text-align: end;'>Ask Question from your excel click below! 📚</p>",unsafe_allow_html=True,)#lfb1
-
-# Using f-string to embed the image URL and width in the HTML code
-image_html = f'<img src="{image}" width="{width}" style="float: right;" />'
-
-# Adding the anchor tag around the image to create a clickable link
-link_html = '<a href="link to chatbot" target="_parent">' + image_html + '</a>'
-
-# Display the combined HTML code with the link and image
-st.markdown(link_html, unsafe_allow_html=True)
-
+    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+    for logo in logos:
+        # st.markdown('<h1 class="subHeading">InfraBot</h1>', unsafe_allow_html=True)
+        st.markdown('<div class="logo-item">', unsafe_allow_html=True)
+        st.markdown(f'<center><img src="{logo["image"]}" class="logo-image" /> </center>', unsafe_allow_html=True)
+        st.markdown(f'<center><p>{logo["text"]}</p></center>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -2479,6 +2518,95 @@ def main():
                 st.write(data.head())
                 st.write(data.shape)
 
+
+
+                # Assuming 'apply_anomaly_detection_autoencoder' function is defined elsewhere
+                # and returns a DataFrame with an 'Anomaly' column (0 for non-anomalies, 1 for anomalies)
+                data_with_anomalies_Autoencoder = apply_anomaly_detection_autoencoder(data)
+
+                st.subheader("Data with Anomalies")
+                st.write(data_with_anomalies_Autoencoder)
+
+                selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                # Create a scatter plot using Seaborn
+                plt.figure(figsize=(10, 6))
+                sns.scatterplot(data=data_with_anomalies_Autoencoder, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+
+                # Get the current legend
+                current_handles, current_labels = plt.gca().get_legend_handles_labels()
+
+                legend_labels = ['Not Anomaly', 'Anomaly']
+                legend_title = 'Anomaly'
+                custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+
+                # Set colors for the legend
+                for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                    if label == 'Not Anomaly':
+                        handle.set_color('blue')
+                    elif label == 'Anomaly':
+                        handle.set_color('red')
+
+                # Show the Seaborn plot
+                st.pyplot()
+
+                # Save the Seaborn plot as an image file (optional)
+                # plt.savefig("scatter_plot.png")
+
+                st.write("Download the data with anomaly indicator")
+                st.download_button(
+                    label="Download",
+                    data=data_with_anomalies_Autoencoder.to_csv(index=False),
+                    file_name="data_with_anomalies_Autoencoder.csv",
+                    mime="text/csv"
+                )
+
+                # Count the number of anomalies
+                num_anomalies = data_with_anomalies_Autoencoder['Anomaly'].sum()
+
+                # Total number of data points
+                total_data_points = len(data_with_anomalies_Autoencoder)
+
+                # Calculate the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
 
 
 
