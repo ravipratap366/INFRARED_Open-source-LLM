@@ -1,13 +1,17 @@
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 from sklearn.decomposition import PCA
 import io
 import pptx
+# from sklearn.mixture import GaussianMixture
 import base64
 import warnings
 from sklearn.preprocessing import OrdinalEncoder
 import plotly.graph_objs as go
+from sklearn.svm import OneClassSVM
+from sklearn.neighbors import LocalOutlierFactor
 import plotly.io as pio
 import io
 import pptx
@@ -15,6 +19,7 @@ from scipy.spatial.distance import mahalanobis
 import base64
 import tempfile
 import numpy as np
+from sklearn.linear_model import SGDOneClassSVM
 import plotly.graph_objs as go
 from sklearn.preprocessing import StandardScaler
 import plotly.io as pio
@@ -677,6 +682,7 @@ def get_download_link(file_path):
 
 
 
+    
 def drop_features_with_missing_values(data):
     # Calculate the number of missing values in each column
     missing_counts = data.isnull().sum()
@@ -768,20 +774,28 @@ def apply_anomaly_detection_IsolationForest(data):
     # Create a new column in the original DataFrame for the anomaly indicator
     data['Anomaly'] = np.where(anomaly_labels == -1, 1, 0)
     return data
-def apply_anomaly_detection_LocalOutlierFactor(data):
-    # Make a copy of the data
-    data_copy = data.copy()
 
-    from sklearn.neighbors import LocalOutlierFactor
-
-    # Step 3: Apply Local Outlier Factor
-    lof = LocalOutlierFactor(n_neighbors=200, metric='euclidean', contamination=0.04)
-
-    outlier_labels = lof.fit_predict(data_copy)
-
-    # Display the outlier labels for each data point
-    data['Outlier_Label'] = outlier_labels
+def apply_anomaly_detection_LocalOutlierFactor(data, neighbors=200):
+    lof = LocalOutlierFactor(n_neighbors=neighbors, contamination='auto')
+    data['Anomaly'] = lof.fit_predict(data)
+    data['Anomaly'] = np.where(data['Anomaly'] == -1, 1, 0)
     return data
+
+
+# def apply_anomaly_detection_LocalOutlierFactor(data):
+#     # Make a copy of the data
+#     data_copy = data.copy()
+
+#     from sklearn.neighbors import LocalOutlierFactor
+
+#     # Step 3: Apply Local Outlier Factor
+#     lof = LocalOutlierFactor(n_neighbors=200, metric='euclidean', contamination=0.04)
+
+#     outlier_labels = lof.fit_predict(data_copy)
+
+#     # Display the outlier labels for each data point
+#     data['Outlier_Label'] = outlier_labels
+#     return data
 
 
 
@@ -807,6 +821,31 @@ def find_duplicate_vendors(vendors_df, threshold):
     return duplicates, df_duplicates
 
 
+
+def apply_anomaly_detection_OneClassSVM(data):
+    # Copy the original data to avoid modifying the original dataframe
+    data_with_anomalies = data.copy()
+
+    # Perform One-Class SVM anomaly detection
+    clf = OneClassSVM(nu=0.05)
+    y_pred = clf.fit_predict(data)
+    data_with_anomalies['Anomaly'] = np.where(y_pred == -1, 1, 0)
+
+    return data_with_anomalies
+
+
+def apply_anomaly_detection_SGDOCSVM(data):
+    # Copy the original data to avoid modifying the original dataframe
+    data_with_anomalies = data.copy()
+
+    
+    # Perform One-Class SVM anomaly detection using SGD solver
+    clf = SGDOneClassSVM(nu=0.05)
+    clf.fit(data)
+    y_pred = clf.predict(data)
+    data_with_anomalies['Anomaly'] = np.where(y_pred == -1, 1, 0)
+
+    return data_with_anomalies
 
 
 
@@ -848,6 +887,12 @@ def calculate_3th_digit(data):
 
 
 
+def apply_anomaly_detection_GMM(data):
+
+    gmm = GaussianMixture()
+    data['Anomaly'] = gmm.fit_predict(data)
+    data['Anomaly'] = np.where(data['Anomaly'] == 1, 0, 1)
+    return data
 
 
 def z_score_anomaly_detection(data, column, threshold):
@@ -926,7 +971,7 @@ with st.container():
     for logo in logos:
         # st.markdown('<h1 class="subHeading">InfraBot</h1>', unsafe_allow_html=True)
         st.markdown('<div class="logo-item">', unsafe_allow_html=True)
-        st.markdown(f'<center><img src="{logo["image"]}" class="logo-image" /> </center>', unsafe_allow_html=True)
+        st.markdown(f'<center><a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot"><img src="{logo["image"]}" class="logo-image" /></a> </center>', unsafe_allow_html=True)
         st.markdown(f'<center><p>{logo["text"]}</p></center>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -1870,7 +1915,7 @@ def main():
                         "Kernel Density Estimation (KDE)",
                         "K-Means",
                         "Gaussian Mixture Models (GMM)",
-                        "DBSCAN",
+                        # "DBSCAN",
                         "Local Outlier Factor",
                         "Robust Covariance",
                         "One-Class SVM",
@@ -2111,22 +2156,16 @@ def main():
                 # Create a DataFrame for the KDE results
                 kde_data = pd.DataFrame({'Feature': data[selected_feature], 'Density': np.exp(log_densities)})
 
-                # Plot the results using Plotly Express
-                fig = px.line(kde_data, x='Feature', y='Density')
-                fig.update_layout(
-                    title='Kernel Density Estimation Anomaly Detection',
-                    xaxis_title=selected_feature,
-                    yaxis_title='Density'
-                )
+                # Plot the results using Seaborn
+                plt.figure(figsize=(10, 6))
+                sns.lineplot(data=kde_data, x='Feature', y='Density', color='blue')
+                sns.scatterplot(data=kde_data.loc[kde_data.index.isin(outlier_indices)], x='Feature', y='Density', color='red')
 
-                # Save the Plotly figure as an HTML file
-                fig_html_path = "kde_plot.html"
-                fig.write_html(fig_html_path)
+                plt.title('Kernel Density Estimation Anomaly Detection')
+                plt.xlabel(selected_feature)
+                plt.ylabel('Density')
 
-                # Provide a link to open the Plotly chart in a new tab
-                if st.button("Open KDE Plot"):
-                    new_tab = webbrowser.get()
-                    new_tab.open(fig_html_path, new=2)
+                st.pyplot()
 
                 # Counting the number of anomalies
                 num_anomalies = data_with_anomalies_kde['Anomaly'].sum()
@@ -2302,12 +2341,145 @@ def main():
 
 
         elif selected_anomalyAlgorithm == "Gaussian Mixture Models (GMM)":
-            st.header("Try other technique we are working on Gaussian Mixture Models (GMM).......")
+            st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
+                unsafe_allow_html=True)
+            data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+            if data_file is not None:
+                file_extension = data_file.name.split(".")[-1]
+                if file_extension == "csv":
+                    data = pd.read_csv(data_file)
+                elif file_extension in ["xlsx", "XLSX"]:
+                    data = pd.read_excel(data_file)
+                else:
+                    st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+
+
+
+
+                st.write("Dealing with missing values:")
+                threshold = 0.1  # Set the threshold to 10% (0.1)
+                missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                data = data.drop(columns=columns_to_drop)  # Drop the columns
+                st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
+
+
+
+                data = drop_features_with_missing_values(data)
+
+
+
+
+                st.write("Dealing with duplicate values...")
+                num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                st.write(f"Number of duplicate rows: {num_duplicates}")
+                st.write("Dealing done with duplicates.")
+
+                st.write("Performing categorical feature encoding...")
+                categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                data_encoded = data_unique.copy()
+                for feature in categorical_features:
+                    labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                    labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                    data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                data = data_encoded  # Update the original dataset with encoded features
+                st.write("Categorical features encoded successfully.")
+
+                st.write("Performing feature scaling...")
+                numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                if len(numeric_columns) == 0:
+                    st.write("No numeric columns found.")
+                else:
+                    scaler = MinMaxScaler()
+                    data_scaled = data.copy()
+                    data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                    data = data_scaled  # Update the original dataset with scaled features
+                    st.write("Feature scaling performed successfully.")
+
+                st.write("Downloading the dataset...")
+
+                # Save the modified dataset to a file
+                modified_dataset_filename = "modified_dataset.csv"
+                # data.to_csv(modified_dataset_filename, index=False)
+                st.write(data.head())
+                st.write(data.shape)
+
+
+
+
+                # Applying the anomaly detection using Gaussian Mixture Models
+                data_with_anomalies_GMM = apply_anomaly_detection_GMM(data)
+
+                st.subheader("Data with Anomalies (GMM)")
+                st.write(data_with_anomalies_GMM)
+
+                selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                # Create a scatter plot using Seaborn
+                plt.figure(figsize=(10, 6))
+                sns.scatterplot(data=data_with_anomalies_GMM, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+
+                # Get the current legend
+                current_handles, current_labels = plt.gca().get_legend_handles_labels()
+
+                # Customize the legend
+                legend_labels = ['Not Anomaly', 'Anomaly']
+                legend_title = 'Anomaly'
+                custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+
+                # Set colors for the legend
+                for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                    if label == 'Not Anomaly':
+                        handle.set_color('blue')
+                    elif label == 'Anomaly':
+                        handle.set_color('red')
+
+                plt.title('Gaussian Mixture Models Anomaly Detection')
+                plt.xlabel(selected_x_col)
+                plt.ylabel(selected_y_col)
+
+                st.pyplot()
+
+                # Save the Seaborn plot as an image file (optional)
+                # plt.savefig("gmm_plot.png")
+
+                st.write("Download the data with anomaly indicator")
+                st.download_button(
+                    label="Download",
+                    data=data_with_anomalies_GMM.to_csv(index=False),
+                    file_name="GMMAnomaly.csv",
+                    mime="text/csv"
+                )
+
+                # Count the number of anomalies
+                num_anomalies = data_with_anomalies_GMM['Anomaly'].sum()
+
+                # Total number of data points
+                total_data_points = len(data_with_anomalies_GMM)
+
+                # Calculate the percentage of anomalies
+                percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                st.write(f"Number of anomalies: {num_anomalies}")
+                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+
+
+            
 
 
 
         elif selected_anomalyAlgorithm == "DBSCAN":
-            st.header("Try other technique we are working on DBSCAN.......")
+            st.header("Try other technique we are working on Gaussian Mixture Models (GMM).......")
+           
+
 
 
 
@@ -2394,24 +2566,36 @@ def main():
                 st.subheader("Data with Anomalies")
                 st.write(data_with_anomalies_LocalOutlierFactor)
 
-
-
-                ##################################################
                 selected_x_col = st.selectbox("Select X-axis column", data.columns)
                 selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-                # Plot the results using Plotly Express
-                fig = px.scatter(data_with_anomalies_LocalOutlierFactor, x=selected_x_col, y=selected_y_col, color='Anomaly')
-                fig.update_layout(title='LocalOutlierFactor Anomaly Detection')
+                # Create a scatter plot using Seaborn
+                plt.figure(figsize=(10, 6))
+                sns.scatterplot(data=data_with_anomalies_LocalOutlierFactor, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
 
-                # Save the Plotly figure as an HTML file
-                fig_html_path = "LocalOutlierFactor_plot.html"
-                fig.write_html(fig_html_path)
+                # Get the current legend
+                current_handles, current_labels = plt.gca().get_legend_handles_labels()
 
-                # Provide a link to open the Plotly chart in a new tab
-                if st.button("Open LocalOutlierFactor Plot"):
-                    new_tab = webbrowser.get()
-                    new_tab.open(fig_html_path, new=2)
+                # Customize the legend
+                legend_labels = ['Not Anomaly', 'Anomaly']
+                legend_title = 'Anomaly'
+                custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+
+                # Set colors for the legend
+                for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                    if label == 'Not Anomaly':
+                        handle.set_color('blue')
+                    elif label == 'Anomaly':
+                        handle.set_color('red')
+
+                plt.title('LocalOutlierFactor Anomaly Detection')
+                plt.xlabel(selected_x_col)
+                plt.ylabel(selected_y_col)
+
+                st.pyplot()
+
+                # Save the Seaborn plot as an image file (optional)
+                # plt.savefig("local_outlier_factor_plot.png")
 
                 st.write("Download the data with anomaly indicator")
                 st.download_button(
@@ -2422,10 +2606,10 @@ def main():
                 )
 
                 # Count the number of anomalies
-                num_anomalies = data_with_anomalies_IsolationForest['Anomaly'].sum()
+                num_anomalies = data_with_anomalies_LocalOutlierFactor['Anomaly'].sum()
 
                 # Total number of data points
-                total_data_points = len(data_with_anomalies_IsolationForest)
+                total_data_points = len(data_with_anomalies_LocalOutlierFactor)
 
                 # Calculate the percentage of anomalies
                 percentage_anomalies = (num_anomalies / total_data_points) * 100
@@ -2565,10 +2749,259 @@ def main():
 
 
         elif selected_anomalyAlgorithm == "One-Class SVM":
-            st.header("Try other technique we are working on One-Class SVM.......")
+                st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
+                unsafe_allow_html=True)
+                data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+                if data_file is not None:
+                    file_extension = data_file.name.split(".")[-1]
+                    if file_extension == "csv":
+                        data = pd.read_csv(data_file)
+                    elif file_extension in ["xlsx", "XLSX"]:
+                        data = pd.read_excel(data_file)
+                    else:
+                        st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+
+
+
+
+                    st.write("Dealing with missing values:")
+                    threshold = 0.1  # Set the threshold to 10% (0.1)
+                    missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                    columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                    data = data.drop(columns=columns_to_drop)  # Drop the columns
+                    st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
+
+
+
+                    data = drop_features_with_missing_values(data)
+
+
+
+
+                    st.write("Dealing with duplicate values...")
+                    num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                    data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                    st.write(f"Number of duplicate rows: {num_duplicates}")
+                    st.write("Dealing done with duplicates.")
+
+                    st.write("Performing categorical feature encoding...")
+                    categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                    data_encoded = data_unique.copy()
+                    for feature in categorical_features:
+                        labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                        labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                        data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                    data = data_encoded  # Update the original dataset with encoded features
+                    st.write("Categorical features encoded successfully.")
+
+                    st.write("Performing feature scaling...")
+                    numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                    if len(numeric_columns) == 0:
+                        st.write("No numeric columns found.")
+                    else:
+                        scaler = MinMaxScaler()
+                        data_scaled = data.copy()
+                        data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                        data = data_scaled  # Update the original dataset with scaled features
+                        st.write("Feature scaling performed successfully.")
+
+                    st.write("Downloading the dataset...")
+
+                    # Save the modified dataset to a file
+                    modified_dataset_filename = "modified_dataset.csv"
+                    # data.to_csv(modified_dataset_filename, index=False)
+                    st.write(data.head())
+                    st.write(data.shape)
+            
+
+
+                    # Applying the anomaly detection using One-Class SVM
+                    data_with_anomalies_OneClassSVM = apply_anomaly_detection_OneClassSVM(data)
+
+                    st.subheader("Data with Anomalies")
+                    st.write(data_with_anomalies_OneClassSVM)
+
+                    selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                    selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                    # Create a scatter plot using Seaborn
+                    plt.figure(figsize=(10, 6))
+                    sns.scatterplot(data=data_with_anomalies_OneClassSVM, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+
+                    # Get the current legend
+                    current_handles, current_labels = plt.gca().get_legend_handles_labels()
+
+                    # Customize the legend
+                    legend_labels = ['Not Anomaly', 'Anomaly']
+                    legend_title = 'Anomaly'
+                    custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+
+                    # Set colors for the legend
+                    for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                        if label == 'Not Anomaly':
+                            handle.set_color('blue')
+                        elif label == 'Anomaly':
+                            handle.set_color('red')
+
+                    # Show the Seaborn plot
+                    st.pyplot()
+
+                    # Save the Seaborn plot as an image file (optional)
+                    # plt.savefig("one_class_svm_plot.png")
+
+                    st.write("Download the data with anomaly indicator")
+                    st.download_button(
+                        label="Download",
+                        data=data_with_anomalies_OneClassSVM.to_csv(index=False),
+                        file_name="OneClassSVMAnomaly.csv",
+                        mime="text/csv"
+                    )
+
+                    # Count the number of anomalies
+                    num_anomalies = data_with_anomalies_OneClassSVM['Anomaly'].sum()
+
+                    # Total number of data points
+                    total_data_points = len(data_with_anomalies_OneClassSVM)
+
+                    # Calculate the percentage of anomalies
+                    percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                    st.write(f"Number of anomalies: {num_anomalies}")
+                    st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
         elif selected_anomalyAlgorithm == "One-Class SVM (SGD)":
-            st.header("Try other technique we are working on One-Class SVM (SGD).......")
+                st.markdown(
+                "<h2 style='font-size: 24px; color: blue;'>Upload Dataset, Empower Machine Learning Algorithms!</h2>",
+                unsafe_allow_html=True)
+                data_file = st.file_uploader("Upload File", type=["csv", "xlsx", "XLSX"])
+
+                if data_file is not None:
+                    file_extension = data_file.name.split(".")[-1]
+                    if file_extension == "csv":
+                        data = pd.read_csv(data_file)
+                    elif file_extension in ["xlsx", "XLSX"]:
+                        data = pd.read_excel(data_file)
+                    else:
+                        st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
+
+
+
+
+
+                    st.write("Dealing with missing values:")
+                    threshold = 0.1  # Set the threshold to 10% (0.1)
+                    missing_percentages = data.isnull().mean()  # Calculate the percentage of missing values in each column
+                    columns_to_drop = missing_percentages[missing_percentages > threshold].index  # Get the columns exceeding the threshold
+                    data = data.drop(columns=columns_to_drop)  # Drop the columns
+                    st.write(f"Features with more than {threshold*100:.2f}% missing values dropped successfully.")
+
+
+
+                    data = drop_features_with_missing_values(data)
+
+
+
+
+                    st.write("Dealing with duplicate values...")
+                    num_duplicates = data.duplicated().sum()  # Count the number of duplicate rows
+                    data_unique = data.drop_duplicates()  # Drop the duplicate rows
+                    st.write(f"Number of duplicate rows: {num_duplicates}")
+                    st.write("Dealing done with duplicates.")
+
+                    st.write("Performing categorical feature encoding...")
+                    categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
+                    data_encoded = data_unique.copy()
+                    for feature in categorical_features:
+                        labels_ordered = data_unique.groupby([feature]).size().sort_values().index
+                        labels_ordered = {k: i for i, k in enumerate(labels_ordered, 0)}
+                        data_encoded[feature] = data_encoded[feature].map(labels_ordered)
+                    data = data_encoded  # Update the original dataset with encoded features
+                    st.write("Categorical features encoded successfully.")
+
+                    st.write("Performing feature scaling...")
+                    numeric_columns = data.select_dtypes(include=["int", "float"]).columns
+
+                    if len(numeric_columns) == 0:
+                        st.write("No numeric columns found.")
+                    else:
+                        scaler = MinMaxScaler()
+                        data_scaled = data.copy()
+                        data_scaled[numeric_columns] = scaler.fit_transform(data_scaled[numeric_columns])
+                        data = data_scaled  # Update the original dataset with scaled features
+                        st.write("Feature scaling performed successfully.")
+
+                    st.write("Downloading the dataset...")
+
+                    # Save the modified dataset to a file
+                    modified_dataset_filename = "modified_dataset.csv"
+                    # data.to_csv(modified_dataset_filename, index=False)
+                    st.write(data.head())
+                    st.write(data.shape)
+
+
+                        # Applying the anomaly detection using SGD-based One-Class SVM
+                    data_with_anomalies_SGDOCSVM = apply_anomaly_detection_SGDOCSVM(data)
+
+                    st.subheader("Data with Anomalies (SGD-based One-Class SVM)")
+                    st.write(data_with_anomalies_SGDOCSVM)
+
+                    selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                    selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+
+                    # Create a scatter plot using Seaborn
+                    plt.figure(figsize=(10, 6))
+                    sns.scatterplot(data=data_with_anomalies_SGDOCSVM, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+
+                    # Get the current legend
+                    current_handles, current_labels = plt.gca().get_legend_handles_labels()
+
+                    # Customize the legend
+                    legend_labels = ['Not Anomaly', 'Anomaly']
+                    legend_title = 'Anomaly'
+                    custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+
+                    # Set colors for the legend
+                    for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                        if label == 'Not Anomaly':
+                            handle.set_color('blue')
+                        elif label == 'Anomaly':
+                            handle.set_color('red')
+
+                    # Show the Seaborn plot
+                    st.pyplot()
+
+                    # Save the Seaborn plot as an image file (optional)
+                    # plt.savefig("sgd_one_class_svm_plot.png")
+
+                    st.write("Download the data with anomaly indicator")
+                    st.download_button(
+                        label="Download",
+                        data=data_with_anomalies_SGDOCSVM.to_csv(index=False),
+                        file_name="SGD_OneClassSVM_Anomaly.csv",
+                        mime="text/csv"
+                    )
+
+                    # Count the number of anomalies
+                    num_anomalies = data_with_anomalies_SGDOCSVM['Anomaly'].sum()
+
+                    # Total number of data points
+                    total_data_points = len(data_with_anomalies_SGDOCSVM)
+
+                    # Calculate the percentage of anomalies
+                    percentage_anomalies = (num_anomalies / total_data_points) * 100
+
+                    st.write(f"Number of anomalies: {num_anomalies}")
+                    st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+
+
+
+
 
 
 
