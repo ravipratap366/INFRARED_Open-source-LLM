@@ -242,9 +242,7 @@ st.markdown("""
     [id='tabs-bui2-tab-0'] {
         color: #2b86d9;
     }
-    .st-co {
-    background-color: #000;
-    }
+  
     .st-c7 {
     background-color: #f2f2f2;
     }
