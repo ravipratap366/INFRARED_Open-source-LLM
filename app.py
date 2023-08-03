@@ -124,7 +124,7 @@ marquee_html = """
       width: 100%;
       overflow: hidden;
       background-color: #2b86d9;
-      color: #fff;
+      color: #E3F4F4;
       padding: 20px;
       margin-top: 0; /* Adjust the margin-top value here */
       text-align: center;
@@ -133,7 +133,7 @@ marquee_html = """
     .marquee span {
       display: inline-block;
       animation: marquee 20s linear infinite;
-      color: #111;
+      color: #E3F4F4;
       font-size: 1.2rem;
       width: 2000px; /* Slim the span */
       /* height: 50px; Slim the span in height */
@@ -177,14 +177,12 @@ marquee_html = """
 <body>
 
   <div class="marquee">
-    <span style="color: #f2f2f2; background-color: #2b86d9;">
+    <span style="color: #E3F4F4; background-color: #2b86d9;">
 This application provides an advanced method for understanding your dataset and detecting outliers. 
 It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
   <center>
     <img src="https://raw.githubusercontent.com/MANMEET75/INFRARED/main/NewGif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
-    <br>
-    <br>
     <br>
     <br>
   </center>
@@ -203,13 +201,17 @@ def main():
     with st.sidebar:
         st.markdown(
             f"""
+           
             <a href="http://revoquant.com" target="_blank">
               <div style="padding: 0px; border-radius: 0px; text-decoration: none; font-family: cursive; font-size: 16px; white-space: nowrap; text-align: center; position: absolute; bottom: 0; width: 100%;">
               <center>
               <img style="position:relative;top:20px;" src="https://github.com/MANMEET75/INFRARED/raw/main/ilogo.png" width="270">
               </center>
               </div>
+
             </a>
+          
+            
             """,
             unsafe_allow_html=True,
         )
@@ -218,13 +220,65 @@ if __name__ == "__main__":
     main()
 
 
+import streamlit as st
+
+# changing the color of side bar over here
+st.markdown("""
+<style>
+    [data-testid=stSidebar] {
+        background-color: #E3F4F4;
+    }
+    [data-testid=stHeader] {
+        background-color: #2b86d9;
+    }
+            
+    [data-testid=stAppViewContainer] {
+        background-color: #f2f2f2;
+    }
+  
+    [data-testid=stMarkdownContainer] {
+        color: #2b86d9;
+    }
+    [id='tabs-bui2-tab-0'] {
+        color: #2b86d9;
+    }
+    .st-co {
+    background-color: #000;
+    }
+    .st-c7 {
+    background-color: #f2f2f2;
+    }
+    .st-d8{
+        background-color:#f2f2f2
+    }
+            
+
+            
+
+                    
+    
+}
+            
+  
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown(
+    f"""
+    <style>
+    
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # Set the background color using CSS styling
 background_color = """
     <style>
+   
     body {
-        background-color: #ffffff;
+        background-color: #E3F4F4;
         font-family: Roboto, sans-serif;
     }
 
@@ -239,7 +293,7 @@ background_color = """
     }
 
     .stTab {
-        background-color: #007bff;
+        background-color: #E3F4F4;
         color: #ffffff;
         padding: 0.75rem 1.5rem;
         border: none;
@@ -249,12 +303,12 @@ background_color = """
     }
 
     .stTab:hover {
-        background-color: #0056b3;
+        background-color: #E3F4F4;
         cursor: pointer;
     }
 
     .stTab--active {
-        background-color: #0056b3;
+        background-color: #E3F4F4;
         color: #ffffff;
     }
 
@@ -262,7 +316,7 @@ background_color = """
         padding: 1.5rem;
         border: 1px solid #dddddd;
         border-radius: 0 5px 5px 5px;
-        background-color: #ffffff;
+        background-color: #E3F4F4;
     }
     </style>
 """
@@ -277,47 +331,55 @@ tab_styles1 = """
     /* Main Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;
     }
 
     /* About Infrared Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;
     }
 
     /* Benford's Law Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;
     }
 
     /* pdf Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;
     }
 
     /* Z-score Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;s
     }
 
     /* Isolation Forest Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;
     }
 
     /* Auto-encoder Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;
     }
 
     /* Process Mining Tab */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
+        background-color: #E3F4F4;
     }
 
     /* Other Tab Here */
     .button[data-baseweb="tab"]::before {
         color: #2b86d9;
-    }
+        background-color: #E3F4F4;
    
 </style>
 """
@@ -3267,66 +3329,214 @@ if __name__ == "__main__":
     main()
 
 
-# Define the logos and their related text
-logos = [
-    {
-        'image': "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png",
-        'text': "Ask Question related to Infrared click below! 😎"
-    },
-    {
-        'image': "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180",
-        'text': "Ask Question from your PDF click below! 📚"
-    },
-    {
-        'image': "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png",
-        'text': "Ask Question from your Excel click below! 📚"
-    }
-]
 
-# Custom CSS to align images and text
-custom_css = """
-<style>
-    .subHeading{
-        position: relative;
-        bottom:50px;
-    }
-    .logo-container {
+
+
+def UI():
+    # Add custom HTML and CSS using Bootstrap
+    bootstrap_html = """
+
+        <center>
+        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>
+        </center>
+
+        
+
+        <div class="cards-list">
+
+        <a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot">
+        <div class="card 1">
+        <div class="card_image"> <img src="https://cdn.dribbble.com/users/673428/screenshots/6256511/chatbot-kiu.gif" /> </div>
+        <div class="card_title title-dark">
+            <p>InfraBotAI</p>
+        </div>
+        </div>
+        </a>
+
+        <a href="https://github.com/ravipratap366/LLM_chatbot">
+        <div class="card 2">
+        <div class="card_image">
+            <img src="https://static.wixstatic.com/media/245711_fc5563559fc4474d917bb10ac978346c~mv2.gif" />
+            </div>
+        <div class="card_title title-dark">
+            <p>Multiple PDF Query</p>
+        </div>
+        </div>
+        </a>
+        
+
+    
+
+
+    """
+
+    # CSS code for Bootstrap
+    bootstrap_css = """
+    <style>
+        a{
+            text-decoration: none;
+        }
+      
+        .cards-list {
+        z-index: 0;
+        width: 100%;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: row;
-    }
-    .logo-item {
-        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        }
+
+        .card {
+        margin: 30px auto;
+        width: 300px;
+        height: 300px;
+        border-radius: 40px;
+        box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.22);
+        cursor: pointer;
+        transition: 0.4s;
+        }
+
+        .card .card_image {
+        width: inherit;
+        height: inherit;
+        border-radius: 40px;
+        }
+
+        .card .card_image img {
+        width: inherit;
+        height: inherit;
+        border-radius: 40px;
+        object-fit: cover;
+        }
+
+        .card .card_title {
         text-align: center;
-        padding: 10px;
-    }
-    .logo-image {
-        display: flex;
-        width: 150px;
-        margin-bottom: 10px;
-    }
-</style>
-"""
+        border-radius: 0px 0px 40px 40px;
+        font-family: sans-serif;
+        font-weight: bold;
+        font-size: 30px;
+        margin-top: -80px;
+        height: 40px;
+        font-weight:800;
+        position: relative;
+        top: 110px;
+        }
+
+        .card:hover {
+        transform: scale(0.9, 0.9);
+        box-shadow: 5px 5px 30px 15px rgba(0,0,0,0.25), 
+            -5px -5px 30px 15px rgba(0,0,0,0.22);
+        }
+
+        .title-white {
+        color: white;
+        }
+
+        .title-black {
+        color: black;
+        }
+
+        @media all and (max-width: 500px) {
+        .card-list {
+            /* On small screens, we are no longer using row direction but column */
+            flex-direction: column;
+        }
+        }
 
 
+        /*
+        .card {
+        margin: 30px auto;
+        width: 300px;
+        height: 300px;
+        border-radius: 40px;
+        background-image: url('https://i.redd.it/b3esnz5ra34y.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-repeat: no-repeat;
+        box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.22);
+        transition: 0.4s;
+        }
+        */
+        .container{
+            margin:50px;
+        }
+        /* Add your custom CSS here or link to an external stylesheet */
+        /* For Bootstrap classes to work, make sure you have included the Bootstrap CSS and JS files in your index.html file */
+    </style>
+    """
+
+    # JavaScript code to enhance the app
+    bootstrap_js = """
+    <script>
+        // Add your custom JavaScript here or link to an external JS file
+        // For Bootstrap JavaScript components to work, make sure you have included the Bootstrap CSS and JS files in your index.html file
+    </script>
+    """
+
+    # Combine and render the HTML, CSS, and JavaScript
+    st.markdown(bootstrap_css, unsafe_allow_html=True)
+    st.markdown(bootstrap_html, unsafe_allow_html=True)
+    st.components.v1.html(bootstrap_js)
+
+if __name__ == "__main__":
+    UI()
 
 
+# # Define the logos and their related text
+# logos = [
+#     {
+#         'image': "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png",
+#         'text': "Ask Question related to Infrared click below! 😎"
+#     },
+#     {
+#         'image': "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180",
+#         'text': "Ask Question from your PDF click below! 📚"
+#     },
+#     {
+#         'image': "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png",
+#         'text': "Ask Question from your Excel click below! 📚"
+#     }
+# ]
 
-# Display the custom CSS
-st.write(custom_css, unsafe_allow_html=True)
+# # Custom CSS to align images and text
+# custom_css = """
+# <style>
+#     .subHeading{
+#         position: relative;
+#         bottom:50px;
+#     }
+#     .logo-container {
+#         display: flex;
+#         align-items: center;
+#         justify-content: center;
+#     }
+#     .logo-item {
+#         display: flex;
+#         flex-direction: column;
+#         align-items: center;
+#         text-align: center;
+#         padding: 10px;
+#     }
+#     .logo-image {
+#         width: 150px;
+#         margin-bottom: 10px;
+#     }
+# </style>
+# """
 
-# Display the logos and their related text in a single line
-with st.container():
+# # Display the custom CSS
+# st.write(custom_css, unsafe_allow_html=True)
 
-    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    st.markdown('<h3><span style="color: blue;font-weight:800;">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>', unsafe_allow_html=True)
-    for logo in logos:
-        st.markdown('<div class="logo-item">', unsafe_allow_html=True)
-        st.markdown(f'<center><a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot"><img src="{logo["image"]}" class="logo-image" /></a> </center>', unsafe_allow_html=True)
-        st.markdown(f'<center><p>{logo["text"]}</p></center>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-
+# # Display the logos and their related text in a single line
+# with st.container():
+#     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+#     st.markdown('<h3><span style="color: blue;font-weight:800;">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>', unsafe_allow_html=True)
+    
+#     for logo in logos:
+#         st.markdown('<div class="logo-item">', unsafe_allow_html=True)
+#         st.markdown(f'<a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot"><img src="{logo["image"]}" class="logo-image" /></a>', unsafe_allow_html=True)
+#         st.markdown(f'<p>{logo["text"]}</p>', unsafe_allow_html=True)
+#         st.markdown('</div>', unsafe_allow_html=True)
+        
+#     st.markdown('</div>', unsafe_allow_html=True)
