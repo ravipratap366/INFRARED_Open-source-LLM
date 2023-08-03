@@ -243,13 +243,13 @@ st.markdown("""
         color: #2b86d9;
     }
     .st-co {
-        background-color: #000;
+    background-color: #000;
     }
     .st-c7 {
-        background-color: #f2f2f2;
+    background-color: #f2f2f2;
     }
     .st-d8{
-        background-color:#f2f2f2
+    background-color:#f2f2f2
     }
             
 
