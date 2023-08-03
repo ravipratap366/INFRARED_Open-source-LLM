@@ -226,14 +226,14 @@ import streamlit as st
 st.markdown("""
 <style>
     [data-testid=stSidebar] {
-        background-color: #E3F4F4;
+        background-color: #DFD3C3;
     }
     [data-testid=stHeader] {
         background-color: #2b86d9;
     }
             
     [data-testid=stAppViewContainer] {
-        background-color: #f2f2f2;
+        background-color: #F1F6F5;
     }
   
     [data-testid=stMarkdownContainer] {
