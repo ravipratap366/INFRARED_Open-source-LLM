@@ -59,6 +59,8 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
 
+
+
 # Define the HTML code with CSS for the marquee
 
 # Add custom CSS
@@ -97,16 +99,14 @@ st.markdown(
 st.markdown(
     """
     <div id="right">
-        <img src="https://i.ibb.co/VQCBVxg/templogo.jpg" class="P_logo" style="max-width: 70%; height: auto;">
+            <img style="position:relative;" src="https://github.com/MANMEET75/INFRARED/raw/main/ilogo.png" width="350">
         <a href="http://revoquant.com/">
-            <img src="https://revoquant.com/assets/img/logo/logo-dark.png" class="logo" style="max-width: 75px; height: auto;" />
+            <img src="https://revoquant.com/assets/img/logo/logo-dark.png" class="logo" style="width: 100px; height: auto;" />
         </a>
     </div>
     """,
     unsafe_allow_html=True
 )
-
-
 
 
 marquee_html = """
@@ -123,7 +123,7 @@ marquee_html = """
     .marquee {
       width: 100%;
       overflow: hidden;
-      background-color: rgb(80 175 183);
+      background-color: #2b86d9;
       color: #fff;
       padding: 20px;
       margin-top: 0; /* Adjust the margin-top value here */
@@ -134,7 +134,6 @@ marquee_html = """
       display: inline-block;
       animation: marquee 20s linear infinite;
       color: #111;
-      background-color: #111;
       font-size: 1.2rem;
       width: 2000px; /* Slim the span */
       /* height: 50px; Slim the span in height */
@@ -178,7 +177,7 @@ marquee_html = """
 <body>
 
   <div class="marquee">
-    <span style="color: #000; background-color: #fff;">
+    <span style="color: #f2f2f2; background-color: #2b86d9;">
 This application provides an advanced method for understanding your dataset and detecting outliers. 
 It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
@@ -206,7 +205,9 @@ def main():
             f"""
             <a href="http://revoquant.com" target="_blank">
               <div style="padding: 0px; border-radius: 0px; text-decoration: none; font-family: cursive; font-size: 16px; white-space: nowrap; text-align: center; position: absolute; bottom: 0; width: 100%;">
-              <img src="https://github.com/MANMEET75/INFRARED/raw/main/infraredlogo.jpg" width="100">
+              <center>
+              <img style="position:relative;top:20px;" src="https://github.com/MANMEET75/INFRARED/raw/main/ilogo.png" width="270">
+              </center>
               </div>
             </a>
             """,
@@ -217,40 +218,6 @@ if __name__ == "__main__":
     main()
 
 
-
-# def UI():
-#     # Add custom HTML and CSS using Bootstrap
-#     bootstrap_html = """
-#     <div class="container">
-#         <h1 class="display-4">Welcome to My Streamlit App</h1>
-#         <p class="lead">This is a simple Streamlit app integrated with Bootstrap.</p>
-#         <button type="button" class="btn btn-primary">Click Me!</button>
-#     </div>
-#     """
-
-#     # CSS code for Bootstrap
-#     bootstrap_css = """
-#     <style>
-#         /* Add your custom CSS here or link to an external stylesheet */
-#         /* For Bootstrap classes to work, make sure you have included the Bootstrap CSS and JS files in your index.html file */
-#     </style>
-#     """
-
-#     # JavaScript code to enhance the app
-#     bootstrap_js = """
-#     <script>
-#         // Add your custom JavaScript here or link to an external JS file
-#         // For Bootstrap JavaScript components to work, make sure you have included the Bootstrap CSS and JS files in your index.html file
-#     </script>
-#     """
-
-#     # Combine and render the HTML, CSS, and JavaScript
-#     st.markdown(bootstrap_css, unsafe_allow_html=True)
-#     st.markdown(bootstrap_html, unsafe_allow_html=True)
-#     st.components.v1.html(bootstrap_js)
-
-# if __name__ == "__main__":
-#     UI()
 
 
 # Set the background color using CSS styling
@@ -309,48 +276,49 @@ tab_styles1 = """
 <style>
     /* Main Tab */
     .button[data-baseweb="tab"]::before {
-        color: red;
+        color: #2b86d9;
     }
 
     /* About Infrared Tab */
     .button[data-baseweb="tab"]::before {
-        color: green;
+        color: #2b86d9;
     }
 
     /* Benford's Law Tab */
     .button[data-baseweb="tab"]::before {
-        color: blue;
+        color: #2b86d9;
     }
 
     /* pdf Tab */
     .button[data-baseweb="tab"]::before {
-        color: orange;
+        color: #2b86d9;
     }
 
     /* Z-score Tab */
     .button[data-baseweb="tab"]::before {
-        color: purple;
+        color: #2b86d9;
     }
 
     /* Isolation Forest Tab */
     .button[data-baseweb="tab"]::before {
-        color: teal;
+        color: #2b86d9;
     }
 
     /* Auto-encoder Tab */
     .button[data-baseweb="tab"]::before {
-        color: brown;
+        color: #2b86d9;
     }
 
     /* Process Mining Tab */
     .button[data-baseweb="tab"]::before {
-        color: pink;
+        color: #2b86d9;
     }
 
     /* Other Tab Here */
     .button[data-baseweb="tab"]::before {
-        color: gray;
+        color: #2b86d9;
     }
+   
 </style>
 """
 
@@ -3323,21 +3291,27 @@ custom_css = """
         bottom:50px;
     }
     .logo-container {
-        display: inline;
+        display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: row;
     }
     .logo-item {
+        display: flex;
         text-align: center;
         padding: 10px;
     }
     .logo-image {
+        display: flex;
         width: 150px;
         margin-bottom: 10px;
     }
 </style>
 """
+
+
+
+
 
 # Display the custom CSS
 st.write(custom_css, unsafe_allow_html=True)
