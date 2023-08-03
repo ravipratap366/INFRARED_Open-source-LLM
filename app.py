@@ -205,9 +205,8 @@ def main():
         st.markdown(
             f"""
             <a href="http://revoquant.com" target="_blank">
-              <div style="background-color: #ffffff; color: white; padding: 0px; border-radius: 0px; text-decoration: none; font-family: cursive; font-size: 16px; white-space: nowrap; text-align: center; position: absolute; bottom: 0; width: 100%;">
-              <img src="D:\INFRARED\infraredlogo.jpg">
-                # <h2 style="font-weight: bold; text-transform: uppercase;">INFRARED</h2>
+              <div style="padding: 0px; border-radius: 0px; text-decoration: none; font-family: cursive; font-size: 16px; white-space: nowrap; text-align: center; position: absolute; bottom: 0; width: 100%;">
+              <img src="https://github.com/MANMEET75/INFRARED/raw/main/infraredlogo.jpg" width="100">
               </div>
             </a>
             """,
