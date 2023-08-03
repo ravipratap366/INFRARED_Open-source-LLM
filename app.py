@@ -922,60 +922,7 @@ import streamlit as st
 
 
 
-# Define the logos and their related text
-logos = [
-    {
-        'image': "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png",
-        'text': "Ask Question related to Infrared click below! 😎"
-    },
-    {
-        'image': "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180",
-        'text': "Ask Question from your PDF click below! 📚"
-    },
-    {
-        'image': "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png",
-        'text': "Ask Question from your Excel click below! 📚"
-    }
-]
 
-# Custom CSS to align images and text
-custom_css = """
-<style>
-    .subHeading{
-        position: relative;
-        bottom:50px;
-    }
-    .logo-container {
-        display: inline;
-        align-items: center;
-        justify-content: center;
-        flex-direction: row;
-    }
-    .logo-item {
-        text-align: center;
-        padding: 10px;
-    }
-    .logo-image {
-        width: 150px;
-        margin-bottom: 10px;
-    }
-</style>
-"""
-
-# Display the custom CSS
-st.write(custom_css, unsafe_allow_html=True)
-
-# Display the logos and their related text in a single line
-with st.container():
-
-    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-    for logo in logos:
-        # st.markdown('<h1 class="subHeading">InfraBot</h1>', unsafe_allow_html=True)
-        st.markdown('<div class="logo-item">', unsafe_allow_html=True)
-        st.markdown(f'<center><a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot"><img src="{logo["image"]}" class="logo-image" /></a> </center>', unsafe_allow_html=True)
-        st.markdown(f'<center><p>{logo["text"]}</p></center>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -1674,33 +1621,37 @@ def main():
 
 
 
-                # Exclude the first digit (0) from the observed distribution
-                #counts = counts.iloc[1:]
+                    # Create a button to open the chart
+                if st.button("Open Chart"):
+                    # Calculate the distribution of first digits using Benford's Law
+                    df, df1, counts, benford = calculate_first_digit(data[selected_feature])
+                    df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
+                    st.write(df2)
 
-                # Create the observed and expected bar plots
-                observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed')
-                expected_trace = go.Scatter(x=np.arange(0, 10), y=benford * 100, mode='lines', name='Expected')
+                    # Create the observed and expected bar plots
+                    observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed')
+                    expected_trace = go.Scatter(x=np.arange(0, 10), y=benford * 100, mode='lines', name='Expected')
 
-                # Create the layout
-                layout = go.Layout(
-                    title="Benford's Law Analysis of " + selected_feature,
-                    xaxis=dict(title="First Digit"),
-                    yaxis=dict(title="Percentage"),
-                    legend=dict(x=0, y=1)
-                )
+                    # Create the layout
+                    layout = go.Layout(
+                        title="Benford's Law Analysis of " + selected_feature,
+                        xaxis=dict(title="First Digit"),
+                        yaxis=dict(title="Percentage"),
+                        legend=dict(x=0, y=1)
+                    )
 
-                # Create the figure and add the traces
-                fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
+                    # Create the figure and add the traces
+                    fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
 
-                # Display the figure
-                fig.show()
+                    # Display the figure
+                    st.plotly_chart(fig)
 
-                # Option to save the plot
-                save_plot_option = st.checkbox("Save plot")
-                if save_plot_option:
-                    file_name = "Benford_Plot_" + selected_feature.replace(" ", "_") + ".html"
-                    pio.write_html(fig, file_name)
-                    st.write(f"Plot saved as {file_name}")
+                    # Option to save the plot
+                    save_plot_option = st.checkbox("Save plot")
+                    if save_plot_option:
+                        file_name = "Benford_Plot_" + selected_feature.replace(" ", "_") + ".html"
+                        pio.write_html(fig, file_name)
+                        st.write(f"Plot saved as {file_name}")
 
                 # Calculate the deviation from expected percentages
                 deviation = (counts - benford) * 100
@@ -1708,7 +1659,7 @@ def main():
                 # Create the results DataFrame
                 results = pd.DataFrame(
                     {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford * 100,
-                     'Deviation (%)': deviation})
+                    'Deviation (%)': deviation})
 
                 # Option to save the results as CSV
                 save_csv_option = st.checkbox("Save results as CSV")
@@ -1724,8 +1675,7 @@ def main():
                 # Display the results DataFrame
                 st.write("Results:")
                 st.write(df2)
-
-            #  ending of anomaly detection algorithms over here
+            #  starting of anomaly detection algorithms over here
 
         elif selected_anomalyAlgorithm == "Benford law 2nd digit":
             st.markdown(
@@ -1762,34 +1712,38 @@ def main():
 
 
 
-                # Exclude the first digit (0) from the observed distribution
-                #counts = counts.iloc[1:]
+                # Create a button to open the chart
+                if st.button("Open Chart"):
+                    # Calculate the distribution of second digits using Benford's Law
+                    df, df1, counts, benford = calculate_2th_digit(data[selected_feature])
+                    df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
+                    st.write(df2)
 
-                # Create the observed and expected bar plots
-                observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
-                expected_trace = go.Scatter(x=np.arange(0, 100), y=benford * 100, mode='lines', line=dict(color='red'),
-                                            name='Expected')
+                    # Create the observed and expected bar plots
+                    observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
+                    expected_trace = go.Scatter(x=np.arange(0, 100), y=benford * 100, mode='lines', line=dict(color='red'),
+                                                name='Expected')
 
-                # Create the layout
-                layout = go.Layout(
-                    title="Benford's Law Analysis of Second Digit in " + selected_feature,
-                    xaxis=dict(title="Second Digit"),
-                    yaxis=dict(title="Percentage"),
-                    legend=dict(x=0, y=1)
-                )
+                    # Create the layout
+                    layout = go.Layout(
+                        title="Benford's Law Analysis of Second Digit in " + selected_feature,
+                        xaxis=dict(title="Second Digit"),
+                        yaxis=dict(title="Percentage"),
+                        legend=dict(x=0, y=1)
+                    )
 
-                # Create the figure and add the traces
-                fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
+                    # Create the figure and add the traces
+                    fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
 
-                # Display the figure
-                fig.show()
+                    # Display the figure
+                    st.plotly_chart(fig)
 
-                # Option to save the plot
-                save_plot_option = st.checkbox("Save plot")
-                if save_plot_option:
-                    file_name = "Benford_Plot_2nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
-                    pio.write_html(fig, file_name)
-                    st.write(f"Plot saved as {file_name}")
+                    # Option to save the plot
+                    save_plot_option = st.checkbox("Save plot")
+                    if save_plot_option:
+                        file_name = "Benford_Plot_2nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
+                        pio.write_html(fig, file_name)
+                        st.write(f"Plot saved as {file_name}")
 
                 # Calculate the deviation from expected percentages
                 deviation = (counts - benford) * 100
@@ -1797,7 +1751,7 @@ def main():
                 # Create the results DataFrame
                 results = pd.DataFrame(
                     {'Digit': counts.index, 'Observed (%)': counts * 100, 'Expected (%)': benford[:len(counts)] * 100,
-                     'Deviation (%)': deviation})
+                    'Deviation (%)': deviation})
 
                 # Option to save the results as CSV
                 save_csv_option = st.checkbox("Save results as CSV")
@@ -1813,6 +1767,7 @@ def main():
                 # Display the results DataFrame
                 st.write("Results:")
                 st.write(df2)
+            #  starting of anomaly detection algorithms over here
 
 
         elif selected_anomalyAlgorithm == "Benford law 3rd digit":
@@ -1832,10 +1787,12 @@ def main():
 
                 st.write(data.head())
 
+                # Option to select the feature for analysis
+                selected_feature = st.selectbox("Select a feature:", data.columns)
+
 
                 # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
 
-                selected_feature = st.selectbox("Select a feature:", data.columns)
 
                 # Calculate the distribution of second digits using Benford's Law
                 df, df1, counts, benford = calculate_3th_digit(data[selected_feature])
@@ -1849,32 +1806,34 @@ def main():
                 #counts = counts.iloc[1:]
 
 
-                # Create the observed and expected bar plots
-                counts=counts[counts.index > 99]
-                observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
-                expected_trace = go.Scatter(x=np.arange(100, 1000), y=benford * 100, mode='lines', line=dict(color='red'),
-                                            name='Expected')
+            # Create a button to open the chart
+                if st.button("Open Chart"):
+                    # Create the observed and expected bar plots
+                    counts = counts[counts.index > 99]
+                    observed_trace = go.Bar(x=counts.index, y=counts * 100, name='Observed', marker=dict(color='blue'))
+                    expected_trace = go.Scatter(x=np.arange(100, 1000), y=benford * 100, mode='lines', line=dict(color='red'),
+                                                name='Expected')
 
-                # Create the layout
-                layout = go.Layout(
-                    title="Benford's Law Analysis of 3rd Digit in " + selected_feature,
-                    xaxis=dict(title="3rd Digit"),
-                    yaxis=dict(title="Percentage"),
-                    legend=dict(x=0, y=1)
-                )
+                    # Create the layout
+                    layout = go.Layout(
+                        title="Benford's Law Analysis of 3rd Digit in " + selected_feature,
+                        xaxis=dict(title="3rd Digit"),
+                        yaxis=dict(title="Percentage"),
+                        legend=dict(x=0, y=1)
+                    )
 
-                # Create the figure and add the traces
-                fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
+                    # Create the figure and add the traces
+                    fig = go.Figure(data=[observed_trace, expected_trace], layout=layout)
 
-                # Display the figure
-                fig.show()
+                    # Display the figure
+                    st.plotly_chart(fig)
 
-                # Option to save the plot
-                save_plot_option = st.checkbox("Save plot")
-                if save_plot_option:
-                    file_name = "Benford_Plot_3nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
-                    pio.write_html(fig, file_name)
-                    st.write(f"Plot saved as {file_name}")
+                    # Option to save the plot
+                    save_plot_option = st.checkbox("Save plot")
+                    if save_plot_option:
+                        file_name = "Benford_Plot_3nd_Digit_" + selected_feature.replace(" ", "_") + ".html"
+                        pio.write_html(fig, file_name)
+                        st.write(f"Plot saved as {file_name}")
 
                 # Calculate the deviation from expected percentages
                 deviation = (counts - benford) * 100
@@ -1916,7 +1875,7 @@ def main():
                         "Kernel Density Estimation (KDE)",
                         "K-Means",
                         # "Gaussian Mixture Models (GMM)",
-                        "DBSCAN",
+                        # "DBSCAN",
                         "Local Outlier Factor",
                         "Robust Covariance",
                         "One-Class SVM",
@@ -1975,6 +1934,9 @@ def main():
                 st.write("Dealing done with duplicates.")
 
                 st.write("Performing categorical feature encoding...")
+                # creating the copy of the original dataset over here
+                copy_data=data.copy()
+                # st.write(copy_data)
                 categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                 data_encoded = data_unique.copy()
                 for feature in categorical_features:
@@ -2009,10 +1971,14 @@ def main():
 
 
                 # Applying the anomaly detection
+                
                 data_with_anomalies_IsolationForest = apply_anomaly_detection_IsolationForest(data)
-
+                AnomalyFeature=data_with_anomalies_IsolationForest[["Anomaly"]]
+                # st.write(AnomalyFeature)
+                
                 st.subheader("Data with Anomalies")
-                st.write(data_with_anomalies_IsolationForest)
+                final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
+                st.write(final_data)
                 ##################################################
                 selected_x_col = st.selectbox("Select X-axis column", data.columns)
                 selected_y_col = st.selectbox("Select Y-axis column", data.columns)
@@ -2045,7 +2011,7 @@ def main():
                 st.write("Download the data with anomaly indicator")
                 st.download_button(
                     label="Download",
-                    data=data_with_anomalies_IsolationForest.to_csv(index=False),
+                    data=final_data.to_csv(index=False),
                     file_name="IsolationForestAnomaly.csv",
                     mime="text/csv"
                 )
@@ -2105,6 +2071,7 @@ def main():
                 st.write("Dealing done with duplicates.")
 
                 st.write("Performing categorical feature encoding...")
+                copy_data=data.copy()
                 categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                 data_encoded = data_unique.copy()
                 for feature in categorical_features:
@@ -2135,6 +2102,8 @@ def main():
                 st.write(data.shape)
 
 
+
+
                 # Perform anomaly detection using Kernel Density Estimation
                 kde = KernelDensity()
                 kde.fit(data)
@@ -2150,7 +2119,9 @@ def main():
                 data_with_anomalies_kde.iloc[outlier_indices, -1] = 1
 
                 st.subheader("Data with Anomalies (KDE)")
-                st.write(data_with_anomalies_kde)
+                AnomalyFeature=data_with_anomalies_kde[["Anomaly"]]
+                final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
+                st.write(final_data)
 
                 selected_feature = st.selectbox("Select a feature", data.columns)
 
@@ -2184,7 +2155,7 @@ def main():
                 st.write("Download the data with anomaly indicator (KDE)")
                 st.download_button(
                     label="Download",
-                    data=data_with_anomalies_kde.to_csv(index=False),
+                    data=final_data.to_csv(index=False),
                     file_name="KDEAnomaly.csv",
                     mime="text/csv"
                 )
@@ -2239,6 +2210,7 @@ def main():
                 st.write("Dealing done with duplicates.")
 
                 st.write("Performing categorical feature encoding...")
+                copy_data=data.copy()
                 categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                 data_encoded = data_unique.copy()
                 for feature in categorical_features:
@@ -2289,7 +2261,10 @@ def main():
                 data_with_clusters['Anomaly'] = np.where(data_with_clusters['Cluster'] == 1, 1, 0)
 
                 st.subheader("Data with Anomaly Indicator")
-                st.write(data_with_clusters)
+
+                AnomalyFeature=data_with_clusters[["Anomaly"]]
+                final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
+                st.write(final_data)
 
                 selected_x_col = st.selectbox("Select X-axis column", data.columns)
                 selected_y_col = st.selectbox("Select Y-axis column", data.columns)
@@ -2331,7 +2306,7 @@ def main():
                 st.write("Download the data with anomaly indicator")
                 st.download_button(
                     label="Download",
-                    data=data_with_clusters.to_csv(index=False),
+                    data=final_data.to_csv(index=False),
                     file_name="KMeansAnomaly.csv",
                     mime="text/csv"
                 )
@@ -2454,7 +2429,7 @@ def main():
                 st.write("Download the data with anomaly indicator")
                 st.download_button(
                     label="Download",
-                    data=data_with_anomalies_GMM.to_csv(index=False),
+                    data=final_data.to_csv(index=False),
                     file_name="GMMAnomaly.csv",
                     mime="text/csv"
                 )
@@ -2527,6 +2502,7 @@ def main():
                 st.write("Dealing done with duplicates.")
 
                 st.write("Performing categorical feature encoding...")
+                copy_data=data.copy()
                 categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                 data_encoded = data_unique.copy()
                 for feature in categorical_features:
@@ -2563,9 +2539,12 @@ def main():
 
                 # Applying the anomaly detection
                 data_with_anomalies_LocalOutlierFactor = apply_anomaly_detection_LocalOutlierFactor(data)
-
+                AnomalyFeature=data_with_anomalies_LocalOutlierFactor[["Anomaly"]]
+                final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
                 st.subheader("Data with Anomalies")
-                st.write(data_with_anomalies_LocalOutlierFactor)
+
+
+                st.write(final_data)
 
                 selected_x_col = st.selectbox("Select X-axis column", data.columns)
                 selected_y_col = st.selectbox("Select Y-axis column", data.columns)
@@ -2601,7 +2580,7 @@ def main():
                 st.write("Download the data with anomaly indicator")
                 st.download_button(
                     label="Download",
-                    data=data_with_anomalies_LocalOutlierFactor.to_csv(index=False),
+                    data=final_data.to_csv(index=False),
                     file_name="LocalOutlierFactor.csv",
                     mime="text/csv"
                 )
@@ -2659,6 +2638,7 @@ def main():
                     st.write("Dealing done with duplicates.")
 
                     st.write("Performing categorical feature encoding...")
+                    copy_data=data.copy()
                     categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                     data_encoded = data_unique.copy()
                     for feature in categorical_features:
@@ -2696,9 +2676,11 @@ def main():
 
                     # Applying the anomaly detection
                     data_with_anomalies_RobustCovariance = apply_anomaly_detection_Mahalanobis(data)
+                    AnomalyFeature=data_with_anomalies_RobustCovariance[["Anomaly"]]
+                    final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
 
                     st.subheader("Data with Anomalies")
-                    st.write(data_with_anomalies_RobustCovariance)
+                    st.write(final_data)
                     ##################################################
                     selected_x_col = st.selectbox("Select X-axis column", data.columns)
                     selected_y_col = st.selectbox("Select Y-axis column", data.columns)
@@ -2731,7 +2713,7 @@ def main():
                     st.write("Download the data with anomaly indicator")
                     st.download_button(
                         label="Download",
-                        data=data_with_anomalies_RobustCovariance.to_csv(index=False),
+                        data=final_data.to_csv(index=False),
                         file_name="RobustCovarianceAnomaly.csv",
                         mime="text/csv"
                     )
@@ -2790,6 +2772,7 @@ def main():
                     st.write("Dealing done with duplicates.")
 
                     st.write("Performing categorical feature encoding...")
+                    copy_data=data.copy()
                     categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                     data_encoded = data_unique.copy()
                     for feature in categorical_features:
@@ -2823,9 +2806,11 @@ def main():
 
                     # Applying the anomaly detection using One-Class SVM
                     data_with_anomalies_OneClassSVM = apply_anomaly_detection_OneClassSVM(data)
+                    AnomalyFeature=data_with_anomalies_OneClassSVM[["Anomaly"]]
+                    final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
 
                     st.subheader("Data with Anomalies")
-                    st.write(data_with_anomalies_OneClassSVM)
+                    st.write(final_data)
 
                     selected_x_col = st.selectbox("Select X-axis column", data.columns)
                     selected_y_col = st.selectbox("Select Y-axis column", data.columns)
@@ -2858,7 +2843,7 @@ def main():
                     st.write("Download the data with anomaly indicator")
                     st.download_button(
                         label="Download",
-                        data=data_with_anomalies_OneClassSVM.to_csv(index=False),
+                        data=final_data.to_csv(index=False),
                         file_name="OneClassSVMAnomaly.csv",
                         mime="text/csv"
                     )
@@ -2916,6 +2901,7 @@ def main():
                     st.write("Dealing done with duplicates.")
 
                     st.write("Performing categorical feature encoding...")
+                    copy_data=data.copy()
                     categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                     data_encoded = data_unique.copy()
                     for feature in categorical_features:
@@ -2946,59 +2932,61 @@ def main():
                     st.write(data.shape)
 
 
-                        # Applying the anomaly detection using SGD-based One-Class SVM
-                data_with_anomalies_SGDOCSVM = apply_anomaly_detection_SGDOCSVM(data)
+                    # Applying the anomaly detection using SGD-based One-Class SVM
+                    data_with_anomalies_SGDOCSVM = apply_anomaly_detection_SGDOCSVM(data)
+                    AnomalyFeature=data_with_anomalies_SGDOCSVM[["Anomaly"]]
+                    final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
 
-                st.subheader("Data with Anomalies (SGD-based One-Class SVM)")
-                st.write(data_with_anomalies_SGDOCSVM)
+                    st.subheader("Data with Anomalies (SGD-based One-Class SVM)")
+                    st.write(final_data)
 
-                selected_x_col = st.selectbox("Select X-axis column", data.columns)
-                selected_y_col = st.selectbox("Select Y-axis column", data.columns)
+                    selected_x_col = st.selectbox("Select X-axis column", data.columns)
+                    selected_y_col = st.selectbox("Select Y-axis column", data.columns)
 
-                # Create a scatter plot using Seaborn
-                plt.figure(figsize=(10, 6))
-                sns.scatterplot(data=data_with_anomalies_SGDOCSVM, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
+                    # Create a scatter plot using Seaborn
+                    plt.figure(figsize=(10, 6))
+                    sns.scatterplot(data=data_with_anomalies_SGDOCSVM, x=selected_x_col, y=selected_y_col, hue='Anomaly', palette={0: 'blue', 1: 'red'})
 
-                # Get the current legend
-                current_handles, current_labels = plt.gca().get_legend_handles_labels()
+                    # Get the current legend
+                    current_handles, current_labels = plt.gca().get_legend_handles_labels()
 
-                # Customize the legend
-                legend_labels = ['Not Anomaly', 'Anomaly']
-                legend_title = 'Anomaly'
-                custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
+                    # Customize the legend
+                    legend_labels = ['Not Anomaly', 'Anomaly']
+                    legend_title = 'Anomaly'
+                    custom_legend = plt.legend(current_handles, legend_labels, title=legend_title, loc='upper right')
 
-                # Set colors for the legend
-                for handle, label in zip(custom_legend.legendHandles, legend_labels):
-                    if label == 'Not Anomaly':
-                        handle.set_color('blue')
-                    elif label == 'Anomaly':
-                        handle.set_color('red')
+                    # Set colors for the legend
+                    for handle, label in zip(custom_legend.legendHandles, legend_labels):
+                        if label == 'Not Anomaly':
+                            handle.set_color('blue')
+                        elif label == 'Anomaly':
+                            handle.set_color('red')
 
-                # Show the Seaborn plot
-                st.pyplot()
+                    # Show the Seaborn plot
+                    st.pyplot()
 
-                # Save the Seaborn plot as an image file (optional)
-                # plt.savefig("sgd_one_class_svm_plot.png")
+                    # Save the Seaborn plot as an image file (optional)
+                    # plt.savefig("sgd_one_class_svm_plot.png")
 
-                st.write("Download the data with anomaly indicator")
-                st.download_button(
-                    label="Download",
-                    data=data_with_anomalies_SGDOCSVM.to_csv(index=False),
-                    file_name="SGD_OneClassSVM_Anomaly.csv",
-                    mime="text/csv"
-                )
+                    st.write("Download the data with anomaly indicator")
+                    st.download_button(
+                        label="Download",
+                        data=final_data.to_csv(index=False),
+                        file_name="SGD_OneClassSVM_Anomaly.csv",
+                        mime="text/csv"
+                    )
 
-                # Count the number of anomalies
-                num_anomalies = data_with_anomalies_SGDOCSVM['Anomaly'].sum()
+                    # Count the number of anomalies
+                    num_anomalies = data_with_anomalies_SGDOCSVM['Anomaly'].sum()
 
-                # Total number of data points
-                total_data_points = len(data_with_anomalies_SGDOCSVM)
+                    # Total number of data points
+                    total_data_points = len(data_with_anomalies_SGDOCSVM)
 
-                # Calculate the percentage of anomalies
-                percentage_anomalies = (num_anomalies / total_data_points) * 100
+                    # Calculate the percentage of anomalies
+                    percentage_anomalies = (num_anomalies / total_data_points) * 100
 
-                st.write(f"Number of anomalies: {num_anomalies}")
-                st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
+                    st.write(f"Number of anomalies: {num_anomalies}")
+                    st.write(f"Percentage of anomalies: {percentage_anomalies:.2f}%")
 
 
 
@@ -3078,6 +3066,7 @@ def main():
                 st.write("Dealing done with duplicates.")
 
                 st.write("Performing categorical feature encoding...")
+                copy_data=data.copy()
                 categorical_features = [feature for feature in data_unique.columns if data_unique[feature].dtype == 'object']
                 data_encoded = data_unique.copy()
                 for feature in categorical_features:
@@ -3112,9 +3101,11 @@ def main():
                 # Assuming 'apply_anomaly_detection_autoencoder' function is defined elsewhere
                 # and returns a DataFrame with an 'Anomaly' column (0 for non-anomalies, 1 for anomalies)
                 data_with_anomalies_Autoencoder = apply_anomaly_detection_autoencoder(data)
+                AnomalyFeature=data_with_anomalies_Autoencoder[["Anomaly"]]
+                final_data=pd.concat([copy_data,AnomalyFeature],axis=1)
 
                 st.subheader("Data with Anomalies")
-                st.write(data_with_anomalies_Autoencoder)
+                st.write(final_data)
 
                 selected_x_col = st.selectbox("Select X-axis column", data.columns)
                 selected_y_col = st.selectbox("Select Y-axis column", data.columns)
@@ -3147,7 +3138,7 @@ def main():
                 st.download_button(
                     label="Download",
                     data=data_with_anomalies_Autoencoder.to_csv(index=False),
-                    file_name="data_with_anomalies_Autoencoder.csv",
+                    file_name="final_data.csv",
                     mime="text/csv"
                 )
 
@@ -3268,5 +3259,58 @@ if __name__ == "__main__":
 
 
 
+# Define the logos and their related text
+logos = [
+    {
+        'image': "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png",
+        'text': "Ask Question related to Infrared click below! 😎"
+    },
+    {
+        'image': "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180",
+        'text': "Ask Question from your PDF click below! 📚"
+    },
+    {
+        'image': "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png",
+        'text': "Ask Question from your Excel click below! 📚"
+    }
+]
 
+# Custom CSS to align images and text
+custom_css = """
+<style>
+    .subHeading{
+        position: relative;
+        bottom:50px;
+    }
+    .logo-container {
+        display: inline;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+    }
+    .logo-item {
+        text-align: center;
+        padding: 10px;
+    }
+    .logo-image {
+        width: 150px;
+        margin-bottom: 10px;
+    }
+</style>
+"""
+
+# Display the custom CSS
+st.write(custom_css, unsafe_allow_html=True)
+
+# Display the logos and their related text in a single line
+with st.container():
+
+    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+    for logo in logos:
+        # st.markdown('<h1 class="subHeading">InfraBot</h1>', unsafe_allow_html=True)
+        st.markdown('<div class="logo-item">', unsafe_allow_html=True)
+        st.markdown(f'<center><a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot"><img src="{logo["image"]}" class="logo-image" /></a> </center>', unsafe_allow_html=True)
+        st.markdown(f'<center><p>{logo["text"]}</p></center>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
