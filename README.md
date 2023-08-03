@@ -7,3 +7,4 @@ Unleash the power of machine learning and advanced statistics to find outliers a
 
 <img src="NewGif.gif">
 <img src="ilogo.png" width="200">
+Enjoy Coding!
