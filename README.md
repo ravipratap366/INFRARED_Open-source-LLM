@@ -6,4 +6,4 @@ Unleash the power of machine learning and advanced statistics to find outliers a
 <br>
 
 <img src="NewGif.gif">
-<img src="infraredlogo.jpg" width="200">
+<img src="ilogo.png" width="200">
