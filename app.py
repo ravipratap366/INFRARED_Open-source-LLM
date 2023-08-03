@@ -188,7 +188,6 @@ It comes with pre-built statistical and machine learning models specifically des
     <br>
     <br>
     <br>
-    <h3><span style="color: blue;font-weight:800;">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>
   </center>
 </body>
 </html>
@@ -207,7 +206,8 @@ def main():
             f"""
             <a href="http://revoquant.com" target="_blank">
               <div style="background-color: #ffffff; color: white; padding: 0px; border-radius: 0px; text-decoration: none; font-family: cursive; font-size: 16px; white-space: nowrap; text-align: center; position: absolute; bottom: 0; width: 100%;">
-                <h2 style="font-weight: bold; text-transform: uppercase;">INFRARED</h2>
+              <img src="D:\INFRARED\infraredlogo.jpg">
+                # <h2 style="font-weight: bold; text-transform: uppercase;">INFRARED</h2>
               </div>
             </a>
             """,
@@ -217,6 +217,41 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+
+# def UI():
+#     # Add custom HTML and CSS using Bootstrap
+#     bootstrap_html = """
+#     <div class="container">
+#         <h1 class="display-4">Welcome to My Streamlit App</h1>
+#         <p class="lead">This is a simple Streamlit app integrated with Bootstrap.</p>
+#         <button type="button" class="btn btn-primary">Click Me!</button>
+#     </div>
+#     """
+
+#     # CSS code for Bootstrap
+#     bootstrap_css = """
+#     <style>
+#         /* Add your custom CSS here or link to an external stylesheet */
+#         /* For Bootstrap classes to work, make sure you have included the Bootstrap CSS and JS files in your index.html file */
+#     </style>
+#     """
+
+#     # JavaScript code to enhance the app
+#     bootstrap_js = """
+#     <script>
+#         // Add your custom JavaScript here or link to an external JS file
+#         // For Bootstrap JavaScript components to work, make sure you have included the Bootstrap CSS and JS files in your index.html file
+#     </script>
+#     """
+
+#     # Combine and render the HTML, CSS, and JavaScript
+#     st.markdown(bootstrap_css, unsafe_allow_html=True)
+#     st.markdown(bootstrap_html, unsafe_allow_html=True)
+#     st.components.v1.html(bootstrap_js)
+
+# if __name__ == "__main__":
+#     UI()
 
 
 # Set the background color using CSS styling
@@ -326,21 +361,57 @@ tab_styles1 = """
 st.markdown(tab_styles1, unsafe_allow_html=True)
 
 # Add your Streamlit code here
-tabs = ["Main", "About Infrared","Convert excel to csv", "Process Mining", "Benford's Law", "pdf", "Z-score", "Isolation Forest", "Auto-encoder" ,"other tab here"]
-tab1, tab0,tab9, tab8, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
+# tabs = ["HOME", "ABOUT","ExceltoCSV", "ProcessMining", "Benford's Law", "pdf", "Z-score", "Isolation Forest", "Auto-encoder" ,"other tab here"]
+tabs = ["HOME", "ABOUT","EXCEL TO CSV", "PROCESS MINING", "STATISTICAL METHODS", "MACHINE LEARNING METHODS", "DEEP LEARNING METHODS", "TIME SERIES METHODS"]
+tab0, tab1,tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
 
-
-with tab1:
-    pass
 
 with tab0:
+    pass
+
+with tab1:
     st.header("Infrared")
     st.write("A first of its kind concept that lets you discover counterintuitive patterns and insights often invisible due to limitations of the human mind, biases, and voluminous data.")
     st.write("Unleash the power of machine learning and advanced statistics to find outliers and exceptions in your data. This application provides an instant output that can be reviewed and acted upon with agility to stop revenue leakages, improve efficiency, and detect/prevent fraud.")
 
     st.image("http://revoquant.com/assets/img/infra.jpg", use_column_width=True)
 
+
 with tab2:
+        
+        def convert_excel_to_csv(uploaded_file, page_number):
+            if page_number == 1:
+                excel_data = pd.read_excel(uploaded_file)
+            else:
+                excel_data = pd.read_excel(uploaded_file, sheet_name=page_number - 1)
+            csv_file = BytesIO()
+            excel_data.to_csv(csv_file, index=False)
+            csv_file.seek(0)
+            return csv_file.getvalue()
+
+
+        st.header("Excel to CSV Converter")
+        uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx", "xls"])
+        selected_page = st.number_input("Enter the page number", min_value=1, value=1)
+
+        if uploaded_file is not None:
+            csv_data = convert_excel_to_csv(uploaded_file, selected_page)
+            st.download_button(
+                "Download CSV file",
+                csv_data,
+                file_name="output.csv",
+                mime="text/csv"
+            )
+
+            with st.expander("Excel Data"):
+                excel_data = pd.read_excel(uploaded_file, sheet_name=selected_page - 1)
+                st.dataframe(excel_data)
+
+            with st.expander("Converted CSV Data"):
+                csv_data = pd.read_csv(BytesIO(csv_data))
+                st.dataframe(csv_data)
+
+
         st.header("Benford's Law: The Mystery Behind the Numbers")
         st.image("https://image2.slideserve.com/4817711/what-is-benford-s-law-l.jpg", use_column_width=True)
         st.write("Have you ever wondered why certain numbers appear more frequently as the first digit in a dataset? "
@@ -387,44 +458,7 @@ with tab2:
 
 # Move this code block below the page
 
-with tab9:
-
-
-
-    def convert_excel_to_csv(uploaded_file, page_number):
-        if page_number == 1:
-            excel_data = pd.read_excel(uploaded_file)
-        else:
-            excel_data = pd.read_excel(uploaded_file, sheet_name=page_number - 1)
-        csv_file = BytesIO()
-        excel_data.to_csv(csv_file, index=False)
-        csv_file.seek(0)
-        return csv_file.getvalue()
-
-
-    st.header("Excel to CSV Converter")
-    uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx", "xls"])
-    selected_page = st.number_input("Enter the page number", min_value=1, value=1)
-
-    if uploaded_file is not None:
-        csv_data = convert_excel_to_csv(uploaded_file, selected_page)
-        st.download_button(
-            "Download CSV file",
-            csv_data,
-            file_name="output.csv",
-            mime="text/csv"
-        )
-
-        with st.expander("Excel Data"):
-            excel_data = pd.read_excel(uploaded_file, sheet_name=selected_page - 1)
-            st.dataframe(excel_data)
-
-        with st.expander("Converted CSV Data"):
-            csv_data = pd.read_csv(BytesIO(csv_data))
-            st.dataframe(csv_data)
-
-# Define content for Tab 3
-with tab3:
+with tab4:
     st.write(
         "In probability theory and statistics, a Probability Distribution Function (PDF) is a function that describes the likelihood of a random variable taking on a particular value or falling within a specific range of values. It provides valuable information about the probabilities associated with different outcomes of a random variable.")
 
@@ -471,7 +505,6 @@ with tab3:
     st.write(
         "Remember, probabilities are all around us, and understanding them can empower us to make better decisions and gain valuable insights from data!")
 
-with tab4:
     st.write(
         "In statistics, a Z-score, also known as a standard score, is a measurement that indicates how many standard deviations an element or observation is from the mean of a distribution. It provides a standardized way to compare and interpret data points in different distributions.")
 
@@ -525,6 +558,8 @@ with tab4:
         "We hope this blog post has provided you with a clear understanding of Z-scores and their applications. Remember to explore further and practice applying Z-scores to real-world datasets to enhance your statistical analysis skills.")
     st.write("Happy analyzing!")
 
+
+    
 with tab5:
     st.write(
         "Isolation Forest is an unsupervised machine learning algorithm used for anomaly detection. It is particularly effective in detecting outliers or anomalies in large datasets. The algorithm works by isolating anomalous observations by recursively partitioning the data into subsets. The main idea behind the Isolation Forest is that anomalies are more likely to be isolated into small partitions compared to normal data points.")
@@ -623,7 +658,7 @@ with tab6:
     st.write("Happy autoencoding!")
 
 
-with tab8:
+with tab3:
 
 
     # Get the Power BI iframe URL
@@ -645,13 +680,6 @@ with tab8:
     #if __name__ == "__main__":
     #    embed_pdf(pdf_file)
 
-with tab7:
-
-    video_url = "https://revoquant.com/assets/img/bnr-vid.mp4"
-    st.title("Video Demo")
-    st.video(video_url, format="video/mp4")
-
-    #st.image("https://revoquant.com/assets/img/bnr-vid.mp4", use_column_width=True,)
 
 
 # Render the marquee in Streamlit
@@ -1612,12 +1640,17 @@ def main():
 
 
                 # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
-                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+
+                numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+                newdf = data.select_dtypes(include=numerics)
+
+                selected_feature = st.selectbox("Select a feature:", newdf.columns)
 
                 # Calculate the distribution of first digits using Benford's Law
                 df, df1, counts, benford  = calculate_first_digit(data[selected_feature])
                 df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
-                st.write(df2)
+                # st.write(df2)
 
 
 
@@ -1701,12 +1734,16 @@ def main():
 
                 # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
 
-                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+                newdf = data.select_dtypes(include=numerics)
+
+                selected_feature = st.selectbox("Select a feature:", newdf.columns)
 
                 # Calculate the distribution of second digits using Benford's Law
                 df, df1, counts, benford = calculate_2th_digit(data[selected_feature])
                 df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
-                st.write(df2)
+                # st.write(df2)
 
                 #counts, benford = calculate_2th_digit(data[selected_feature])
 
@@ -1788,7 +1825,10 @@ def main():
                 st.write(data.head())
 
                 # Option to select the feature for analysis
-                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+                newdf = data.select_dtypes(include=numerics)
+                selected_feature = st.selectbox("Select a feature:", newdf.columns)
 
 
                 # Assuming you have a DataFrame named 'data' with a column of numeric data named 'selected_feature'
@@ -1798,7 +1838,7 @@ def main():
                 df, df1, counts, benford = calculate_3th_digit(data[selected_feature])
 
                 df2 = pd.merge(df, df1, left_on=df.iloc[:, 0],right_on='index',how='right')
-                st.write(df2)
+                # st.write(df2)
 
 
 
@@ -3253,10 +3293,11 @@ def main():
 
 
 
+
+
+
 if __name__ == "__main__":
     main()
-
-
 
 
 # Define the logos and their related text
@@ -3306,11 +3347,13 @@ st.write(custom_css, unsafe_allow_html=True)
 with st.container():
 
     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+    st.markdown('<h3><span style="color: blue;font-weight:800;">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>', unsafe_allow_html=True)
     for logo in logos:
-        # st.markdown('<h1 class="subHeading">InfraBot</h1>', unsafe_allow_html=True)
         st.markdown('<div class="logo-item">', unsafe_allow_html=True)
         st.markdown(f'<center><a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot"><img src="{logo["image"]}" class="logo-image" /></a> </center>', unsafe_allow_html=True)
         st.markdown(f'<center><p>{logo["text"]}</p></center>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
+
+
 
