@@ -226,7 +226,7 @@ import streamlit as st
 st.markdown("""
 <style>
     [data-testid=stSidebar] {
-        background-color: #DFD3C3;
+        background-color: #9fc6e8;
     }
     [data-testid=stHeader] {
         background-color: #2b86d9;
