@@ -177,9 +177,7 @@ marquee_html = """
 <body>
 
   <div class="marquee">
-    <span style="color: #E3F4F4; background-color: #2b86d9;">
-This application provides an advanced method for understanding your dataset and detecting outliers. 
-It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
+    <span style="color: #E3F4F4; background-color: #2b86d9;">It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
   <center>
   <br>
