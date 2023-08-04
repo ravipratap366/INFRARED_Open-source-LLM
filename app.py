@@ -3529,9 +3529,7 @@ def UI():
         .container{
             margin:50px;
         }
-        p{
-        color:#2b86d9;
-        }
+       
         /* Add your custom CSS here or link to an external stylesheet */
         /* For Bootstrap classes to work, make sure you have included the Bootstrap CSS and JS files in your index.html file */
     </style>
