@@ -183,7 +183,7 @@ It comes with pre-built statistical and machine learning models specifically des
   </div>
   <center>
   <br>
-    <img src="https://github.com/MANMEET75/INFRARED/raw/main/lifecycle.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
+    <img src="https://github.com/MANMEET75/INFRARED/raw/main/lifecycle1.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
     <br>
     <br>
   </center>
@@ -232,6 +232,7 @@ st.markdown("""
     [data-testid=stHeader] {
         background-color: #2b86d9;
     }
+
             
     [data-testid=stAppViewContainer] {
         background-color: #F1F6F5;
@@ -266,6 +267,24 @@ st.markdown("""
     .eqr7zpz0{
     color:#2b86d9;
     }  
+    .css-16idsys{
+    color:#2b86d9;
+    letter-spacing:1px;
+    }  
+         
+    .css-5rimss{
+    color:#000;
+    letter-spacing:1px;
+    }  
+         
+    #tabs-bui2-tab-0{
+    color:#000;
+    }  
+    .css-zt5igj{
+    font-size:30px;
+    text-align:center;
+    }  
+         
                
 
             
@@ -3422,9 +3441,7 @@ def UI():
     # CSS code for Bootstrap
     bootstrap_css = """
     <style>
-        p{
-        color:#000;
-        }
+      
         a{
             text-decoration: none;
         }
