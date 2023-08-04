@@ -182,7 +182,7 @@ This application provides an advanced method for understanding your dataset and 
 It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
   <center>
-    <img src="https://raw.githubusercontent.com/MANMEET75/INFRARED/main/NewGif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
+    <img src="https://github.com/MANMEET75/INFRARED/raw/main/silvergif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
     <br>
     <br>
   </center>
