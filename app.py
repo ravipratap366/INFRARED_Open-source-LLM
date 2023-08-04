@@ -172,6 +172,23 @@ marquee_html = """
       0% { transform: translateX(100%); }
       100% { transform: translateX(-100%); }
     }
+    #gif_card{
+    width: 100%;
+    border-radius:0%;
+    }
+
+    .cardGif .card_image_gif {
+    width: inherit;
+    height: inherit;
+    border-radius: 0%;
+    }
+
+    .cardGif .card_image_gif img {
+    width: inherit;
+    height: inherit;
+    border-radius: 0%;
+    object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -181,9 +198,14 @@ marquee_html = """
   </div>
   <center>
   <br>
-    <img src="https://github.com/MANMEET75/INFRARED/raw/main/lifecycle1.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
-    <br>
-    <br>
+    <a href="https://github.com/ravipratap366/LLM_chatbot">
+        <div class="cardGif 2" id="gif_card">
+        <div class="card_image_gif" id="gif_card">
+            <img src="https://github.com/MANMEET75/INFRARED/raw/main/lifecycle1.gif" />
+            </div>
+    </a>
+    </div>
+
   </center>
 </body>
 </html>
@@ -424,11 +446,13 @@ st.markdown(tab_styles1, unsafe_allow_html=True)
 
 # Add your Streamlit code here
 # tabs = ["HOME", "ABOUT","ExceltoCSV", "ProcessMining", "Benford's Law", "pdf", "Z-score", "Isolation Forest", "Auto-encoder" ,"other tab here"]
-tabs = ["HOME", "ABOUT","EXCEL TO CSV", "PROCESS MINING", "STATISTICAL METHODS", "MACHINE LEARNING METHODS", "DEEP LEARNING METHODS", "TIME SERIES METHODS"]
-tab0, tab1,tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
+tabs = ["HOME", "ABOUT","EXCEL TO CSV", "PROCESS MINING","EXPLORATORY DATA ANALYSIS", "STATISTICAL METHODS", "MACHINE LEARNING METHODS", "DEEP LEARNING METHODS", "TIME SERIES METHODS"]
+tab0, tab1,tab2, tab3, tab4, tab5, tab6, tab7,tab8 = st.tabs(tabs)
 
 
 with tab0:
+    pass
+with tab8:
     pass
 
 with tab1:
@@ -474,53 +498,58 @@ with tab2:
                 st.dataframe(csv_data)
 
 
-        st.header("Benford's Law: The Mystery Behind the Numbers")
-        st.image("https://image2.slideserve.com/4817711/what-is-benford-s-law-l.jpg", use_column_width=True)
-        st.write("Have you ever wondered why certain numbers appear more frequently as the first digit in a dataset? "
+        
+
+# Move this code block below the page
+
+with tab4:
+    st.header("Benford's Law: The Mystery Behind the Numbers")
+    st.image("https://image2.slideserve.com/4817711/what-is-benford-s-law-l.jpg", use_column_width=True)
+    st.write("Have you ever wondered why certain numbers appear more frequently as the first digit in a dataset? "
                  "This phenomenon is known as Benford's Law, and it has been a subject of fascination for mathematicians, "
                  "statisticians, and data analysts for decades.")
 
-        st.subheader("What is Benford's Law?")
-        st.write(
+    st.subheader("What is Benford's Law?")
+    st.write(
             "Benford's Law, also called the First-Digit Law, states that in many naturally occurring numerical datasets, "
             "the first digit is more likely to be small (e.g., 1, 2, or 3) than large (e.g., 8 or 9). Specifically, "
             "the probability of a number starting with digit d is given by the formula: P(d) = log10(1 + 1/d), where "
             "log10 represents the base-10 logarithm.")
 
-        st.subheader("Applications of Benford's Law")
-        st.write(
+    st.subheader("Applications of Benford's Law")
+    st.write(
             "Benford's Law has found applications in various fields, including forensic accounting, fraud detection, "
             "election analysis, and quality control. Its ability to uncover anomalies in large datasets makes it "
             "particularly useful for identifying potential irregularities or discrepancies.")
 
-        st.subheader("Real-World Examples")
-        st.write(
+    st.subheader("Real-World Examples")
+    st.write(
             "Benford's Law can be observed in numerous real-world datasets. For instance, if you examine the lengths "
             "of rivers worldwide, the population numbers of cities, or even the stock prices of companies, you are "
             "likely to find that the leading digits follow the predicted distribution.")
 
-        st.subheader("Exceptions and Limitations")
-        st.write("While Benford's Law holds true for many datasets, it is not universally applicable. Certain datasets "
+    st.subheader("Exceptions and Limitations")
+    st.write("While Benford's Law holds true for many datasets, it is not universally applicable. Certain datasets "
                  "with specific characteristics may deviate from the expected distribution. Additionally, Benford's Law "
                  "should not be considered as definitive proof of fraudulent or irregular activities but rather as a tool "
                  "for further investigation.")
 
-        st.subheader("Conclusion")
-        st.write("Benford's Law offers a fascinating insight into the distribution of numbers in various datasets. "
+    st.subheader("Conclusion")
+    st.write("Benford's Law offers a fascinating insight into the distribution of numbers in various datasets. "
                  "Understanding its principles can help data analysts and researchers identify potential outliers and "
                  "anomalies in their data. By harnessing the power of Benford's Law, we can gain valuable insights and "
                  "uncover hidden patterns in the vast sea of numerical information that surrounds us.")
 
-        st.write("---")
-        st.write("References:")
-        st.write("1. Hill, T. P. (1995). A Statistical Derivation of the Significant-Digit Law. _Statistical Science_, "
+    st.write("---")
+    st.write("References:")
+    st.write("1. Hill, T. P. (1995). A Statistical Derivation of the Significant-Digit Law. _Statistical Science_, "
                  "10(4), 354-363.")
-        st.write("2. Berger, A., & Hill, T. P. (2015). Benford’s Law Strikes Back: No Simple Explanation in Sight for "
+    st.write("2. Berger, A., & Hill, T. P. (2015). Benford’s Law Strikes Back: No Simple Explanation in Sight for "
                  "Mathematician’s Rule. _Mathematical Association of America_, 122(9), 887-903.")
 
-# Move this code block below the page
 
-with tab4:
+
+    
     st.write(
         "In probability theory and statistics, a Probability Distribution Function (PDF) is a function that describes the likelihood of a random variable taking on a particular value or falling within a specific range of values. It provides valuable information about the probabilities associated with different outcomes of a random variable.")
 
@@ -3379,7 +3408,12 @@ def UI():
     bootstrap_html = """
 
         <center>
-        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">InfraBot AI</span>:<span style="color:#000;"> Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</span></h3>
+
+        <h2 style="margin-bottom:100px;">Empowering Your Data: Unleash the Power of Effortless Querying and Precise Conversion!</h2>
+        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">InfraBot AI</span>:<span style="color:#000;">Inquire about infrared products with InfraBot AI in this chat.</span></h3>
+        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">Multiple PDF Query</span>:<span style="color:#000;">Effortlessly conduct precise PDF queries with Multiple PDF Query.</span></h3>
+        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">Whisper Speech to Text</span>:<span style="color:#000;">Whisper Speech to Text: Transform video audio into PDF for easy querying.</span></h3>
+        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">Streamlined Excel Query</span>:<span style="color:#000;">Streamlined Excel Query: Effortlessly unravel your messy data files.</span></h3>
         </center>
 
         
@@ -3411,7 +3445,7 @@ def UI():
         <a href="https://github.com/ravipratap366/LLM_chatbot">
         <div class="card 2">
         <div class="card_image">
-            <img src="https://i.gifer.com/PsKV.gif" />
+            <img src="https://thumbs.gfycat.com/EvenJaggedEyas-size_restricted.gif" />
             </div>
         <div class="card_title title-dark">
             <p>Whisper- Speech to Text PDF</p>
@@ -3430,6 +3464,13 @@ def UI():
         </div>
         </div>
         </a>
+       
+    
+
+
+
+
+        
         
 
     
@@ -3552,61 +3593,41 @@ if __name__ == "__main__":
     UI()
 
 
-# # Define the logos and their related text
-# logos = [
-#     {
-#         'image': "https://hybrid.chat/wp-content/uploads/2020/06/chatbot.png",
-#         'text': "Ask Question related to Infrared click below! 😎"
-#     },
-#     {
-#         'image': "https://tse2.mm.bing.net/th?id=OIP.l7zj2alGjBApnkyepjZo8gHaHg&pid=Api&P=0&h=180",
-#         'text': "Ask Question from your PDF click below! 📚"
-#     },
-#     {
-#         'image': "https://pluspng.com/img-png/excel-logo-png-excel-logo-logos-icon-512x512.png",
-#         'text': "Ask Question from your Excel click below! 📚"
-#     }
-# ]
+footer="""<style>
+a:link , a:visited{
+color: blue;
+background-color: transparent;
+text-decoration: underline;
+}
 
-# # Custom CSS to align images and text
-# custom_css = """
-# <style>
-#     .subHeading{
-#         position: relative;
-#         bottom:50px;
-#     }
-#     .logo-container {
-#         display: flex;
-#         align-items: center;
-#         justify-content: center;
-#     }
-#     .logo-item {
-#         display: flex;
-#         flex-direction: column;
-#         align-items: center;
-#         text-align: center;
-#         padding: 10px;
-#     }
-#     .logo-image {
-#         width: 150px;
-#         margin-bottom: 10px;
-#     }
-# </style>
-# """
+a:hover,  a:active {
+color: red;
+background-color: transparent;
+text-decoration: underline;
+}
 
-# # Display the custom CSS
-# st.write(custom_css, unsafe_allow_html=True)
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: #2b86d9;
+color: black;
+text-align: center;
 
-# # Display the logos and their related text in a single line
-# with st.container():
-#     st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-#     st.markdown('<h3><span style="color: blue;font-weight:800;">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>', unsafe_allow_html=True)
-    
-#     for logo in logos:
-#         st.markdown('<div class="logo-item">', unsafe_allow_html=True)
-#         st.markdown(f'<a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot"><img src="{logo["image"]}" class="logo-image" /></a>', unsafe_allow_html=True)
-#         st.markdown(f'<p>{logo["text"]}</p>', unsafe_allow_html=True)
-#         st.markdown('</div>', unsafe_allow_html=True)
-        
-#     st.markdown('</div>', unsafe_allow_html=True)
-
+}
+#footerText{
+color:#D6E4E5;
+position: relative;
+text-align: center;
+margin-top:20px;
+margin-bottom:20px;
+}
+</style>
+<center>
+<div class="footer">
+<p id="footerText">Copyright © 2023 All Rights Reserved Passion By RevoQuantAI</p>
+</div>
+</center>
+"""
+st.markdown(footer,unsafe_allow_html=True)
