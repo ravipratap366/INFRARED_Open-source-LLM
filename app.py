@@ -226,7 +226,7 @@ import streamlit as st
 st.markdown("""
 <style>
     [data-testid=stSidebar] {
-        background-color: #9fc6e8;
+        background-color: #b1c9de;
     }
     [data-testid=stHeader] {
         background-color: #2b86d9;
@@ -1020,7 +1020,7 @@ def main():
                         "Vendor where quality rejection takes significant time and the invoice is already paid or posted",
                         "Vendor which gets considered during invoice posting but not at the time of PO. This means, in PO vendor is showing X whereas in invoice posting vendor is showing as Y",
         ]
-        selected_info = st.sidebar.selectbox("Choose an EDA type", info_options)
+        selected_info = st.sidebar.selectbox("Select an Exploratory Data Analysis (EDA) technique", info_options)
 
         if selected_info == "None":
             st.write(" ")
@@ -1254,7 +1254,7 @@ def main():
                            "Benford law 2nd digit",
                            "Benford law 3rd digit"
                            ]
-        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose statistical methods", anomaly_options)
+        selected_anomalyAlgorithm = st.sidebar.selectbox("Select appropriate statistical techniques", anomaly_options)
 
         if selected_anomalyAlgorithm == "None":
             st.write(" ")
@@ -1292,8 +1292,12 @@ def main():
 
                 st.write("Downloading the dataset...")
 
+                numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+                newdf = data.select_dtypes(include=numerics)
+
+
                 # Select the column to use for z-score calculation
-                column = st.selectbox("Select column for z-score", data.columns)
+                column = st.selectbox("Select column for z-score", newdf.columns)
 
                 # Set the threshold for anomaly detection
                 # threshold = st.slider("Threshold", value=3, min=1, max=10, step=1)
@@ -1380,9 +1384,13 @@ def main():
 
                 st.write("Downloading the dataset...")
 
-                # Select the feature to visualize
 
-                selected_feature = st.selectbox("Select a feature:", data.columns)
+
+                numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+                newdf = data.select_dtypes(include=numerics)
+
+                # Select the feature to visualize
+                selected_feature = st.selectbox("Select a feature:", newdf.columns)
 
                 # Generate the boxplot using Plotly Express
 
@@ -1494,8 +1502,11 @@ def main():
 
 
 
-                # Select the feature to analyze
-                selected_feature = st.selectbox("Select a feature:", data.columns)
+                numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+                newdf = data.select_dtypes(include=numerics)
+                
+                # Select the feature to visualize
+                selected_feature = st.selectbox("Select a feature:", newdf.columns)
 
                 # Calculate mean and standard deviation
                 mean = data[selected_feature].mean()
@@ -1963,7 +1974,7 @@ def main():
 
 
         ]
-        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose density-based method", anomaly_options)
+        selected_anomalyAlgorithm = st.sidebar.selectbox("Select machine learning algorithms", anomaly_options)
 
 
 
@@ -3099,7 +3110,7 @@ def main():
 
         st.sidebar.header("Deep Learning Methods")
         anomaly_options = ["None", "Autoencoder"]
-        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose an algorithm", anomaly_options)
+        selected_anomalyAlgorithm = st.sidebar.selectbox("Select deep learning algorithms", anomaly_options)
 
         if selected_anomalyAlgorithm == "None":
             st.write(" ")
@@ -3313,7 +3324,7 @@ def main():
 
 
         # Prompt the user to select a time series analysis method
-        selected_anomalyAlgorithm = st.sidebar.selectbox("Choose density-based method", info_options_ts)
+        selected_anomalyAlgorithm = st.sidebar.selectbox("Select Time Series algorithms", info_options_ts)
 
         if selected_anomalyAlgorithm == "None":
             st.write(" ")
@@ -3357,7 +3368,7 @@ def UI():
 
         <a href="https://github.com/MANMEET75/Infrared-OpenAIChatBot">
         <div class="card 1">
-        <div class="card_image"> <img src="https://cdn.dribbble.com/users/673428/screenshots/6256511/chatbot-kiu.gif" /> </div>
+        <div class="card_image"> <img src="https://static.wixstatic.com/media/a89add_3d73f7e43cff4f37bdf0af4772ef6595~mv2.gif" /> </div>
         <div class="card_title title-dark">
             <p>InfraBotAI</p>
         </div>
@@ -3367,34 +3378,35 @@ def UI():
         <a href="https://github.com/ravipratap366/LLM_chatbot">
         <div class="card 2">
         <div class="card_image">
-            <img src="https://static.wixstatic.com/media/245711_fc5563559fc4474d917bb10ac978346c~mv2.gif" />
+            <img src="https://www.onlineoptimism.com/wp-content/uploads/2023/03/AI-Guidelines-GIF.gif" />
             </div>
         <div class="card_title title-dark">
             <p>Multiple PDF Query</p>
         </div>
         </div>
         </a>
-
-
-        <a href="https://github.com/ravipratap366/LLM_chatbot">
-        <div class="card 2">
-        <div class="card_image">
-            <img src="https://static.wixstatic.com/media/245711_fc5563559fc4474d917bb10ac978346c~mv2.gif" />
-            </div>
-        <div class="card_title title-dark">
-            <p>Multiple PDF Query</p>
-        </div>
-        </div>
-        </a>
-
         
+
+
         <a href="https://github.com/ravipratap366/LLM_chatbot">
         <div class="card 2">
         <div class="card_image">
-            <img src="https://static.wixstatic.com/media/245711_fc5563559fc4474d917bb10ac978346c~mv2.gif" />
+            <img src="https://i.gifer.com/PsKV.gif" />
             </div>
         <div class="card_title title-dark">
-            <p>Multiple PDF Query</p>
+            <p>Whisper- Speech to Text PDF</p>
+        </div>
+        </div>
+        </a>
+
+
+        <a href="https://github.com/ravipratap366/LLM_chatbot">
+        <div class="card 2">
+        <div class="card_image">
+            <img src="https://cdn.dribbble.com/users/489311/screenshots/6691380/excel-icons-animation.gif" />
+            </div>
+        <div class="card_title title-dark">
+            <p>Excel Query</p>
         </div>
         </div>
         </a>
@@ -3421,7 +3433,7 @@ def UI():
         }
 
         .card {
-        margin: 30px auto;
+        margin: 70px auto;
         width: 300px;
         height: 300px;
         border-radius: 40px;
