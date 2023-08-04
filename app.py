@@ -447,7 +447,7 @@ st.markdown(tab_styles1, unsafe_allow_html=True)
 # Add your Streamlit code here
 # tabs = ["HOME", "ABOUT","ExceltoCSV", "ProcessMining", "Benford's Law", "pdf", "Z-score", "Isolation Forest", "Auto-encoder" ,"other tab here"]
 tabs = ["HOME", "ABOUT","EXCEL TO CSV", "PROCESS MINING","EXPLORATORY DATA ANALYSIS", "STATISTICAL METHODS", "MACHINE LEARNING METHODS", "DEEP LEARNING METHODS", "TIME SERIES METHODS"]
-tab0, tab1,tab2, tab3, tab4, tab5, tab6, tab7,tab8 = st.tabs(tabs)
+tab0, tab1,tab2, tab3,tab8,tab4, tab5, tab6, tab7 = st.tabs(tabs)
 
 
 with tab0:
