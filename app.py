@@ -249,7 +249,20 @@ st.markdown("""
     .st-d8{
     background-color:#f2f2f2
     }
-            
+    .st-d8{
+    background-color:#f2f2f2
+    }
+    .st-cw{
+    background-color:#000;
+    }     
+    .st-cn{
+    background-color:#F1F6F5;
+    }  
+               
+    .st-f1{
+    background-color:#000;
+    }  
+               
 
             
 
@@ -3351,6 +3364,30 @@ def UI():
         </div>
         </a>
 
+        <a href="https://github.com/ravipratap366/LLM_chatbot">
+        <div class="card 2">
+        <div class="card_image">
+            <img src="https://static.wixstatic.com/media/245711_fc5563559fc4474d917bb10ac978346c~mv2.gif" />
+            </div>
+        <div class="card_title title-dark">
+            <p>Multiple PDF Query</p>
+        </div>
+        </div>
+        </a>
+
+
+        <a href="https://github.com/ravipratap366/LLM_chatbot">
+        <div class="card 2">
+        <div class="card_image">
+            <img src="https://static.wixstatic.com/media/245711_fc5563559fc4474d917bb10ac978346c~mv2.gif" />
+            </div>
+        <div class="card_title title-dark">
+            <p>Multiple PDF Query</p>
+        </div>
+        </div>
+        </a>
+
+        
         <a href="https://github.com/ravipratap366/LLM_chatbot">
         <div class="card 2">
         <div class="card_image">
