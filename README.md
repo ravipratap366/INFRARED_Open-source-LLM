@@ -5,6 +5,6 @@ A first of its kind concept that lets you discover counterintuitive patterns and
 Unleash the power of machine learning and advanced statistics to find outliers and exceptions in your data. This application provides an instant output that can be reviewed and acted upon with agility to stop revenue leakages, improve efficiency and detect/prevent fraud.
 <br>
 
-<img src="NewGif.gif">
+<img src="silvergif.gif">
 <img src="ilogo.png" width="200">
 Enjoy Coding!
