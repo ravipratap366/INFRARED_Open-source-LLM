@@ -3548,7 +3548,7 @@ def UI():
     st.markdown(bootstrap_css, unsafe_allow_html=True)
     st.markdown(bootstrap_html, unsafe_allow_html=True)
     st.components.v1.html(bootstrap_js)
-
+    
 if __name__ == "__main__":
     UI()
 
