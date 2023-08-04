@@ -182,7 +182,8 @@ This application provides an advanced method for understanding your dataset and 
 It comes with pre-built statistical and machine learning models specifically designed to identify outliers in large-scale data.</span>
   </div>
   <center>
-    <img src="https://github.com/MANMEET75/INFRARED/raw/main/silvergif.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
+  <br>
+    <img src="https://github.com/MANMEET75/INFRARED/raw/main/lifecycle.gif" alt="GIF" style="max-width: 100%; height: auto; width: 100%; height: 400px;">
     <br>
     <br>
   </center>
@@ -226,7 +227,7 @@ import streamlit as st
 st.markdown("""
 <style>
     [data-testid=stSidebar] {
-        background-color: #b1c9de;
+        background-color: #D6E4E5;
     }
     [data-testid=stHeader] {
         background-color: #2b86d9;
@@ -261,6 +262,9 @@ st.markdown("""
                
     .st-f1{
     background-color:#000;
+    }  
+    .eqr7zpz0{
+    color:#2b86d9;
     }  
                
 
@@ -1635,23 +1639,21 @@ def main():
                     x="RSF",
                     y="EBELN_Count",
                     hover_name="LIFNR",
-                    color="Anomaly Flag"
+                    color="Anomaly Flag",  # Change 'color' to 'Anomaly Flag' for the fill color
 
+                    # Assuming you want different colors for Anomaly and Not Anomaly points
+                    color_discrete_map={"Not Anomaly": "blue", "Anomaly": "red"},
                 )
-
-                # Set the colors of the Anomaly Flag column
-                fig.update_traces(color={"False": "blue", "True": "red"})
 
                 # Add the title and caption
                 fig.update_layout(title="Higher the RSF and EBELN_Count more the Chances of Anomaly")
 
-                #fig.show()
-
+                # Write the Plotly chart to an HTML file
                 fig_html_path = "RSF_Anomaly_graph.html"
                 fig.write_html(fig_html_path)
 
                 # Provide a link to open the Plotly chart in a new tab
-                if st.button("Open PDF Plot"):
+                if st.button("Open RSF Plot"):
                     new_tab = webbrowser.get()
                     new_tab.open(fig_html_path, new=2)
 
@@ -3359,7 +3361,7 @@ def UI():
     bootstrap_html = """
 
         <center>
-        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">InfraBot AI</span>: Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</h3>
+        <h3 style="margin-bottom:100px;"><span style="color: #2b86d9;font-weight:800;text-align:center">InfraBot AI</span>:<span style="color:#000;"> Unlocking Knowledge, Delve into PDFs, and Master Excel Data with Infrared Insights</span></h3>
         </center>
 
         
@@ -3420,6 +3422,9 @@ def UI():
     # CSS code for Bootstrap
     bootstrap_css = """
     <style>
+        p{
+        color:#000;
+        }
         a{
             text-decoration: none;
         }
