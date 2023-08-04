@@ -3529,6 +3529,13 @@ def UI():
         position: relative;
         top: 110px;
         }
+        .card_title p{
+        color: #000;
+        text-decoration: none;
+        }
+        a:link {
+        text-decoration: none;
+        }
 
         .card:hover {
         transform: scale(0.9, 0.9);
@@ -3594,17 +3601,7 @@ if __name__ == "__main__":
 
 
 footer="""<style>
-a:link , a:visited{
-color: blue;
-background-color: transparent;
-text-decoration: underline;
-}
 
-a:hover,  a:active {
-color: red;
-background-color: transparent;
-text-decoration: underline;
-}
 
 .footer {
 position: fixed;
