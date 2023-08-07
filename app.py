@@ -3484,7 +3484,7 @@ def UI():
 
         <div class="cards-list">
 
-        <a href="http://18.182.55.167:8080/">
+        <a href="">
         <div class="card 1">
         <div class="card_image"> <img src="https://static.wixstatic.com/media/a89add_3d73f7e43cff4f37bdf0af4772ef6595~mv2.gif" /> </div>
         <div class="card_title title-dark">
